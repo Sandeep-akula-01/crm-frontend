@@ -1,0 +1,416 @@
+.hero {
+    position: relative;
+    min-height: 100vh;
+    padding: 6rem 8vw;
+    overflow: hidden;
+    background: #0b0e17;
+
+    display: flex;
+    align-items: center;
+}
+
+
+
+/* Gradient Background */
+.gradientBg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(80% 100% at 105% 50%,
+            #E9CF7B 0%,
+            #E19466 40%,
+            #7A64B6 60%,
+            #0a010b 100%);
+    /*#f4a261 0%,
+            #7b7fe5 40%,
+            #5f4bb6 60%,
+            #0b0e17 100%
+            80% 100% at 105% 50% */
+    z-index: 1;
+
+}
+
+
+/* Sparkkkle ----- */
+
+.spark {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: #E19466;
+    border-radius: 50%;
+    filter: blur(6px);
+    z-index: 2;
+
+    offset-path: path("M350 50 A300 300 0 0 1 350 350");
+    offset-rotate: 0deg;
+}
+
+.sparkPath {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+}
+
+
+
+
+
+/* Soft White Glow */
+.whiteTint {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 20% 20%,
+            rgba(255, 255, 255, 0.12),
+            transparent 50%);
+    z-index: 2;
+}
+
+/* Content */
+.heroContent {
+    position: relative;
+    z-index: 3;
+    max-width: 650px;
+    color: white;
+}
+
+/* Heading */
+.heroContent h1 {
+    font-size: clamp(3.2rem, 5vw, 4.5rem);
+    font-weight: 500;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.5rem;
+
+}
+
+.heroContent h1 span {
+    color: #fd7b11;
+}
+
+/* Description */
+.heroContent p {
+    font-size: 1.1rem;
+    opacity: 0.85;
+    max-width: 520px;
+    margin-bottom: 2.5rem;
+
+
+}
+
+/* Buttons */
+.actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 3rem;
+
+}
+
+.primaryBtn {
+    background: white;
+    color: #0b0e17;
+    padding: 0.8rem 1.8rem;
+    border-radius: 999px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.primaryBtn:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 0 0 rgba(254, 159, 104, 0),
+        0 0 24px rgba(255, 109, 24, 0.55),
+        0 0 48px rgba(225, 148, 102, 0.35);
+}
+
+.secondaryBtn {
+    background: transparent;
+    color: white;
+    padding: 0.8rem 1.8rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+
+    position: relative;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+
+}
+
+.secondaryBtn:hover {
+    transform: translateY(-2px);
+    border-color: #fe792c;
+    box-shadow:
+        0 0 18px rgba(225, 148, 102, 0.45),
+        inset 0 0 12px rgba(225, 148, 102, 0.25);
+}
+
+
+
+
+/* Divider Line */
+.divider {
+    width: 100%;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.2);
+    margin-bottom: 1.5rem;
+
+
+}
+
+/* Stats */
+.stats {
+    display: flex;
+    gap: 3rem;
+
+}
+
+.statItem h3 {
+    font-size: 1.4rem;
+    font-weight: 500;
+}
+
+.statItem span {
+    font-size: 0.8rem;
+    opacity: 0.6;
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== Scroll reveal base ===== */
+.reveal {
+    opacity: 0;
+    transform: translateX(-60px);
+    transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.6s ease;
+}
+
+.reveal.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+
+/* =========================
+   BRANDS SECTION
+   ========================= */
+
+.brandsSection {
+  padding: 4.5rem 8%;
+  background: #ffffff;
+  text-align: center;
+  overflow: hidden;
+}
+
+.brandsSection h2 {
+  font-size: 2rem;
+  margin-bottom: 3rem;
+  color: #1e1b3a;
+}
+
+.brandsSection h2 span {
+  background: linear-gradient(90deg, #6a1474, #7A64B6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.brandsDesc {
+  max-width: 560px;
+  margin: 0 auto 3rem;
+  font-size: 1rem;
+  color: #6b6b6b;
+  line-height: 1.6;
+}
+
+.brandsSection {
+  padding: 4.5rem 8%;
+  background: #ffffff;
+  text-align: center;
+  overflow: hidden;
+
+  opacity: 0;
+  transform: translateY(40px);
+  transition: all 0.9s ease;
+}
+
+.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+/* =========================
+   CAROUSEL
+   ========================= */
+
+.brandCarousel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 3rem;
+  transition: transform 0.6s ease;
+}
+
+.brandItem {
+  width: 130px;
+  height: 130px;
+  opacity: 0.35;
+  filter: grayscale(100%);
+  transform: scale(0.75);
+  transition: all 0.6s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brandItem img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.activeBrand {
+  opacity: 1;
+  filter: grayscale(0%);
+  transform: scale(1.3);
+}
+
+
+/* =========================
+   WHY THIS CRM SECTION
+   ========================= */
+
+.whySection {
+  padding: 6rem 8%;
+  background: #fffaf5;
+}
+
+.whyHeader {
+  text-align: center;
+  max-width: 760px;
+  margin: 0 auto 4rem;
+}
+
+.whyHeader h2 {
+  font-size: 3.2rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #1e1b3a;
+}
+
+.whyHeader h2 span {
+  color: #7A64B6;
+}
+
+.whyHeader p {
+  margin-top: 1rem;
+  font-size: 1.1rem;
+  color: #6b6b6b;
+}
+
+/* CONTENT LAYOUT */
+
+.whyContent {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 3rem;
+  align-items: stretch;
+}
+
+/* LEFT IMAGE */
+
+.whyImageWrap {
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+.whyImageWrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* RIGHT CARDS */
+
+.whyCards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  align-content: start;
+}
+
+.whyCard {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 1.8rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+  transition: transform 0.3s ease;
+
+  background: linear-gradient(
+    to bottom,
+    rgba(233, 207, 123, 0.35) 0%,
+    rgba(225, 148, 102, 0.25) 35%,
+    #ffffff 70%
+  );
+
+  position: relative;
+  border: 1px solid rgba(225, 148, 102, 0.45);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+
+
+.whyCard:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 26px 50px rgba(225, 148, 102, 0.18);
+}
+
+.icon {
+  font-size: 1.6rem;
+  margin-bottom: 0.8rem;
+}
+
+.whyCard h4 {
+  font-size: 1.05rem;
+  margin-bottom: 0.4rem;
+  color: #1e1b3a;
+}
+
+.whyCard p {
+  font-size: 0.9rem;
+  color: #6b6b6b;
+  line-height: 1.5;
+}
+
+/* DEMO BUTTON */
+
+.demoBtn {
+  grid-column: span 2;
+  margin-top: 1rem;
+  align-self: start;
+
+  background: linear-gradient(90deg, #6a1474, #7A64B6);
+  color: white;
+  border: none;
+  padding: 0.9rem 1.8rem;
+  border-radius: 14px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  width: fit-content;
+  box-shadow: 0 14px 30px rgba(174, 78, 246, 0.3);
+}
