@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import styles from "./home.module.css";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
+import { NavLink } from "react-router-dom";
+
 
 import whyUs from "../../assets/Why_us.jpg";
 
@@ -30,6 +32,12 @@ import taskImg from "../../assets/tasks.jpg";
 import teamImg from "../../assets/team.jpg";
 import analyticsImg from "../../assets/analytics.jpg";
 import integrationImg from "../../assets/integration.jpg";
+
+/* testimonial images */
+import p1 from "../../assets/pfp1.jpg";
+import p2 from "../../assets/pfp2.jpg";
+import p3 from "../../assets/pfp3.jpg";
+import p4 from "../../assets/pfp4.jpg";
 
 
 const FEATURES = [
@@ -72,6 +80,91 @@ const FEATURES = [
 ];
 
 
+const TESTIMONIALS = [
+    {
+        text:
+            "This CRM completely changed how our sales team works. Everything is organised and follow-ups are effortless.",
+        name: "Aarav Sharma",
+        role: "Sales Manager, FinEdge",
+        img: p1,
+    },
+    {
+        text:
+            "The pipeline visibility and automation helped us close deals faster without extra manual work.",
+        name: "Sanjana Rao",
+        role: "Growth Lead, Marketly",
+        img: p2,
+    },
+    {
+        text:
+            "Simple, clean, and powerful. Our team collaboration improved immediately after switching.",
+        name: "Rehan Khan",
+        role: "Founder, StartX",
+        img: p3,
+    },
+    {
+        text:
+            "Analytics and reports give us clarity we never had before. Highly recommended for growing teams.",
+        name: "Meghana Iyer",
+        role: "Operations Head, CloudNest",
+        img: p4,
+    },
+];
+
+
+const plans = [
+    {
+        name: "Starter",
+        price: "₹999",
+        desc: "For individuals getting started",
+        features: [
+            "Lead management",
+            "Basic analytics",
+            "Email support",
+            "2 team members",
+            "Up to 1,000 contacts",
+            "Basic pipeline management",
+            "Standard support"
+        ],
+        featured: false,
+    },
+    {
+        name: "Growth",
+        price: "₹2,499",
+        desc: "Best for growing teams",
+        features: [
+            "Everything in Starter",
+            "Team collaboration",
+            "Up to 10,000 contacts",
+            "Advanced pipeline & automation",
+            "Email campaigns & tracking",
+            "Custom reports & dashboards",
+            "API access",
+            "Priority support"
+        ],
+        featured: true,
+    },
+    {
+        name: "Enterprise",
+        price: "Custom",
+        desc: "For large scale operations",
+        features: [
+            "Unlimited users",
+            "Custom integrations",
+            "Dedicated manager",
+            "Advanced AI insights",
+            "Custom integrations",
+            "SSO & advanced security",
+            "Dedicated success manager",
+            "24/7 premium support",
+            "Custom training"
+        ],
+        featured: false,
+        enterprise: true,
+    },
+];
+
+
 
 export default function Home() {
     const heroRef = useRef(null);
@@ -80,7 +173,7 @@ export default function Home() {
     const brandsRef = useRef(null);
 
     const [activeIndex, setActiveIndex] = useState(0);
-    const { ref: featuresRef, inView: featuresInView } = useInView({ threshold: 0.4, });
+    const featuresRef = useRef(null);
 
 
     /* Header Animation variants */
@@ -172,25 +265,27 @@ export default function Home() {
 
     /* features Scroll */
     useEffect(() => {
-        if (!featuresInView) return;
-
         const onScroll = () => {
-            const section = document.getElementById("features-section");
+            const section = featuresRef.current;
             if (!section) return;
 
             const rect = section.getBoundingClientRect();
-            const progress = Math.min(
-                Math.max(-rect.top / rect.height, 0),
-                0.99
+            const totalScroll = rect.height - window.innerHeight;
+            const scrolled = Math.min(Math.max(-rect.top, 0), totalScroll);
+
+            const progress = totalScroll > 0 ? scrolled / totalScroll : 0;
+            const index = Math.min(
+                FEATURES.length - 1,
+                Math.floor(progress * FEATURES.length)
             );
 
-            const index = Math.floor(progress * FEATURES.length);
             setActiveIndex(index);
         };
 
         window.addEventListener("scroll", onScroll);
+        onScroll();
         return () => window.removeEventListener("scroll", onScroll);
-    }, [inView]);
+    }, []);
 
     const activeFeature = FEATURES[activeIndex];
 
@@ -198,12 +293,35 @@ export default function Home() {
 
     return (
         <>
+
+            {/* ---------- Navbar ------- */}
+            <nav className={styles.navbar}>
+                {/* Brand */}
+                <div className={styles.navBrand}>
+                    Rvh<span>Crm</span>
+                </div>
+
+                {/* Links */}
+                <ul className={styles.navLinks}>
+                    <li><NavLink to="/" className={({ isActive }) =>
+                        `${styles.navItem} ${isActive ? styles.active : ""}`}>Home</NavLink></li>
+                    <li><NavLink to="/features" className={({ isActive }) =>
+                        `${styles.navItem} ${isActive ? styles.active : ""}`}>Features
+                    </NavLink></li>
+                    <li className={styles.navItem}>Pricing</li>
+                    <li className={styles.navItem}>Contact</li>
+                    <li className={styles.navItem}>Sign Up</li>
+                </ul>
+
+            </nav>
+
+            {/* ----- Header ---------- */}
             <section className={styles.hero} ref={heroRef}>
                 {/* Background */}
                 <div className={styles.gradientBg}></div>
                 <div className={styles.whiteTint}></div>
 
-                {/* 🔥 SPARK GOES HERE */}
+                {/* SPARK GOES HERE */}
                 <motion.div
                     className={styles.spark}
                     animate={{ offsetDistance: ["0%", "100%"] }}
@@ -413,7 +531,140 @@ export default function Home() {
                         </div>
                     </div>
                 </div>
+
             </section>
+
+
+            {/* --------- Testimonials --------- */}
+            <section className={styles.testimonialsSection}>
+
+                <div className={styles.testimonialHeader}>
+                    <span className={styles.label}>What people say</span>
+                    <h2>Loved by teams that sell smarter</h2>
+                    <p>
+                        Trusted by fast-growing teams to improve productivity, collaboration,
+                        and sales clarity.
+                    </p>
+                </div>
+
+                {/* CAROUSEL */}
+                <div className={styles.carouselOuter}>
+                    <div className={styles.carouselTrack}>
+                        {[...TESTIMONIALS, ...TESTIMONIALS].map((item, i) => (
+                            <div className={styles.testimonialCard} key={i}>
+                                {/* stars */}
+                                <div className={styles.stars}>★★★★★</div>
+
+                                {/* text */}
+                                <p className={styles.reviewText}>{item.text}</p>
+
+                                {/* user */}
+                                <div className={styles.userRow}>
+                                    <img src={item.img} alt={item.name} />
+                                    <div>
+                                        <div className={styles.userName}>{item.name}</div>
+                                        <div className={styles.userRole}>{item.role}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+
+            {/* ---- Pricing ------ */}
+            <section className={styles.pricingSection}>
+
+                <div className={styles.headingWrap}>
+                    <span className={styles.label}>Pricing</span>
+                    <h2>
+                        Simple pricing for <span>smart teams</span>
+                    </h2>
+                    <p>Choose a plan that scales as your business grows.</p>
+                </div>
+
+                {/* Cards */}
+                <div className={styles.pricingGrid}>
+                    {plans.map((plan, index) => (
+                        <div
+                            key={index}
+                            className={`${styles.card} ${plan.featured ? styles.featured : ""
+                                }`}
+                        >
+                            {plan.featured && (
+                                <div className={styles.badge}>Most Popular</div>
+                            )}
+
+                            <h3>{plan.name}</h3>
+                            <div className={styles.price}>{plan.price}
+                                {!plan.enterprise && <span>/month</span>}
+                            </div>
+                            <p className={styles.desc}>{plan.desc}</p>
+
+                            <ul className={styles.features}>
+                                {plan.features.map((feature, i) => (
+                                    <li key={i}>✔ {feature}</li>
+                                ))}
+                            </ul>
+
+                            <button
+                                className={`${styles.cta} ${plan.featured ? styles.primary : ""
+                                    }`}
+                            >
+                                {plan.enterprise ? "Contact Sales" : "Get Started"}
+                            </button>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
+            {/* ---- Footer ------ */}
+            <footer className={styles.footer}>
+                <div className={styles.footerInner}>
+                    {/* Left */}
+                    <div className={styles.footerBrand}>
+                        <h3>FlowCRM</h3>
+                        <p>
+                            A modern CRM built to help startups manage leads, teams, and growth —
+                            all in one place.
+                        </p>
+                    </div>
+
+                    {/* Links */}
+                    <div className={styles.footerLinks}>
+                        <div>
+                            <h4>Product</h4>
+                            <a href="#">Features</a>
+                            <a href="#">Pricing</a>
+                            <a href="#">Integrations</a>
+                            <a href="#">Updates</a>
+                        </div>
+
+                        <div>
+                            <h4>Company</h4>
+                            <a href="#">About</a>
+                            <a href="#">Careers</a>
+                            <a href="#">Blog</a>
+                            <a href="#">Contact</a>
+                        </div>
+
+                        <div>
+                            <h4>Support</h4>
+                            <a href="#">Help Center</a>
+                            <a href="#">Docs</a>
+                            <a href="#">Privacy Policy</a>
+                            <a href="#">Terms</a>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Bottom */}
+                <div className={styles.footerBottom}>
+                    © {new Date().getFullYear()} FlowCRM. All rights reserved.
+                </div>
+            </footer>
+
         </>
     );
 }

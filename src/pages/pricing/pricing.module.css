@@ -1,0 +1,296 @@
+
+.simpleHeroWrapper {
+  position: relative;
+  height: 70vh;
+  background-image: url("../../assets/pricing_hero.jpg");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: flex-end;
+  padding: 80px 6%;
+}
+
+/* subtle dark overlay so white text pops */
+.simpleHeroOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(10, 15, 35, 0.75),
+    rgba(10, 15, 35, 0.2)
+  );
+}
+
+.simpleHeroContent {
+  position: relative;
+  max-width: 700px;
+  color: white;
+}
+
+.simpleHeroContent h1 {
+  font-size: clamp(44px, 6vw, 68px);
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 16px;
+}
+
+.simpleHeroContent p {
+  font-size: 18px;
+  color: #e5e7eb;
+  max-width: 520px;
+}
+
+
+
+/* ----- Pricing ---------- */
+.pricingSection {
+  background: linear-gradient(180deg, #804a8a, #3a0353);
+  padding: 4rem 1rem;
+  color: white;
+}
+
+.headingWrap {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto 4rem;
+}
+
+.label {
+  font-size: 0.85rem;
+  color: #fc944f;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.headingWrap h2 {
+  font-size: 2.6rem;
+  margin: 0.8rem 0;
+}
+
+.headingWrap p {
+  color: #e6e4ff;
+}
+
+/* Cards */
+.pricingGrid {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.card {
+  background: #ffffff;
+  color: #2b2b2b;
+  border-radius: 18px;
+  padding: 2.4rem;
+  position: relative;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.18);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.25);
+}
+
+.featured {
+  transform: scale(1.06);
+  z-index: 2;
+}
+
+/* Badge */
+.badge {
+  position: absolute;
+  top: -14px;
+  right: 20px;
+  background: #ff8a3d;
+  color: white;
+  font-size: 0.75rem;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+/* Card content */
+.card h3 {
+  font-size: 1.4rem;
+  margin-bottom: 0.4rem;
+  color: #4f46a5;
+}
+
+.desc {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 1.2rem;
+}
+
+.price {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #4f46a5;
+  margin-bottom: 1.4rem;
+}
+
+.price span {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: #777;
+  margin-left: 4px;
+}
+
+.features {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 1.8rem;
+}
+
+.features li {
+  font-size: 0.9rem;
+  margin-bottom: 0.6rem;
+}
+
+/* CTA */
+.cta {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  background: #ff8a3d;
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.cta:hover {
+  background: #ff7420;
+}
+
+
+/* Testimonial */
+.testimonial {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-style: italic;
+  color: #eae8ff;
+}
+
+
+/* -------- Who It's For Section -------- */
+
+.whoItsForSection {
+  padding: 110px 6%;
+  background: #ffffff;
+}
+
+.whoItsForHeader {
+  max-width: 720px;
+  margin-bottom: 64px;
+}
+
+.whoItsForHeader h2 {
+  font-size: clamp(38px, 5vw, 56px);
+  font-weight: 700;
+  color: #0b1020;
+  margin-bottom: 14px;
+}
+
+.whoItsForHeader p {
+  font-size: 18px;
+  color: #555;
+}
+
+.whoItsForGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 28px;
+}
+
+.whoItsForCard {
+  background: #fff;
+  padding: 32px 26px;
+  border-radius: 20px;
+  border: 1px solid #eee;
+  transition: all 0.35s ease;
+  position: relative;
+}
+
+.whoItsForCard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 159, 28, 0.12),
+    rgba(127, 61, 255, 0.12)
+  );
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.whoItsForCard:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+}
+
+.whoItsForCard:hover::before {
+  opacity: 1;
+}
+
+.whoItsForCard h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #0b1020;
+  margin-bottom: 12px;
+}
+
+.pain {
+  font-size: 14px;
+  color: #777;
+  margin-bottom: 10px;
+}
+
+.solution {
+  font-size: 15px;
+  font-weight: 500;
+  color: #7f3dff;
+}
+
+/* Responsive */
+@media (max-width: 1000px) {
+  .whoItsForGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .whoItsForGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+
+
+
+
+/* Responsive */
+@media (max-width: 900px) {
+  .pricingGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .featured {
+    transform: none;
+  }
+
+  .trust {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+
