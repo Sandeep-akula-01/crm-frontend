@@ -1,47 +1,80 @@
+import React from "react";
 import styles from "./pricing.module.css";
 
-const plans = [
-    {
-        name: "Starter",
-        price: "₹999",
-        desc: "For individuals getting started",
-        features: [
-            "Lead management",
-            "Basic pipeline",
-            "Tasks & reminders",
-            "Email support",
-        ],
-        featured: false,
-    },
-    {
-        name: "Growth",
-        price: "₹2,499",
-        desc: "Best for growing teams",
-        features: [
-            "Everything in Starter",
-            "Automation workflows",
-            "Team collaboration",
-            "Analytics & reports",
-            "Email & WhatsApp integration",
-        ],
-        featured: true,
-    },
-    {
-        name: "Pro / Business",
-        price: "₹4,999",
-        desc: "For scaling sales teams",
-        features: [
-            "Everything in Growth",
-            "Advanced analytics",
-            "Role-based access",
-            "API access",
-            "Priority support",
-        ],
-        featured: false,
-    },
-];
+
 
 export default function Pricing() {
+    const plans = [
+        {
+            name: "Starter",
+            price: "₹999",
+            desc: "For individuals getting started",
+            features: [
+                "Lead management",
+                "Basic pipeline",
+                "Tasks & reminders",
+                "Email support",
+            ],
+            featured: false,
+        },
+        {
+            name: "Growth",
+            price: "₹2,499",
+            desc: "Best for growing teams",
+            features: [
+                "Everything in Starter",
+                "Automation workflows",
+                "Team collaboration",
+                "Analytics & reports",
+                "Email & WhatsApp integration",
+            ],
+            featured: true,
+        },
+        {
+            name: "Pro / Business",
+            price: "₹4,999",
+            desc: "For scaling sales teams",
+            features: [
+                "Everything in Growth",
+                "Advanced analytics",
+                "Role-based access",
+                "API access",
+                "Priority support",
+            ],
+            featured: false,
+        },
+    ];
+
+
+    const benefits = [
+        {
+            title: "Instant Setup",
+            desc: "Launch in minutes. No tutorials, no steep learning curves.",
+            icon: "⚡",
+        },
+        {
+            title: "One Smart Dashboard",
+            desc: "Leads, deals, follow-ups — everything in one clean view.",
+            icon: "📊",
+        },
+        {
+            title: "Never Miss a Follow-up",
+            desc: "Automated reminders that keep every opportunity warm.",
+            icon: "⏰",
+        },
+        {
+            title: "Works Everywhere",
+            desc: "Seamless on desktop, tablet, and mobile devices.",
+            icon: "📱",
+        },
+        {
+            title: "Scales With You",
+            desc: "From solo founders to large teams — grow without friction.",
+            icon: "🌱",
+        },
+    ];
+
+
     return (
         <>
             {/* Simple Hero */}
@@ -155,6 +188,87 @@ export default function Pricing() {
                             A CRM that grows with your process — not against it.
                         </p>
                     </div>
+                </div>
+            </section>
+
+
+            {/* ----- Benefits ----- */}
+            <section className={styles.pricingBenefitsSection}>
+                <div className={styles.pricingBenefitsHeader}>
+                    <p className={styles.pricingBenefitsTag}>Why teams choose RVH CRM</p>
+                    <h2 className={styles.pricingBenefitsTitle}>
+                        Built to make selling feel effortless
+                    </h2>
+                </div>
+
+                <div className={styles.pricingBenefitsGrid}>
+                    {benefits.map((item, i) => (
+                        <div
+                            key={i}
+                            className={styles.pricingBenefitCard}
+                            style={{ animationDelay: `${i * 0.12}s` }}
+                        >
+                            <span className={styles.pricingBenefitIcon}>{item.icon}</span>
+                            <h3>{item.title}</h3>
+                            <p>{item.desc}</p>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
+
+            {/* ----- Pricing How ----- */}
+            <section className={styles.pricingHowSection}>
+                <div className={styles.pricingHowHeader}>
+                    <p className={styles.pricingHowTag}>How it works</p>
+                    <h2 className={styles.pricingHowTitle}>
+                        From lead to loyal customer in 3 simple steps
+                    </h2>
+                </div>
+
+                <div className={styles.pricingHowFlow}>
+                    <div className={styles.pricingHowStep}>
+                        <span className={styles.pricingHowDot}></span>
+                        <h3>Capture leads automatically</h3>
+                        <p>
+                            Collect leads from forms, emails, and integrations without lifting a
+                            finger.
+                        </p>
+                    </div>
+
+                    <div className={styles.pricingHowLine}></div>
+
+                    <div className={styles.pricingHowStep}>
+                        <span className={styles.pricingHowDot}></span>
+                        <h3>Track & automate follow-ups</h3>
+                        <p>
+                            Every conversation stays organized. Set reminders and let CRM do the
+                            chasing.
+                        </p>
+                    </div>
+
+                    <div className={styles.pricingHowLine}></div>
+
+                    <div className={styles.pricingHowStep}>
+                        <span className={styles.pricingHowDot}></span>
+                        <h3>Close deals & view reports</h3>
+                        <p>
+                            See what’s working, close faster, and grow with clarity.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+
+
+            {/* ----- Pricing Final CTA ----- */}
+            <section className={styles.pricingFinalCta}>
+                <h2>Ready to simplify your sales workflow?</h2>
+                <p>Start using RVH CRM in minutes.</p>
+
+                <div className={styles.pricingFinalActions}>
+                    <button className={styles.pricingPrimaryBtn}>Start Free Trial</button>
+                    <button className={styles.pricingGhostBtn}>See Pricing</button>
                 </div>
             </section>
 

@@ -306,11 +306,13 @@ export default function Home() {
                     <li><NavLink to="/" className={({ isActive }) =>
                         `${styles.navItem} ${isActive ? styles.active : ""}`}>Home</NavLink></li>
                     <li><NavLink to="/features" className={({ isActive }) =>
-                        `${styles.navItem} ${isActive ? styles.active : ""}`}>Features
-                    </NavLink></li>
-                    <li className={styles.navItem}>Pricing</li>
-                    <li className={styles.navItem}>Contact</li>
-                    <li className={styles.navItem}>Sign Up</li>
+                        `${styles.navItem} ${isActive ? styles.active : ""}`}>Features</NavLink></li>
+                    <li><NavLink to="/pricing" className={({ isActive }) =>
+                        `${styles.navItem} ${isActive ? styles.active : ""}`}>Pricing</NavLink></li>
+                    <li> <NavLink to="/contact" className={({ isActive }) =>
+                        `${styles.navItem} ${isActive ? styles.active : ""}`}>Contact</NavLink></li>
+                    <li><NavLink to="/signUp" className={({ isActive }) =>
+                        `${styles.navItem} ${isActive ? styles.active : ""}`}>Sign Up</NavLink></li>
                 </ul>
 
             </nav>
