@@ -1,6 +1,6 @@
 .wrapper {
   min-height: 100vh;
-  background: #f7f6fb;
+  background: #e9e5fa;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -27,7 +27,7 @@
 
 .header h1 {
   font-size: 2.2rem;
-  color: #3a2f6e;
+  color: #534497;
   margin: 0.4rem 0;
 }
 
@@ -94,18 +94,36 @@
   justify-content: flex-end;
 }
 
-.primaryBtn {
+/*.addLaterBtn {
+
+  margin-right: 1rem;
   padding: 0.9rem 1.8rem;
   border-radius: 14px;
-  border: none;
-  background: #0f1c3f;
+  border: 2px solid #182d63;
+  color: #182d63;
+  cursor: pointer;
+  background: #ffffff;
+  font-weight: 600;
+  transition: 0.25s;
+} */
+
+.addLaterBtn:hover {
+  transform: translateY(-2px);
+  color: #5c4aff;
+} 
+
+.createBtn {
+  padding: 0.9rem 1.8rem;
+  border-radius: 14px;
+  border: 2px solid #182d63;
+  background: #182d63;
   color: #fff;
   font-weight: 600;
   cursor: pointer;
   transition: 0.25s;
 }
 
-.primaryBtn:hover {
+.createBtn:hover {
   transform: translateY(-2px);
   box-shadow: 0 12px 28px rgba(15, 28, 63, 0.35);
 }

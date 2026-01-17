@@ -6,6 +6,9 @@ import { useNavigate } from "react-router-dom";
 export default function OrganisationSetup() {
     const navigate = useNavigate();
 
+    const [errors, setErrors] = useState({});
+
+
     const [form, setForm] = useState({
         orgName: "",
         industry: "",
@@ -23,6 +26,21 @@ export default function OrganisationSetup() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        const newErrors = {};
+
+        if (!form.orgName.trim()) newErrors.orgName = "Organization name is required";
+        if (!form.industry) newErrors.industry = "Industry is required";
+        if (!form.size) newErrors.size = "Company size is required";
+        if (!form.country.trim()) newErrors.country = "Country is required";
+        if (!form.state.trim()) newErrors.state = "State is required";
+        if (!form.city.trim()) newErrors.city = "City is required";
+
+        setErrors(newErrors);
+
+        if (Object.keys(newErrors).length > 0) return;
+
+
         console.log("Org Data:", form);
         // later: send to backend
         navigate("/dashboard"); // future route
@@ -46,18 +64,19 @@ export default function OrganisationSetup() {
 
                             <div className={styles.grid}>
                                 <div className={styles.inputGroup}>
-                                    <label>Organization name</label>
+                                    <label>Organization name  <span style={{ color: "red" }}>*</span></label>
                                     <input
                                         name="orgName"
                                         placeholder="Acme Corp"
                                         value={form.orgName}
                                         onChange={handleChange}
-                                        required
+                                    /* required */
                                     />
+                                    {errors.orgName && <small style={{ color: "red" }}>{errors.orgName}</small>}
                                 </div>
 
                                 <div className={styles.inputGroup}>
-                                    <label>Industry</label>
+                                    <label>Industry <span style={{ color: "red" }}>*</span></label>
                                     <select name="industry" value={form.industry} onChange={handleChange}>
                                         <option value="">Select</option>
                                         <option>Technology</option>
@@ -66,10 +85,11 @@ export default function OrganisationSetup() {
                                         <option>Education</option>
                                         <option>Retail</option>
                                     </select>
+                                    {errors.industry && <small style={{ color: "red" }}>{errors.industry}</small>}
                                 </div>
 
                                 <div className={styles.inputGroup}>
-                                    <label>Company size</label>
+                                    <label>Company size <span style={{ color: "red" }}>*</span></label>
                                     <select name="size" value={form.size} onChange={handleChange}>
                                         <option value="">Select</option>
                                         <option>1–10</option>
@@ -77,36 +97,40 @@ export default function OrganisationSetup() {
                                         <option>50–200</option>
                                         <option>200+</option>
                                     </select>
+                                    {errors.size && <small style={{ color: "red" }}>{errors.size}</small>}
                                 </div>
 
                                 <div className={styles.inputGroup}>
-                                    <label>Country</label>
+                                    <label>Country <span style={{ color: "red" }}>*</span></label>
                                     <input
                                         name="country"
                                         placeholder="India"
                                         value={form.country}
                                         onChange={handleChange}
                                     />
+                                    {errors.country && <small style={{ color: "red" }}>{errors.country}</small>}
                                 </div>
 
                                 <div className={styles.inputGroup}>
-                                    <label>State</label>
+                                    <label>State <span style={{ color: "red" }}>*</span></label>
                                     <input
                                         name="state"
                                         placeholder="Telangana"
                                         value={form.state}
                                         onChange={handleChange}
                                     />
+                                    {errors.state && <small style={{ color: "red" }}>{errors.state}</small>}
                                 </div>
 
                                 <div className={styles.inputGroup}>
-                                    <label>City / Branch</label>
+                                    <label>City / Branch <span style={{ color: "red" }}>*</span></label>
                                     <input
                                         name="city"
                                         placeholder="Hyderabad"
                                         value={form.city}
                                         onChange={handleChange}
                                     />
+                                    {errors.city && <small style={{ color: "red" }}>{errors.city}</small>}
                                 </div>
                             </div>
                         </div>
@@ -130,10 +154,27 @@ export default function OrganisationSetup() {
 
                         {/* CTA */}
                         <div className={styles.footer}>
-                            <button type="submit" className={styles.primaryBtn}>
+                            <button
+                                className={styles.addLaterBtn}
+                                type="button"
+                                onClick={() => navigate("/dashboard")}
+                                style={{
+                                    marginRight: "1rem",
+                                    background: "transparent",
+                                    border: "none",
+                                    color: "#182d63",
+                                    cursor: "pointer",
+                                    fontWeight: 500,
+                                }}
+                            >
+                                Add later
+                            </button>
+
+                            <button type="submit" className={styles.createBtn}>
                                 Create Workspace →
                             </button>
                         </div>
+
                     </form>
                 </div>
             </div>
