@@ -1,0 +1,139 @@
+/* KPI GRID */
+.contactStats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+/* BASE CARD */
+.statCard {
+  position: relative;
+  background: #fff;
+  border-radius: 20px;
+  padding: 1.2rem 1.4rem;
+  box-shadow: 0 14px 35px rgba(90, 80, 170, 0.12);
+  overflow: hidden;
+}
+
+/* soft gradient overlay */
+.statCard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.45),
+    rgba(255,255,255,0)
+  );
+  pointer-events: none;
+}
+
+/* TEXT */
+.statCard span {
+  font-size: 0.65rem;
+  letter-spacing: 0.4px;
+  color: #7a7fa3;
+}
+
+.statCard b {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: #1f2a44;
+}
+
+/* INDIVIDUAL ACCENTS */
+.total {
+  background: linear-gradient(135deg, #f6f5ff, #ffffff);
+  border-left: 4px solid #6b5cff;
+}
+
+.active {
+  background: linear-gradient(135deg, #f2fffb, #ffffff);
+  border-left: 4px solid #3bbfa0;
+}
+
+.companies {
+  background: linear-gradient(135deg, #fff7f1, #ffffff);
+  border-left: 4px solid #ff9f6e;
+}
+
+.recent {
+  background: linear-gradient(135deg, #f9f6ff, #ffffff);
+  border-left: 4px solid #9b8cff;
+}
+
+/* HOVER (very subtle) */
+.statCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 45px rgba(90, 80, 170, 0.16);
+  transition: 0.25s ease;
+}
+
+
+/* ------- Table */
+
+.contactsTableWrap {
+  background: #fff;
+  border-radius: 18px;
+  padding: .8rem;
+  box-shadow: 0 12px 30px rgba(0,0,0,.08);
+  overflow-x: auto;
+}
+
+.contactsTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .75rem;
+}
+
+.contactsTable th {
+  text-align: left;
+  padding: .6rem;
+  font-size: .65rem;
+  color: #7a7fa3;
+  background: linear-gradient(90deg,#f6f7ff,#fff);
+}
+
+.contactsTable td {
+  padding: .6rem;
+  border-bottom: 1px solid #f0f1f6;
+}
+
+.contactsTable tr:hover {
+  background: #fafbff;
+}
+
+/* CONTACT CELL */
+.contactCell {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+
+.avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg,#6b5cff,#9b8cff);
+  color: #fff;
+  font-size: .7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+/* STATUS */
+.status {
+  padding: .25rem .6rem;
+  border-radius: 999px;
+  font-size: .6rem;
+  color: #fff;
+}
+
+/*.active { background: #3bbfa0; } */
+.new { background: #6b5cff; }
+.inactive { background: #aaa; }

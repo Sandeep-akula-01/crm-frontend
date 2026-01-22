@@ -6,9 +6,9 @@ import { useNavigate, useLocation } from "react-router-dom";
 export default function ChangePassword() {
 
     const navigate = useNavigate();
-    
+
     const location = useLocation();
-const { email, otp } = location.state || {};
+    const { email, otp } = location.state || {};
 
     const [password, setPassword] = useState("");
     const [confirm, setConfirm] = useState("");
@@ -38,7 +38,8 @@ const { email, otp } = location.state || {};
                 body: JSON.stringify({
                     email,
                     otp,
-                    password,
+                    newPassword: password,
+                    confirmPassword: confirm,
                 }),
             });
 

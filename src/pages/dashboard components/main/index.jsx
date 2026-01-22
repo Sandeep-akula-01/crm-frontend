@@ -1,4 +1,8 @@
 import React, { useEffect, useState } from "react";
+import Deals from "../deals";
+import Tasks from "../tasks";
+import Reports from "../reports";
+import Contacts from "../main contacts";
 import styles from "./main.module.css";
 import {
     LineChart,
@@ -473,16 +477,16 @@ export default function Main({ active, branch }) {
 
 
         case "Deals":
-            return <h2>Active Deals</h2>;
+            return <Deals branch={branch} />;
 
         case "Tasks":
-            return <h2>Your Tasks</h2>;
+            return <Tasks branch={branch} />;
 
         case "Contacts":
-            return <h2>Contacts</h2>;
+            return <Contacts branch={branch} />;
 
         case "Reports":
-            return <h2>Reports & Insights</h2>;
+            return <Reports branch={branch} />;
 
         default:
             return null;

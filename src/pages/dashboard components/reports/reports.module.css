@@ -1,0 +1,122 @@
+.reportsPage {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+
+/* KPI */
+.reportStats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.statCard {
+  background: #fff;
+  border-radius: 16px;
+  padding: 1rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,.06);
+}
+
+.statCard span {
+  font-size: .65rem;
+  color: #7a7fa3;
+}
+
+.statCard b {
+  font-size: 1.1rem;
+}
+
+/* CHARTS */
+.chartsRow {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1rem;
+}
+
+.chartCard {
+  background: #fff;
+  border-radius: 18px;
+  padding: 1rem;
+  box-shadow: 0 12px 30px rgba(0,0,0,.08);
+}
+
+.chartHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chartHeader h3 {
+  font-size: .9rem;
+}
+
+.chartHeader span {
+  font-size: .6rem;
+  color: #7a7fa3;
+}
+
+/* LINE GRAPH */
+.trendGraph {
+  height: 140px;
+  margin-top: .6rem;
+}
+
+.trendGraph svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* MONTHS */
+.months {
+  display: flex;
+  justify-content: space-between;
+  font-size: .6rem;
+  color: #9aa0c3;
+}
+
+/* SOURCES */
+.sourcesList {
+  margin-top: .6rem;
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+}
+
+.sourcesList div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: .7rem;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #6b5cff;
+  margin-right: .4rem;
+}
+
+/* INSIGHTS */
+.insights {
+  background: #fff;
+  border-radius: 18px;
+  padding: 1rem;
+  box-shadow: 0 12px 30px rgba(0,0,0,.08);
+}
+
+.insights h3 {
+  font-size: .9rem;
+  margin-bottom: .4rem;
+}
+
+.insights ul {
+  font-size: .7rem;
+  color: #5c6290;
+  padding-left: 1rem;
+}
+
+.insights li {
+  margin-bottom: .4rem;
+}

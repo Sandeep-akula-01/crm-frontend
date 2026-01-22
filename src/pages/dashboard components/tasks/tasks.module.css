@@ -1,0 +1,99 @@
+.tasksPage {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+/* OVERVIEW CARDS */
+.taskStats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.statCard {
+  background: #fff;
+  border-radius: 16px;
+  padding: 1rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,.06);
+}
+
+.statCard span {
+  font-size: .65rem;
+  color: #7a7fa3;
+}
+
+.statCard b {
+  font-size: 1.1rem;
+}
+
+/* TASK LIST */
+.taskList {
+  background: #fff;
+  border-radius: 18px;
+  padding: 1rem;
+  box-shadow: 0 12px 30px rgba(0,0,0,.08);
+}
+
+.taskList h3 {
+  font-size: .9rem;
+  margin-bottom: .6rem;
+  color: #1f2a44;
+}
+
+/* TASK ROW */
+.taskRow {
+  display: grid;
+  grid-template-columns: 24px 1.6fr .6fr .6fr .6fr;
+  align-items: center;
+  gap: .8rem;
+  padding: .6rem .4rem;
+  border-bottom: 1px solid #f0f1f6;
+}
+
+.taskRow:last-child {
+  border-bottom: none;
+}
+
+.taskInfo strong {
+  font-size: .75rem;
+}
+
+.taskInfo span {
+  font-size: .6rem;
+  color: #7a7fa3;
+}
+
+/* PRIORITY */
+.priority {
+  font-size: .6rem;
+  padding: .25rem .55rem;
+  border-radius: 999px;
+  text-align: center;
+  color: #fff;
+}
+
+.high { background: #ff6a88; }
+.medium { background: #f2a154; }
+.low { background: #6bcf9b; }
+
+/* META */
+.due {
+  font-size: .65rem;
+  color: #5c6290;
+}
+
+.owner {
+  font-size: .65rem;
+  color: #9aa0c3;
+}
+
+/* DONE TASK */
+.done {
+  opacity: .5;
+}
+
+.done strong {
+  text-decoration: line-through;
+}
+
