@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import styles from "./home.module.css";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 
 import whyUs from "../../assets/Why_us.jpg";
@@ -167,6 +167,9 @@ const plans = [
 
 
 export default function Home() {
+
+    const navigate = useNavigate();
+
     const heroRef = useRef(null);
     const contentRef = useRef(null);
 
@@ -509,8 +512,8 @@ export default function Home() {
                         {FEATURES.map((item, i) => (
                             <div
                                 key={i}
-                                className={`${styles.topic} ${i === activeIndex ? styles.activeTopic : ""
-                                    }`}
+                                onClick={() => setActiveIndex(i)}
+                                className={`${styles.topic} ${i === activeIndex ? styles.activeTopic : ""}`}
                             >
                                 {item.title}
                             </div>
@@ -526,7 +529,14 @@ export default function Home() {
                                 <h3>{activeFeature.title}</h3>
                                 <p>{activeFeature.desc}</p>
 
-                                <a href="#" className={styles.learnMore}>
+                                <a
+                                    className={styles.learnMore}
+                                    onClick={() =>
+                                        navigate("/features", {
+                                            state: { feature: activeFeature.title },
+                                        })
+                                    }
+                                >
                                     Learn more →
                                 </a>
                             </div>
@@ -626,7 +636,7 @@ export default function Home() {
                 <div className={styles.footerInner}>
                     {/* Left */}
                     <div className={styles.footerBrand}>
-                        <h3>FlowCRM</h3>
+                        <h3>RvhCRM</h3>
                         <p>
                             A modern CRM built to help startups manage leads, teams, and growth —
                             all in one place.
@@ -637,10 +647,10 @@ export default function Home() {
                     <div className={styles.footerLinks}>
                         <div>
                             <h4>Product</h4>
-                            <a href="#">Features</a>
-                            <a href="#">Pricing</a>
-                            <a href="#">Integrations</a>
-                            <a href="#">Updates</a>
+                            <a onClick={() => navigate("/features")}>Features</a>
+                            <a onClick={() => navigate("/pricing")}>Pricing</a>
+                            <a onClick={() => navigate("/contact")}>Contact</a>
+                            <a onClick={() => navigate("/login")}>Login</a>
                         </div>
 
                         <div>
@@ -663,7 +673,7 @@ export default function Home() {
 
                 {/* Bottom */}
                 <div className={styles.footerBottom}>
-                    © {new Date().getFullYear()} FlowCRM. All rights reserved.
+                    © {new Date().getFullYear()} RvhCRM. All rights reserved.
                 </div>
             </footer>
 

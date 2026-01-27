@@ -1,8 +1,5 @@
-
 /* ------ NavBar ---------*/
-/* ======================
-   NAVBAR
-   ====================== */
+
 
 .navbar {
   position: fixed;
@@ -15,7 +12,11 @@
   justify-content: space-between;
   z-index: 10;
 
-  background: transparent;
+  /* purple glass tint */
+  background: rgba(122, 100, 182, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
 }
 
 /* Brand */
@@ -28,7 +29,8 @@
 }
 
 .navBrand span {
-  color: #fd7b11; /* orange accent */
+  color: #fd7b11;
+  /* orange accent */
 }
 
 /* Links */
@@ -57,7 +59,8 @@
   bottom: -6px;
   width: 0%;
   height: 2px;
-  background: #fd7b11;/*linear-gradient(90deg, #fd7b11, #7A64B6);*/
+  background: #fd7b11;
+  /*linear-gradient(90deg, #fd7b11, #7A64B6);*/
   transition: width 0.3s ease;
 }
 
@@ -1075,7 +1078,8 @@
    ====================== */
 
 .footer {
-  background: #0f1a2b; /* navy blue */
+  background: #0f1a2b;
+  /* navy blue */
   color: #cfd6e6;
   padding: 4rem 8% 1.5rem;
 }
@@ -1121,6 +1125,8 @@
   text-decoration: none;
   margin-bottom: 0.6rem;
   transition: color 0.2s ease;
+
+  cursor: pointer;
 }
 
 .footerLinks a:hover {
@@ -1147,4 +1153,3 @@
     grid-template-columns: 1fr 1fr;
   }
 }
-

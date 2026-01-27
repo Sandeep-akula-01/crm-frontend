@@ -36,7 +36,7 @@
 }
 
 .taskList h3 {
-  font-size: .9rem;
+  font-size: 1.05rem;
   margin-bottom: .6rem;
   color: #1f2a44;
 }
@@ -56,17 +56,18 @@
 }
 
 .taskInfo strong {
-  font-size: .75rem;
+  font-size: .95rem;
 }
 
 .taskInfo span {
-  font-size: .6rem;
+  font-size: .75rem;
   color: #7a7fa3;
+  margin-left: 10px;
 }
 
 /* PRIORITY */
 .priority {
-  font-size: .6rem;
+  font-size: .75rem;
   padding: .25rem .55rem;
   border-radius: 999px;
   text-align: center;
@@ -79,12 +80,12 @@
 
 /* META */
 .due {
-  font-size: .65rem;
+  font-size: .75rem;
   color: #5c6290;
 }
 
 .owner {
-  font-size: .65rem;
+  font-size: .75rem;
   color: #9aa0c3;
 }
 
@@ -95,5 +96,183 @@
 
 .done strong {
   text-decoration: line-through;
+}
+
+
+/* ------- TABS */
+/* TABS */
+.tabs {
+  display: flex;
+  gap: .8rem;
+}
+
+.tabs button {
+  padding: .45rem .9rem;
+  border-radius: 999px;
+  border: 1px solid #e4e6f0;
+  /*background: #fff; */
+  font-size: .90rem;
+  cursor: pointer;
+}
+
+.activeTab {
+  background: #fd7b11;
+  color: #fff;
+  border-color: #fd7b11;
+}
+
+/* NOTES & FILES PANELS */
+.panel {
+  background: #fff;
+  border-radius: 18px;
+  padding: 1rem;
+  box-shadow: 0 12px 30px rgba(0,0,0,.08);
+}
+
+.noteInput {
+  display: flex;
+  gap: .6rem;
+  margin-bottom: .8rem;
+}
+
+.noteInput textarea {
+  flex: 1;
+  resize: none;
+  padding: .5rem;
+  border-radius: 10px;
+  border: 1px solid #e4e6f0;
+  font-size: .95rem;
+}
+
+.noteInput button {
+  padding: .4rem .8rem;
+  border-radius: 10px;
+  border: none;
+  background: #fd7b11;
+  color: #fff;
+  cursor: pointer;
+}
+
+.noteCard {
+  padding: .6rem;
+  border-bottom: 1px solid #f0f1f6;
+}
+
+.noteCard span {
+  font-size: .65rem;
+  color: #9aa0c3;
+}
+
+.fileRow {
+  font-size: .7rem;
+  padding: .4rem 0;
+}
+
+
+/*Append ----- */
+.noteActions {
+  display: flex;
+  gap: .4rem;
+  margin-top: .3rem;
+}
+
+.noteActions button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: .65rem;
+  opacity: .7;
+}
+
+.noteActions button:hover {
+  opacity: 1;
+}
+
+.editTextarea {
+  width: 100%;
+  resize: none;
+  border-radius: 10px;
+  padding: .5rem;
+  border: 1px solid #e4e6f0;
+  font-size: .7rem;
+}
+
+
+/* FILES PANEL TITLE */
+.panelTitle {
+  font-size: 1.15rem;
+  margin-bottom: .6rem;
+  color: #1f2a44;
+}
+
+/* UPLOAD AREA */
+.fileUpload {
+  display: flex;
+  flex-direction: column;
+  gap: .3rem;
+  margin-bottom: .8rem;
+}
+
+.fileUpload input {
+  font-size: 0.85rem;
+}
+
+.fileUpload span {
+  font-size: 0.85rem;
+  color: #8b90b6;
+}
+
+/* FILES LIST */
+.filesList {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+}
+
+/* FILE ROW */
+.fileRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .45rem .6rem;
+  border-radius: 10px;
+  background: #f7f8fc;
+}
+
+/* FILE INFO */
+.fileInfo {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+}
+
+.fileIcon {
+  font-size: 0.95rem;
+}
+
+.fileName {
+  font-size: 0.95rem;
+  color: #2b345a;
+  max-width: 220px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* DELETE BUTTON */
+.deleteBtn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 1rem;
+  opacity: .6;
+}
+
+.deleteBtn:hover {
+  opacity: 1;
+}
+
+.fileRow button:hover {
+  opacity: 1;
 }
 

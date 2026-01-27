@@ -137,3 +137,12 @@
 /*.active { background: #3bbfa0; } */
 .new { background: #6b5cff; }
 .inactive { background: #aaa; }
+
+/* pointer */
+.rowClickable {
+  cursor: pointer;
+}
+
+.rowClickable:hover {
+  background: #f6f7ff;
+}

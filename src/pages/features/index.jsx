@@ -3,6 +3,8 @@ import { motion } from "framer-motion";
 import { UserPlus, GitBranch, BarChart3 } from "lucide-react";
 import styles from "./features.module.css";
 
+import { NavLink, useNavigate } from "react-router-dom";
+
 import visual1 from "../../assets/leads.jpg";
 import visual2 from "../../assets/pipelines.jpg";
 import visual3 from "../../assets/tasks.jpg";
@@ -61,11 +63,37 @@ const steps = [
 
 
 export default function Features() {
+  const navigate = useNavigate();
+
   const [active, setActive] = useState(0);
   const current = TABS[active];
 
   return (
     <>
+
+      {/* ---------- Navbar ------- */}
+      <nav className={styles.navbar}>
+        {/* Brand */}
+        <div className={styles.navBrand}>
+          Rvh<span>Crm</span>
+        </div>
+
+        {/* Links */}
+        <ul className={styles.navLinks}>
+          <li><NavLink to="/" className={({ isActive }) =>
+            `${styles.navItem} ${isActive ? styles.active : ""}`}>Home</NavLink></li>
+          <li><NavLink to="/features" className={({ isActive }) =>
+            `${styles.navItem} ${isActive ? styles.active : ""}`}>Features</NavLink></li>
+          <li><NavLink to="/pricing" className={({ isActive }) =>
+            `${styles.navItem} ${isActive ? styles.active : ""}`}>Pricing</NavLink></li>
+          <li> <NavLink to="/contact" className={({ isActive }) =>
+            `${styles.navItem} ${isActive ? styles.active : ""}`}>Contact</NavLink></li>
+          <li><NavLink to="/signUp" className={({ isActive }) =>
+            `${styles.navItem} ${isActive ? styles.active : ""}`}>Sign Up</NavLink></li>
+        </ul>
+
+      </nav>
+
       {/*----- Hero --------*/}
       <section className={styles.featuresHero}>
         <div className={styles.overlay}></div>
@@ -222,6 +250,52 @@ export default function Features() {
           </div>
         </div>
       </section>
+
+      {/* ---- Footer ------ */}
+      <footer className={styles.footer}>
+        <div className={styles.footerInner}>
+          {/* Left */}
+          <div className={styles.footerBrand}>
+            <h3>RvhCRM</h3>
+            <p>
+              A modern CRM built to help startups manage leads, teams, and growth —
+              all in one place.
+            </p>
+          </div>
+
+          {/* Links */}
+          <div className={styles.footerLinks}>
+            <div>
+              <h4>Product</h4>
+              <a onClick={() => navigate("/features")}>Features</a>
+              <a onClick={() => navigate("/pricing")}>Pricing</a>
+              <a onClick={() => navigate("/contact")}>Contact</a>
+              <a onClick={() => navigate("/login")}>Login</a>
+            </div>
+
+            <div>
+              <h4>Company</h4>
+              <a href="#">About</a>
+              <a href="#">Careers</a>
+              <a href="#">Blog</a>
+              <a href="#">Contact</a>
+            </div>
+
+            <div>
+              <h4>Support</h4>
+              <a href="#">Help Center</a>
+              <a href="#">Docs</a>
+              <a href="#">Privacy Policy</a>
+              <a href="#">Terms</a>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom */}
+        <div className={styles.footerBottom}>
+          © {new Date().getFullYear()} RvhCRM. All rights reserved.
+        </div>
+      </footer>
 
 
     </>

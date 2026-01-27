@@ -81,10 +81,10 @@ export default function Contacts() {
                             <tr
                                 key={i}
                                 onClick={() => {
-                                    console.log("Clicked:", c);   
+                                    console.log("Clicked:", c);
                                     setSelectedContact(c);
                                 }}
-                                className={styles.rowClickable} 
+                                className={styles.rowClickable}
                             >
                                 <td className={styles.contactCell}>
                                     <div className={styles.avatar}>{c.name[0]}</div>
@@ -105,6 +105,14 @@ export default function Contacts() {
                     </tbody>
                 </table>
             </div>
+
+            {selectedContact && (
+                <ContactProfile
+                    contact={selectedContact}
+                    onClose={() => setSelectedContact(null)}
+                />
+            )}
+
 
         </div>
     );

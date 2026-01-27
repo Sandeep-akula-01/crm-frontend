@@ -1,9 +1,12 @@
 import React from "react";
 import styles from "./pricing.module.css";
 
-
+import { NavLink, useNavigate } from "react-router-dom";
 
 export default function Pricing() {
+
+    const navigate = useNavigate();
+
     const plans = [
         {
             name: "Starter",
@@ -77,6 +80,31 @@ export default function Pricing() {
 
     return (
         <>
+
+            {/* ---------- Navbar ------- */}
+            <nav className={styles.navbar}>
+                {/* Brand */}
+                <div className={styles.navBrand}>
+                    Rvh<span>Crm</span>
+                </div>
+
+                {/* Links */}
+                <ul className={styles.navLinks}>
+                    <li><NavLink to="/" className={({ isActive }) =>
+                        `${styles.navItem} ${isActive ? styles.active : ""}`}>Home</NavLink></li>
+                    <li><NavLink to="/features" className={({ isActive }) =>
+                        `${styles.navItem} ${isActive ? styles.active : ""}`}>Features</NavLink></li>
+                    <li><NavLink to="/pricing" className={({ isActive }) =>
+                        `${styles.navItem} ${isActive ? styles.active : ""}`}>Pricing</NavLink></li>
+                    <li> <NavLink to="/contact" className={({ isActive }) =>
+                        `${styles.navItem} ${isActive ? styles.active : ""}`}>Contact</NavLink></li>
+                    <li><NavLink to="/signUp" className={({ isActive }) =>
+                        `${styles.navItem} ${isActive ? styles.active : ""}`}>Sign Up</NavLink></li>
+                </ul>
+
+            </nav>
+
+
             {/* Simple Hero */}
             <section className={styles.simpleHeroWrapper}>
                 <div className={styles.simpleHeroOverlay} />
@@ -271,6 +299,53 @@ export default function Pricing() {
                     <button className={styles.pricingGhostBtn}>See Pricing</button>
                 </div>
             </section>
+
+
+            {/* ---- Footer ------ */}
+            <footer className={styles.footer}>
+                <div className={styles.footerInner}>
+                    {/* Left */}
+                    <div className={styles.footerBrand}>
+                        <h3>RvhCRM</h3>
+                        <p>
+                            A modern CRM built to help startups manage leads, teams, and growth —
+                            all in one place.
+                        </p>
+                    </div>
+
+                    {/* Links */}
+                    <div className={styles.footerLinks}>
+                        <div>
+                            <h4>Product</h4>
+                            <a onClick={() => navigate("/features")}>Features</a>
+                            <a onClick={() => navigate("/pricing")}>Pricing</a>
+                            <a onClick={() => navigate("/contact")}>Contact</a>
+                            <a onClick={() => navigate("/login")}>Login</a>
+                        </div>
+
+                        <div>
+                            <h4>Company</h4>
+                            <a href="#">About</a>
+                            <a href="#">Careers</a>
+                            <a href="#">Blog</a>
+                            <a href="#">Contact</a>
+                        </div>
+
+                        <div>
+                            <h4>Support</h4>
+                            <a href="#">Help Center</a>
+                            <a href="#">Docs</a>
+                            <a href="#">Privacy Policy</a>
+                            <a href="#">Terms</a>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Bottom */}
+                <div className={styles.footerBottom}>
+                    © {new Date().getFullYear()} RvhCRM. All rights reserved.
+                </div>
+            </footer>
 
 
         </>
