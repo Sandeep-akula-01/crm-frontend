@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from "react";
+import Leads from "../leads";
 import Deals from "../deals";
 import Tasks from "../tasks";
 import Reports from "../reports";
 import Contacts from "../main contacts";
 import styles from "./main.module.css";
-import {
+{/*import {
     LineChart,
     Line,
     XAxis,
     YAxis,
     Tooltip,
     ResponsiveContainer,
-} from "recharts";
+} from "recharts"; 
 
 
 const leadTrend = [
@@ -21,9 +22,9 @@ const leadTrend = [
     { week: "W4", all: 42, qualified: 34 },
     { week: "W5", all: 55, qualified: 40 },
     { week: "W6", all: 68, qualified: 52 },
-];
+]; */}
 
-const tempLeads = [
+{/*const tempLeads = [
     {
         name: "Riya Sharma",
         email: "riya@gmail.com",
@@ -64,15 +65,10 @@ const tempLeads = [
         createdAt: "1 week ago",
         description: "Budget mismatch",
     },
-];
+]; */}
 
 
 export default function Main({ active, branch }) {
-
-    const [leads, setLeads] = useState([]);
-    const [search, setSearch] = useState("");
-    const [statusFilter, setStatusFilter] = useState("All");
-    const [sourceFilter, setSourceFilter] = useState("All");
 
     useEffect(() => {
         fetch("http://192.168.1.18:5000/api1/leads")
@@ -80,6 +76,13 @@ export default function Main({ active, branch }) {
             .then(data => setLeads(data))
             .catch(err => console.error(err));
     }, []);
+
+    {/*const [leads, setLeads] = useState([]);
+    const [search, setSearch] = useState("");
+    const [statusFilter, setStatusFilter] = useState("All");
+    const [sourceFilter, setSourceFilter] = useState("All");
+
+    
 
     const filtered = leads.filter(l =>
         (statusFilter === "All" || l.status === statusFilter) &&
@@ -100,7 +103,7 @@ export default function Main({ active, branch }) {
     const campaigns = {};
     leads.forEach(l => {
         campaigns[l.source] = (campaigns[l.source] || 0) + 1;
-    });
+    }); */}
 
 
     switch (active) {
@@ -265,13 +268,19 @@ export default function Main({ active, branch }) {
 
             {/* ------------   Leads   ---------------- */ }
 
-        case "Leads":
 
+
+        case "Leads":
             return (
                 <>
-                    <div className={styles.leadsWrap}>
+                    <Leads branch={branch} />
+                </>
+            );
 
-                        {/* KPI CARDS */}
+
+            {/*<div className={styles.leadsWrap}>
+
+                        {/* KPI CARDS 
                         <div className={styles.leadsKpiGrid}>
                             <div className={`${styles.leadsKpi} ${styles.kpiTotal}`}>
                                 <span>Total Leads</span>
@@ -293,13 +302,13 @@ export default function Main({ active, branch }) {
                                 <span>Lost</span>
                                 <strong>{lost}</strong>
                             </div>
-                        </div>
+                        </div> */}
 
 
-                        {/* TREND + CAMPAIGN ROW */}
+            {/* TREND + CAMPAIGN ROW 
 
                         <div className={styles.leadsInsightsRow}>
-                            {/* Leads Over Time */}
+                           
                             <div className={styles.leadsTrendCard}>
                                 <div className={styles.trendHeader}>
                                     <div>
@@ -337,7 +346,7 @@ export default function Main({ active, branch }) {
 
 
 
-                            {/* Campaign Panel */}
+                            {/* Campaign Panel 
 
                             <div className={styles.campaignPanel}>
                                 <div className={styles.campaignHeader}>
@@ -369,8 +378,8 @@ export default function Main({ active, branch }) {
                                     <span className={styles.campaignMeta}>310 leads • 32%</span>
                                 </div>
 
-                                <button className={styles.campaignBtn}>View All Campaigns</button>
-                            </div>
+                                <button className={styles.campaignBtn}>View All Campaigns</button> 
+                            </div>  
 
 
 
@@ -381,7 +390,7 @@ export default function Main({ active, branch }) {
 
 
                         {/* SEARCH & FILTERS */}
-                        {/* CONTROLS BAR */}
+            {/* CONTROLS BAR
                         <div className={styles.leadsTopBar}>
                             <div className={styles.leadsLeftControls}>
                                 <select
@@ -428,10 +437,10 @@ export default function Main({ active, branch }) {
                                     + Create Lead
                                 </button>
                             </div>
-                        </div>
+                        </div>   */}
 
 
-                        {/* ---------- LEADS List TABLE */}
+            {/* ---------- LEADS List TABLE 
                         <div className={styles.leadsLayout}>
                             <div className={styles.leadsTableWrap}>
                                 <table className={styles.leadsTable}>
@@ -469,11 +478,11 @@ export default function Main({ active, branch }) {
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
+                        </div> 
 
-                    </div>
-                </>
-            );
+                    </div> */}
+
+
 
 
         case "Deals":
