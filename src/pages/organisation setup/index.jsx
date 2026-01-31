@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import styles from "./organisationSetup.module.css";
 import { useNavigate } from "react-router-dom";
 
@@ -16,15 +17,15 @@ export default function OrganisationSetup() {
         country: "",
         state: "",
         city: "",
-        inviteEmail: "",
-        role: "User",
+        name: "",
+        phone: "",
     });
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         const newErrors = {};
@@ -35,16 +36,62 @@ export default function OrganisationSetup() {
         if (!form.country.trim()) newErrors.country = "Country is required";
         if (!form.state.trim()) newErrors.state = "State is required";
         if (!form.city.trim()) newErrors.city = "City is required";
+        if (!form.name.trim()) newErrors.name = "Name is required";
+        if (!form.phone.trim()) newErrors.phone = "Phone number is required";
+
+
+        if (!/^\d{10}$/.test(form.phone)) {
+            newErrors.phone = "Enter a valid 10-digit phone number";
+        }
+
 
         setErrors(newErrors);
 
         if (Object.keys(newErrors).length > 0) return;
 
+        const payload = {
+            organization_name: form.orgName,
+            organization_size: form.size,
+            industry: form.industry,
+            phone: form.phone,
+            country: form.country,
+            state: form.state,
+            city_or_branch: form.city,
+            name: form.name,
+        };
 
-        console.log("Org Data:", form);
-        // later: send to backend
-        navigate("/dashboard"); // future route
-    };
+
+
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            console.error("No auth token found");
+            return;
+        }
+
+        try {
+            const response = await axios.post(
+                "http://192.168.1.46:5000/api/organization/setup",
+                payload,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            console.log("Organization setup success:", response.data);
+            navigate("/dashboard");
+
+        } catch (error) {
+            console.error(
+                "Error creating organization:",
+                error.response?.data || error.message
+            );
+        }
+
+    }
+
     return (
         <>
 
@@ -136,21 +183,39 @@ export default function OrganisationSetup() {
                         </div>
 
                         {/* Team Basics */}
+                        {/* Contact Details */}
                         <div className={styles.section}>
-                            <h3>Invite your first teammate (optional)</h3>
-                            <div className={styles.inline}>
-                                <input
-                                    name="inviteEmail"
-                                    placeholder="teammate@company.com"
-                                    value={form.inviteEmail}
-                                    onChange={handleChange}
-                                />
-                                <select name="role" value={form.role} onChange={handleChange}>
-                                    <option>User</option>
-                                    <option>Manager</option>
-                                </select>
+                            <h3>Primary contact details</h3>
+
+                            <div className={styles.grid}>
+                                <div className={styles.inputGroup}>
+                                    <label>Name <span style={{ color: "red" }}>*</span></label>
+                                    <input
+                                        name="name"
+                                        placeholder="John Doe"
+                                        value={form.name}
+                                        onChange={handleChange}
+                                    />
+                                    {errors.name && (
+                                        <small style={{ color: "red" }}>{errors.name}</small>
+                                    )}
+                                </div>
+
+                                <div className={styles.inputGroup}>
+                                    <label>Phone number <span style={{ color: "red" }}>*</span></label>
+                                    <input
+                                        name="phone"
+                                        placeholder="+91 98765 43210"
+                                        value={form.phone}
+                                        onChange={handleChange}
+                                    />
+                                    {errors.phone && (
+                                        <small style={{ color: "red" }}>{errors.phone}</small>
+                                    )}
+                                </div>
                             </div>
                         </div>
+
 
                         {/* CTA */}
                         <div className={styles.footer}>

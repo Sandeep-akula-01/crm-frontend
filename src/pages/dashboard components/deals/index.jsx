@@ -1,7 +1,16 @@
+import React, { useEffect, useState } from "react";
 import styles from "./deals.module.css";
 import * as XLSX from "xlsx";
 
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
+/* deals pipeline */
 const dealsData = [
   {
     name: "CRM Setup",
@@ -28,6 +37,47 @@ const dealsData = [
     close: "18 Feb",
   },
 ];
+
+const salesData = [
+  { name: "Mobile App", company: "Zen Corp", stage: "Proposal", value: "₹2,40,000", close: "22 Feb" },
+  { name: "SEO Retainer", company: "Rankly", stage: "Negotiation", value: "₹60,000", close: "28 Feb" },
+  { name: "Dashboard Revamp", company: "Finova", stage: "Won", value: "₹1,80,000", close: "10 Feb" },
+];
+
+const partnershipData = [
+  { name: "Agency Tie-up", company: "DesignHub", stage: "Proposal", value: "—", close: "—" },
+  { name: "Tech Partner", company: "CloudNine", stage: "Negotiation", value: "—", close: "—" },
+  { name: "Referral Partner", company: "GrowthX", stage: "Won", value: "—", close: "—" },
+];
+
+const enterpriseData = [
+  { name: "ERP System", company: "MegaCorp", stage: "Proposal", value: "₹12,00,000", close: "Mar" },
+  { name: "Internal CRM", company: "Axis Group", stage: "Negotiation", value: "₹8,50,000", close: "Apr" },
+  { name: "AI Platform", company: "OmniTech", stage: "Won", value: "₹18,00,000", close: "Jan" },
+];
+
+
+
+const winLossData = [
+  { name: "Won", value: 52 },
+  { name: "Lost", value: 33 },
+  { name: "In Progress", value: 15 },
+];
+
+const WIN_LOSS_COLORS = ["#10b981", "#f97316", "#6366f1"];
+
+const winReasons = [
+  { label: "Pricing Fit", value: 35, color: "#10b981" }, // green
+  { label: "Product Match", value: 25, color: "#3b82f6" }, // blue
+  { label: "Fast Follow-up", value: 18, color: "#f97316" }, // orange
+];
+
+const lossReasons = [
+  { label: "Budget Issues", value: 30, color: "#f97316" },
+  { label: "Competitor Chosen", value: 22, color: "#ef4444" },
+  { label: "Delayed Response", value: 15, color: "#6366f1" },
+];
+
 
 export default function Deals({ branch }) {
   const handleExportDeals = () => {
@@ -57,7 +107,6 @@ export default function Deals({ branch }) {
 
   // ---------- Forecast logic ----------
 
-
   // convert ₹ strings to numbers
   const parseAmount = (value) =>
     Number(value.replace(/[₹,]/g, ""));
@@ -86,6 +135,17 @@ export default function Deals({ branch }) {
     d.close.toLowerCase().includes("feb")
   ).length;
 
+  /* deals pipeline */
+  const [activePipeline, setActivePipeline] = React.useState("deals");
+
+  const pipelineMap = {
+    deals: dealsData,
+    sales: salesData,
+    partnership: partnershipData,
+    enterprise: enterpriseData,
+  };
+
+  const activeData = pipelineMap[activePipeline];
 
 
 
@@ -128,7 +188,7 @@ export default function Deals({ branch }) {
       </div>
 
 
-      {/* Deals Pipeline */}
+      {/* Deals Pipeline 
       <div className={styles.pipelineSection}>
         <h3 className={styles.pipelineTitle}>Deals Pipeline</h3>
 
@@ -162,7 +222,169 @@ export default function Deals({ branch }) {
             </div>
           ))}
         </div>
+      </div> */}
+
+      {/* Pipelines Section */}
+      <div className={styles.pipelineSection}>
+
+        {/* Pipeline Tabs */}
+        <div className={styles.pipelineTabs}>
+          {[
+            { id: "deals", label: "Deals Pipeline" },
+            { id: "sales", label: "Sales Pipeline" },
+            { id: "partnership", label: "Partnership" },
+            { id: "enterprise", label: "Enterprise" },
+          ].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActivePipeline(tab.id)}
+              className={`${styles.pipelineTab} ${activePipeline === tab.id ? styles.activeTab : ""
+                }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* SAME KANBAN – data swaps */}
+        <div className={`${styles.pipelineBoardWrap} ${styles[activePipeline]}`}>
+          <div className={styles.pipelineBoard}>
+            {["Proposal", "Negotiation", "Won"].map(stage => (
+              <div
+                key={stage}
+                className={`${styles.pipelineColumn} ${styles[stage]}`}
+
+              >
+                <div className={styles.pipelineHeader}>
+                  <span>{stage}</span>
+                  <b>{activeData.filter(d => d.stage === stage).length}</b>
+                </div>
+
+                <div className={styles.pipelineCards}>
+                  {activeData
+                    .filter(d => d.stage === stage)
+                    .map((deal, i) => (
+                      <div key={i} className={styles.pipelineCard}>
+                        <strong>{deal.name}</strong>
+                        <span className={styles.pipelineCompany}>{deal.company}</span>
+
+                        <div className={styles.pipelineMeta}>
+                          <span>{deal.value}</span>
+                          <span>{deal.close}</span>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
+
+
+
+      {/* -------------- Win / Loss Analytics ----------------*/}
+      <section className={styles.winLossSection}>
+        <h3 className={styles.sectionTitle}>Win / Loss Analytics</h3>
+
+        <div className={styles.winLossGrid}>
+
+          {/* Donut Chart */}
+          <div className={styles.chartBox}>
+
+            <div className={styles.donutLegend}>
+              <span>
+                <i className={styles.wonDot}></i> Won
+              </span>
+              <span>
+                <i className={styles.lostDot}></i> Lost
+              </span>
+              <span>
+                <i className={styles.progressDot}></i> In Progress
+              </span>
+            </div>
+
+            <ResponsiveContainer width="100%" height={240}>
+              <PieChart>
+
+                {/* Gradient Definitions */}
+                <defs>
+                  <linearGradient id="wonGradient" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#43cea2" />
+                    <stop offset="100%" stopColor="#185a9d" />
+                  </linearGradient>
+
+                  <linearGradient id="lostGradient" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#ff7e5f" />
+                    <stop offset="100%" stopColor="#feb47b" />
+                  </linearGradient>
+
+                  <linearGradient id="progressGradient" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#6a11cb" />
+                    <stop offset="100%" stopColor="#2575fc" />
+                  </linearGradient>
+                </defs>
+
+                <Pie
+                  data={winLossData}
+                  innerRadius={70}
+                  outerRadius={100}
+                  paddingAngle={4}
+                  dataKey="value"
+                >
+                  <Cell fill="url(#wonGradient)" />
+                  <Cell fill="url(#lostGradient)" />
+                  <Cell fill="url(#progressGradient)" />
+                </Pie>
+
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+
+
+            <div className={styles.chartCenter}>
+              <span>Deal Outcomes</span>
+            </div>
+          </div>
+
+          {/* Insights */}
+
+          <div className={styles.insightGrid}>
+
+            {/* Win Card */}
+            <div className={styles.insightCard}>
+              <h4 className={styles.winTitle}>Top Win Reasons</h4>
+
+              <ul className={styles.reasonList}>
+                {winReasons.map((r, i) => (
+                  <li key={i}>
+                    <span className={styles.reasonLabel}>{r.label}</span>
+                    <em className={styles.reasonValue}>{r.value}%</em>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Loss Card */}
+            <div className={styles.insightCard}>
+              <h4 className={styles.lossTitle}>Top Loss Reasons</h4>
+
+              <ul className={styles.reasonList}>
+                {lossReasons.map((r, i) => (
+                  <li key={i}>
+                    <span className={styles.reasonLabel}>{r.label}</span>
+                    <em className={styles.reasonValue}>{r.value}%</em>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+          </div>
+
+
+        </div>
+      </section>
+
 
 
 

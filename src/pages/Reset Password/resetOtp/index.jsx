@@ -1,89 +1,58 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./resetOtp.module.css";
-import { useNavigate, NavLink, useLocation } from "react-router-dom";
 
+import { useNavigate, NavLink } from "react-router-dom";
+
+
+import axios from "axios";
 
 export default function ResetOtp() {
 
-    const navigate = useNavigate();
-
-    const location = useLocation();
-    const email = location.state?.email
-
-
     const [otp, setOtp] = useState("");
     const [error, setError] = useState("");
+    const [info, setInfo] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    const handleChange = (e) => {
-        const value = e.target.value;
+    const navigate = useNavigate();
+    const email = localStorage.getItem("resetEmail");
 
-        // Allow only numbers
-        if (!/^\d*$/.test(value)) {
-            setError("Only numbers are allowed");
-            return;
-        }
-
-        setError("");
-        setOtp(value);
-    };
-
-    {/*const handleSubmit = (e) => {
+    const handleVerifyOtp = async (e) => {
         e.preventDefault();
-
-        if (otp.length !== 6) {
-            setError("Please enter the 6-digit code");
-            return;
-        }
-
-        console.log("OTP Submitted:", otp);
-
-        navigate("/change-password");
-    }; */}
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        if (otp.length !== 6) {
-            setError("Please enter the 6-digit code");
-            return;
-        }
-
         setError("");
+
+        if (!otp || otp.length !== 6) {
+            setError("Please enter a valid 6-digit OTP");
+            return;
+        }
 
         try {
-            const res = await fetch("http://192.168.1.46:5000/auth/verify-otp", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    email,
-                    otp,
-                }),
-            });
+            setLoading(true);
 
-            const data = await res.json();
+            const res = await axios.post(
+                "http://192.168.1.46:5000/auth/verify-reset-otp",
+                { email, otp }
+            );
 
-            if (!res.ok) {
-                throw new Error(data.message || "Invalid OTP");
+            console.log("RESET OTP RESPONSE:", res.data);
+
+            if (!res.data.success) {
+                setError(res.data.message || "Invalid or expired OTP");
+                return;
             }
 
-            // OTP verified → go to Change Password page
-            navigate("/change-password", { state: { email, otp } });
+            navigate("/change-password");
 
         } catch (err) {
-            setError(err.message);
+            setError(err.response?.data?.message || "Invalid or expired OTP");
+        } finally {
+            setLoading(false);
         }
     };
 
 
     const handleResend = async () => {
         setError("");
-
-        if (!email) {
-            setError("Email not found. Please restart the reset flow.");
-            return;
-        }
+        setInfo("");
 
         try {
             const res = await fetch("http://192.168.1.46:5000/auth/forgot-password", {
@@ -100,8 +69,11 @@ export default function ResetOtp() {
                 throw new Error(data.message || "Failed to resend OTP");
             }
 
-            // Optional: give user feedback
-            setError("A new OTP has been sent to your email.");
+            navigate("/change-password");
+
+
+            setInfo("A new OTP has been sent to your email.");
+
 
         } catch (err) {
             setError(err.message);
@@ -119,17 +91,18 @@ export default function ResetOtp() {
                     We’ve sent a 6-digit verification code to your email.
                 </p>
 
-                <form onSubmit={handleSubmit} className={styles.form}>
+                <form onSubmit={handleVerifyOtp} className={styles.form}>
                     <input
                         type="text"
                         value={otp}
-                        onChange={handleChange}
+                        onChange={(e) => setOtp(e.target.value)}
                         maxLength={6}
                         placeholder="Enter 6-digit code"
-                        className={styles.otpInput}
+
                     />
 
                     {error && <p className={styles.error}>{error}</p>}
+                    {info && <p className={styles.info}>{info}</p>}
 
                     <button type="submit" className={styles.primaryBtn}>
                         Verify Code

@@ -19,7 +19,7 @@ export default function Login() {
         setLoading(true);
 
         try {
-            const res = await fetch("http://192.168.1.18:5000/auth/login", {
+            const res = await fetch("http://192.168.1.46:5000/auth/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -34,6 +34,10 @@ export default function Login() {
             if (!res.ok) {
                 throw new Error(data.message || "Login failed");
             }
+
+            // Save token after successful login
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("role", data.role); // optional but useful
 
             // Success → go to dashboard / home
             navigate("/organisation-setup");

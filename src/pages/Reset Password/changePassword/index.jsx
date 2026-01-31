@@ -1,26 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./changePassword.module.css";
-import { useNavigate, useLocation } from "react-router-dom";
-
+import { useNavigate } from "react-router-dom";
 
 export default function ChangePassword() {
-
     const navigate = useNavigate();
 
-    const location = useLocation();
-    const { email, otp } = location.state || {};
+    const resetToken = sessionStorage.getItem("resetToken");
 
     const [password, setPassword] = useState("");
     const [confirm, setConfirm] = useState("");
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    // 🔐 Protect route
+    useEffect(() => {
+        if (!resetToken) {
+            navigate("/forgot-password");
+        }
+    }, [resetToken, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        if (!email || !otp) {
-            setError("Session expired. Please restart reset flow.");
-            return;
-        }
 
         if (password.length < 6) {
             setError("Password must be at least 6 characters.");
@@ -33,16 +33,17 @@ export default function ChangePassword() {
         }
 
         setError("");
+        setLoading(true);
 
         try {
             const res = await fetch("http://192.168.1.46:5000/auth/reset-password", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${resetToken}`, // ✅ important safety
                 },
                 body: JSON.stringify({
-                    email,
-                    otp,
+                    reset_token: resetToken,   // ✅ backend-required
                     new_password: password,
                     confirm_password: confirm,
                 }),
@@ -54,14 +55,19 @@ export default function ChangePassword() {
                 throw new Error(data.message || "Failed to update password");
             }
 
-            // Success → go back to login
+            // 🧹 cleanup
+            sessionStorage.removeItem("resetEmail");
+            sessionStorage.removeItem("resetToken");
+            sessionStorage.removeItem("otpVerifyToken");
+
             navigate("/login");
 
         } catch (err) {
             setError(err.message);
+        } finally {
+            setLoading(false);
         }
     };
-
 
     return (
         <div className={styles.wrapper}>
@@ -78,6 +84,7 @@ export default function ChangePassword() {
                         placeholder="New password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
+                        autoComplete="new-password"
                         required
                     />
 
@@ -86,16 +93,24 @@ export default function ChangePassword() {
                         placeholder="Confirm new password"
                         value={confirm}
                         onChange={(e) => setConfirm(e.target.value)}
+                        autoComplete="new-password"
                         required
                     />
 
                     {error && <p className={styles.error}>{error}</p>}
 
-                    <button type="submit" className={styles.primaryBtn}>
-                        Update Password
+                    <button
+                        type="submit"
+                        className={styles.primaryBtn}
+                        disabled={loading}
+                    >
+                        {loading ? "Updating..." : "Update Password"}
                     </button>
                 </form>
             </div>
         </div>
     );
 }
+
+
+

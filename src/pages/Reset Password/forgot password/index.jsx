@@ -2,61 +2,56 @@ import React, { useState } from "react";
 import styles from "./forgotPassword.module.css";
 import { NavLink, useNavigate } from "react-router-dom";
 
+import axios from "axios";
+
 export default function ForgotPassword() {
 
     const navigate = useNavigate();
 
-
+    // ✅ STATES
     const [email, setEmail] = useState("");
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
     const [sent, setSent] = useState(false);
 
-    const [error, setError] = useState("");
-
-
-    {/*const handleSubmit = (e) => {
+    // ✅ SUBMIT HANDLER
+    const handleForgotPassword = async (e) => {
         e.preventDefault();
+        setError("");
 
-        if (!email.trim()) {
-            setError("Please enter your email address.");
+        if (!email) {
+            setError("Email is required");
             return;
         }
-
-        setError("");
-        setSent(true);
-        navigate("/reset-otp");
-    }; */}
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        if (!email.trim()) {
-            setError("Please enter your email address.");
-            return;
-        }
-
-        setError("");
 
         try {
-            const res = await fetch("http://192.168.1.46:5000/auth/forgot-password", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ email }),
+            setLoading(true);
+
+            const res = await axios.post(
+                "http://192.168.1.46:5000/auth/forgot-password",
+                { email }
+            );
+
+            console.log("FORGOT PASSWORD RESPONSE:", res.data);
+
+            // show success state
+            setSent(true);
+
+            // move to OTP page
+            navigate("/otp", {
+                state: { email },
             });
 
-            const data = await res.json();
-
-            if (!res.ok) {
-                throw new Error(data.message || "Failed to send OTP");
-            }
-
-            // OTP sent → go to reset OTP page
-            navigate("/reset-otp", { state: { email } });
         } catch (err) {
-            setError(err.message);
+            console.error(err);
+            setError(
+                err.response?.data?.message || "Failed to send OTP"
+            );
+        } finally {
+            setLoading(false);
         }
     };
+
 
 
     return (
@@ -71,7 +66,7 @@ export default function ForgotPassword() {
 
                             </p>
 
-                            <form onSubmit={handleSubmit} className={styles.form}>
+                            <form onSubmit={handleForgotPassword} className={styles.form}>
                                 <div className={styles.inputGroup}>
                                     <label>Email address</label>
                                     <input
@@ -88,8 +83,9 @@ export default function ForgotPassword() {
                                 <button
                                     type="submit"
                                     className={styles.primaryBtn}
+                                     disabled={loading}
                                 >
-                                    Send OTP
+                                    {loading ? "Sending..." : "Send OTP"}
                                 </button>
 
 

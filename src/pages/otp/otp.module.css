@@ -85,3 +85,17 @@
 }
 
 
+.successText {
+  color: #16a34a;
+  font-size: 0.85rem;
+  margin-top: 6px;
+}
+
+.resend span {
+  cursor: pointer;
+  color: #eb8125;
+  font-weight: 500;
+}
+
+
+

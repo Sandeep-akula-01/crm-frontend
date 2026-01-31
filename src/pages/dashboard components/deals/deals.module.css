@@ -60,7 +60,7 @@
   background: #fff;
   border-radius: 18px;
   padding: .75rem;
-  box-shadow: 0 12px 30px rgba(0,0,0,.08);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .08);
 }
 
 table {
@@ -96,9 +96,17 @@ td {
   color: #fff;
 }
 
-.won { background: #38c172; }
-.proposal { background: #6b5cff; }
-.negotiation { background: #f2a154; }
+.won {
+  background: #38c172;
+}
+
+.proposal {
+  background: #6b5cff;
+}
+
+.negotiation {
+  background: #f2a154;
+}
 
 
 /* ---------- table header- export */
@@ -244,30 +252,84 @@ td {
 
 /* ---------- PIPELINE STAGE COLORS ---------- */
 
-.pipelineColumn.proposal {
+/* stage background */
+.Proposal {
   background: #f5f3ff;
 }
 
-.pipelineColumn.negotiation {
+.Negotiation {
   background: #fff7ed;
 }
 
-.pipelineColumn.won {
+.Won {
   background: #ecfdf5;
 }
 
-/* Header colours */
-.pipelineColumn.proposal .pipelineHeader {
+/* header colours */
+.Proposal .pipelineHeader {
   color: #6d28d9;
 }
 
-.pipelineColumn.negotiation .pipelineHeader {
+.Negotiation .pipelineHeader {
   color: #b45309;
 }
 
-.pipelineColumn.won .pipelineHeader {
+.Won .pipelineHeader {
   color: #047857;
 }
+
+
+
+/* ---------- new Pipeline Tabs ---------- */
+
+.pipelineTabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.pipelineTab {
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  border: none;
+  cursor: pointer;
+  background: #f3f4f6;
+  color: #374151;
+  transition: all 0.25s ease;
+}
+
+.pipelineTab:hover {
+  background: #78a0f7;
+}
+
+.activeTab {
+  background: #153882;
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(0,0,0,.15);
+}
+
+/* ---------- Pipeline Accent Wrapper ---------- */
+
+.pipelineBoardWrap {
+  border-radius: 18px;
+  padding-top: 6px;
+  transition: all 0.3s ease;
+}
+
+/* Accent themes (Deals untouched) */
+.pipelineBoardWrap.sales {
+  background: linear-gradient(180deg, rgba(99,102,241,.08), transparent);
+}
+
+.pipelineBoardWrap.partnership {
+  background: linear-gradient(180deg, rgba(16,185,129,.08), transparent);
+}
+
+.pipelineBoardWrap.enterprise {
+  background: linear-gradient(180deg, rgba(124,58,237,.1), transparent);
+}
+
 
 
 
@@ -289,7 +351,7 @@ td {
   padding: 22px;
   background: linear-gradient(135deg, #f8fafc, #ffffff);
   border-radius: 20px;
-  box-shadow: 0 18px 45px rgba(0,0,0,.06);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, .06);
 }
 
 .forecastHeader h3 {
@@ -318,7 +380,7 @@ td {
   grid-template-columns: repeat(2, 1fr);
   gap: 14px;
 
-   position: relative;
+  position: relative;
   overflow: hidden;
 }
 
@@ -330,7 +392,7 @@ td {
   background: #ffffff;
   border-radius: 16px;
   padding: 16px;
-  box-shadow: 0 10px 28px rgba(0,0,0,.05);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .05);
 }
 
 
@@ -361,7 +423,7 @@ td {
 /* primary highlight */
 .primary {
   background: linear-gradient(135deg, #eef2ff, #fdf2f8);
-  box-shadow: 0 14px 36px rgba(59,130,246,.18);
+  box-shadow: 0 14px 36px rgba(59, 130, 246, .18);
 }
 
 
@@ -370,11 +432,12 @@ td {
 /* ---------- Automation Section ---------- */
 
 .automationSection {
-  margin-top: 0; /* critical */
+  margin-top: 0;
+  /* critical */
   padding: 22px;
   background: linear-gradient(135deg, #ffffff, #f9fafb);
   border-radius: 20px;
-  box-shadow: 0 18px 45px rgba(0,0,0,.06);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, .06);
   border: none;
 }
 
@@ -421,7 +484,7 @@ td {
 
 .automationCard:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 28px rgba(0,0,0,.08);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .08);
 }
 
 
@@ -465,4 +528,192 @@ td {
   margin-top: 12px;
   font-size: 12px;
   color: #888;
+}
+
+
+
+/* ---------- win / loss analysis ----------- */
+
+
+.winLossSection {
+  margin-top: 32px;
+}
+
+.sectionTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  background: linear-gradient(90deg, #4549f3, #7d53db);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.winLossGrid {
+  display: grid;
+  grid-template-columns: 1.1fr 1.4fr;
+  gap: 24px;
+  align-items: stretch;
+}
+
+/* -------- Donut Chart Card -------- */
+
+.chartBox {
+  position: relative;
+  background: #ffffff;
+  border-radius: 22px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chartCenter {
+  position: absolute;
+  text-align: center;
+  pointer-events: none;
+}
+
+.chartCenter span {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #6b7280;
+  letter-spacing: 0.3px;
+}
+
+/* -------- Donut Legend -------- */
+
+.donutLegend {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.donutLegend span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Gradient dots */
+.wonDot,
+.lostDot,
+.progressDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.wonDot {
+  background: linear-gradient(135deg, #43cea2, #185a9d);
+}
+
+.lostDot {
+  background: linear-gradient(135deg, #ff7e5f, #feb47b);
+}
+
+.progressDot {
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+}
+
+
+
+/* -------- INSIGHTS SECTION -------- */
+
+.insightGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.4rem;
+}
+
+/* Card */
+.insightCard {
+  background: #ffffff;
+  border-radius: 22px;
+  padding: 1.4rem 1.4rem 1.2rem 1.6rem; /* extra left padding */
+  box-shadow: 0 16px 40px rgba(90, 80, 170, 0.14);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Full-height soft pink accent */
+.insightCard::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 6px;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    #f9a8d4,  /* soft pink */
+    #f472b6,  /* rose */
+    #ec4899   /* deeper pink */
+  );
+}
+
+
+/* Titles */
+.winTitle,
+.lossTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2a44;
+  margin-bottom: 0.8rem;
+}
+
+/* List */
+.reasonList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.reasonList li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.55rem 0.7rem;
+  border-radius: 14px;
+  background: #fafaff;
+  transition: 0.25s ease;
+}
+
+.reasonList li:hover {
+  background: linear-gradient(90deg, #f4f2ff, #ffffff);
+  transform: translateX(2px);
+}
+
+/* Text */
+.reasonLabel {
+  font-size: 0.85rem;
+  color: #374151;
+}
+
+.reasonValue {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b5cff;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .insightGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* -------- Hover polish -------- */
+
+.chartBox:hover,
+.insightPanel:hover {
+  transform: translateY(-3px);
+  transition: 0.25s ease;
 }

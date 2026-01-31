@@ -8,79 +8,62 @@ import bgImg from "../../assets/otp_img.jpg";
 export default function Otp() {
     const [otp, setOtp] = useState("");
     const [error, setError] = useState("");
+    const [info, setInfo] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
-    const location = useLocation();
-    const email = location.state?.email;
-
-    {/* const handleVerify = (e) => {
-        e.preventDefault();
-        console.log("Entered OTP:", otp);
-    };
-
-    const handleChange = (e) => {
-  const value = e.target.value;
-
-  // Allow only digits
-  if (/^\d*$/.test(value)) {
-    setOtp(value);
-    setError("");
-  } else {
-    setError("Only numbers are allowed");
-  }
-}; */}
-
-    const handleChange = (e) => {
-        const value = e.target.value;
-
-        if (/^\d*$/.test(value)) {
-            setOtp(value);
-            setError("");
-        } else {
-            setError("Only numbers are allowed");
-        }
-    };
-
+    const email = localStorage.getItem("resetEmail");
 
     const handleVerify = async (e) => {
         e.preventDefault();
         setError("");
 
-        if (otp.length !== 6) {
-            setError("Please enter a 6-digit OTP");
+        if (!otp || otp.length !== 6) {
+            setError("Please enter a valid 6-digit OTP");
             return;
         }
 
         try {
-            const res = await fetch("http://192.168.1.18:5000/auth/verify-otp", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    email,
-                    otp,
-                }),
-            });
+            setLoading(true);
 
-            const data = await res.json();
+            const res = await axios.post(
+                "http://192.168.1.46:5000/auth/verify-otp",
+                { email, otp }
+            );
 
-            if (res.status === 409) {
-                // Account already verified → send user to login
-                navigate("/login");
+            console.log("RESET OTP RESPONSE:", res.data);
+
+            if (!res.data.success) {
+                setError(res.data.message || "Invalid or expired OTP");
                 return;
             }
 
-            if (!res.ok) {
-                throw new Error(data.message || "Invalid OTP");
-            }
+            navigate("/change-password");
 
-            // OTP verified → go to login
-            navigate("/login");
         } catch (err) {
-            setError(err.message);
+            setError(err.response?.data?.message || "Invalid or expired OTP");
+        } finally {
+            setLoading(false);
         }
     };
+
+    const handleResend = async () => {
+        setError("");
+        setInfo("");
+
+        try {
+            await axios.post(
+                "http://192.168.1.46:5000/auth/forgot-password",
+                { email }
+            );
+
+            setInfo("A new OTP has been sent to your email.");
+        } catch (err) {
+            setError("Failed to resend OTP");
+        }
+    };
+
+
 
 
     return (
@@ -113,8 +96,12 @@ export default function Otp() {
                     </form>
 
                     <p className={styles.resend}>
-                        Didn’t receive it? <span>Resend OTP</span>
+                        Didn’t receive it?{" "}
+                        <span onClick={handleResendOtp}>
+                            {resending ? "Resending..." : "Resend OTP"}
+                        </span>
                     </p>
+
                 </div>
             </div>
         </>
