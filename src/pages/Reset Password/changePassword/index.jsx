@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
 import styles from "./changePassword.module.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
 
 export default function ChangePassword() {
     const navigate = useNavigate();
+    const location = useLocation();
 
-    const resetToken = sessionStorage.getItem("resetToken");
+    const email = location.state?.email || localStorage.getItem("resetEmail");
+    const otp = location.state?.otp;
 
     const [password, setPassword] = useState("");
     const [confirm, setConfirm] = useState("");
@@ -14,10 +17,10 @@ export default function ChangePassword() {
 
     // 🔐 Protect route
     useEffect(() => {
-        if (!resetToken) {
+        if (!email || !otp) {
             navigate("/forgot-password");
         }
-    }, [resetToken, navigate]);
+    }, [email, otp, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -36,34 +39,20 @@ export default function ChangePassword() {
         setLoading(true);
 
         try {
-            const res = await fetch("http://192.168.1.46:5000/auth/reset-password", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${resetToken}`, // ✅ important safety
-                },
-                body: JSON.stringify({
-                    reset_token: resetToken,   // ✅ backend-required
-                    new_password: password,
-                    confirm_password: confirm,
-                }),
-            });
-
-            const data = await res.json();
-
-            if (!res.ok) {
-                throw new Error(data.message || "Failed to update password");
-            }
+            await axios.post("http://192.168.1.6:5000/auth/reset-password", {
+                email,
+                otp,
+                new_password: password,
+                confirm_password: confirm,
+             });
 
             // 🧹 cleanup
-            sessionStorage.removeItem("resetEmail");
-            sessionStorage.removeItem("resetToken");
-            sessionStorage.removeItem("otpVerifyToken");
+            localStorage.removeItem("resetEmail");
 
             navigate("/login");
 
         } catch (err) {
-            setError(err.message);
+            setError(err.response?.data?.message || "Failed to update password");
         } finally {
             setLoading(false);
         }
@@ -111,6 +100,3 @@ export default function ChangePassword() {
         </div>
     );
 }
-
-
-

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 
 import styles from "./otp.module.css";
@@ -10,56 +10,74 @@ export default function Otp() {
     const [error, setError] = useState("");
     const [info, setInfo] = useState("");
     const [loading, setLoading] = useState(false);
+    const [resending, setResending] = useState(false);
 
     const navigate = useNavigate();
-    const email = localStorage.getItem("resetEmail");
+    const location = useLocation();
+    const email = location.state?.email || localStorage.getItem("resetEmail");
+
+    const handleChange = (e) => {
+        setOtp(e.target.value);
+    };
 
     const handleVerify = async (e) => {
-        e.preventDefault();
-        setError("");
+    e.preventDefault();
+    setError("");
 
-        if (!otp || otp.length !== 6) {
-            setError("Please enter a valid 6-digit OTP");
+    if (!otp || otp.length !== 6) {
+        setError("Please enter a valid 6-digit OTP");
+        return;
+    }
+
+    if (!email) {
+        setError("Session expired. Please restart password reset.");
+        return;
+    }
+
+    try {
+        setLoading(true);
+
+        const res = await axios.post(
+            "http://192.168.1.6:5000/auth/verify-otp",
+            {
+                email,
+                otp, // change to code: otp if backend expects that
+            }
+        );
+
+        if (res.data.success === false) {
+            setError(res.data.message || "Invalid or expired OTP");
             return;
         }
 
-        try {
-            setLoading(true);
+        localStorage.removeItem("resetEmail");
+        navigate("/login", { replace: true });
 
-            const res = await axios.post(
-                "http://192.168.1.46:5000/auth/verify-otp",
-                { email, otp }
-            );
+    } catch (err) {
+        setError(err.response?.data?.message || "Invalid or expired OTP");
+    } finally {
+        setLoading(false);
+    }
+};
 
-            console.log("RESET OTP RESPONSE:", res.data);
 
-            if (!res.data.success) {
-                setError(res.data.message || "Invalid or expired OTP");
-                return;
-            }
-
-            navigate("/change-password");
-
-        } catch (err) {
-            setError(err.response?.data?.message || "Invalid or expired OTP");
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handleResend = async () => {
         setError("");
         setInfo("");
+        setResending(true);
 
         try {
             await axios.post(
-                "http://192.168.1.46:5000/auth/forgot-password",
+                "http://192.168.1.6:5000/auth/forgot-password",
                 { email }
             );
 
             setInfo("A new OTP has been sent to your email.");
         } catch (err) {
             setError("Failed to resend OTP");
+        } finally {
+            setResending(false);
         }
     };
 
@@ -92,12 +110,14 @@ export default function Otp() {
                         {error && <p className={styles.errorText}>{error}</p>}
 
 
-                        <button type="submit">Verify</button>
+                        <button type="submit" disabled={loading} style={{ opacity: loading ? 0.7 : 1, cursor: loading ? "not-allowed" : "pointer" }}>
+                            {loading ? "Verifying..." : "Verify"}
+                        </button>
                     </form>
 
                     <p className={styles.resend}>
                         Didn’t receive it?{" "}
-                        <span onClick={handleResendOtp}>
+                        <span onClick={handleResend}>
                             {resending ? "Resending..." : "Resend OTP"}
                         </span>
                     </p>

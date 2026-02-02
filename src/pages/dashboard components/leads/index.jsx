@@ -23,6 +23,7 @@ const tempLeads = [
     {
         name: "Riya Sharma",
         email: "riya@gmail.com",
+        phone: "9876543210",
         company: "Pixel Labs",
         source: "Instagram",
         status: "Hot",
@@ -35,6 +36,7 @@ const tempLeads = [
     {
         name: "Aman Patel",
         email: "aman@corp.com",
+        phone: "9876543211",
         company: "CorpEdge",
         source: "Campaign",
         status: "Follow-up",
@@ -47,6 +49,7 @@ const tempLeads = [
     {
         name: "Neha Verma",
         email: "neha@mail.com",
+        phone: "9876543212",
         company: "Bloom Co",
         source: "Website",
         status: "Converted",
@@ -59,6 +62,7 @@ const tempLeads = [
     {
         name: "Rahul Singh",
         email: "rahul@xyz.com",
+        phone: "9876543213",
         company: "XYZ Pvt Ltd",
         source: "Referral",
         status: "Lost",
@@ -73,10 +77,45 @@ const tempLeads = [
 
 export default function Leads({ branch }) {
 
-    const [leads, setLeads] = useState([]);
+    const [leads, setLeads] = useState(() => {
+        // On initial load, try to get leads from localStorage
+        try {
+            const savedLeads = localStorage.getItem("crm-leads");
+            return savedLeads ? JSON.parse(savedLeads) : tempLeads;
+        } catch (error) {
+            console.error("Could not parse leads from localStorage", error);
+            return tempLeads;
+        }
+    });
+
+    // This effect runs whenever the 'leads' state changes, saving it to localStorage
+    useEffect(() => {
+        localStorage.setItem("crm-leads", JSON.stringify(leads));
+    }, [leads]);
     const [search, setSearch] = useState("");
     const [statusFilter, setStatusFilter] = useState("All");
     const [sourceFilter, setSourceFilter] = useState("All");
+    const [sortOrder, setSortOrder] = useState("latest");
+    const [showModal, setShowModal] = useState(false);
+    const [newLead, setNewLead] = useState({
+        name: "",
+        email: "",
+        phone: "",
+        company: "",
+        source: "Website",
+        status: "New",
+        score: "Medium",
+        sla: "On Track",
+        owner: "You",
+        description: ""
+    });
+
+    const handleAddLead = (e) => {
+        e.preventDefault();
+        setLeads([{ ...newLead, createdAt: "Just now" }, ...leads]);
+        setShowModal(false);
+        setNewLead({ name: "", email: "", phone: "", company: "", source: "Website", status: "New", score: "Medium", sla: "On Track", owner: "You", description: "" });
+    };
 
     const filtered = leads.filter(l =>
         (statusFilter === "All" || l.status === statusFilter) &&
@@ -87,6 +126,14 @@ export default function Leads({ branch }) {
             l.company?.toLowerCase().includes(search.toLowerCase())
         )
     );
+
+    const sortedAndFiltered = [...filtered];
+    if (sortOrder === 'name-asc') {
+        sortedAndFiltered.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    } else if (sortOrder === 'name-desc') {
+        sortedAndFiltered.sort((a, b) => (b.name || '').localeCompare(a.name || ''));
+    }
+
 
     const total = leads.length;
     const hot = leads.filter(l => l.status === "Hot").length;
@@ -242,10 +289,14 @@ export default function Leads({ branch }) {
                             <option value="Referral">Referral</option>
                         </select>
 
-                        <select className={styles.leadsSelect}>
-                            <option>Sort: Latest</option>
-                            <option>Sort: Name (A–Z)</option>
-                            <option>Sort: Name (Z–A)</option>
+                        <select
+                            value={sortOrder}
+                            onChange={e => setSortOrder(e.target.value)}
+                            className={styles.leadsSelect}
+                        >
+                            <option value="latest">Sort: Latest</option>
+                            <option value="name-asc">Sort: Name (A–Z)</option>
+                            <option value="name-desc">Sort: Name (Z–A)</option>
                         </select>
                     </div>
 
@@ -257,7 +308,7 @@ export default function Leads({ branch }) {
                             onChange={e => setSearch(e.target.value)}
                         />
 
-                        <button className={styles.createLeadBtn}>
+                        <button className={styles.createLeadBtn} onClick={() => setShowModal(true)}>
                             + Create Lead
                         </button>
                     </div>
@@ -273,6 +324,7 @@ export default function Leads({ branch }) {
                                     <th>#</th>
                                     <th>Name</th>
                                     <th>Email</th>
+                                    <th>Phone</th>
                                     <th>Company</th>
                                     <th>Source</th>
                                     <th>Status</th>
@@ -284,15 +336,18 @@ export default function Leads({ branch }) {
                                 </tr>
                             </thead>
                             <tbody>
-                                {tempLeads.map((l, i) => (
+                                {sortedAndFiltered.length > 0 ? (
+                                    sortedAndFiltered.map((l, i) => (
                                     <tr key={i}>
                                         <td className={styles.muted}>{i + 1}</td>
                                         <td className={styles.leadName}>{l.name}</td>
                                         <td className={styles.muted}>{l.email}</td>
+                                        <td className={styles.muted}>{l.phone}</td>
                                         <td>{l.company}</td>
                                         <td><span className={styles.sourceChip}>{l.source}</span></td>
                                         <td>
-                                            <span className={`${styles.status} ${styles[l.status.toLowerCase()]}`}>
+                                            <span
+                                                className={`${styles.status} ${styles[l.status.toLowerCase()]}`}>
                                                 {l.status}
                                             </span>
                                         </td>
@@ -312,12 +367,62 @@ export default function Leads({ branch }) {
                                         <td className={styles.muted}>{l.createdAt}</td>
                                         <td className={styles.desc}>{l.description}</td>
                                     </tr>
-                                ))}
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="11" style={{ textAlign: "center", padding: "20px", color: "#666" }}>
+                                            No leads found matching "{search}"
+                                        </td>
+                                    </tr>
+                                )}
                             </tbody>
                         </table>
                     </div>
                 </div>
 
+                {/* CREATE LEAD MODAL */}
+                {showModal && (
+                    <div style={{
+                        position: "fixed", top: 0, left: 0, width: "100%", height: "100%",
+                        backgroundColor: "rgba(0,0,0,0.5)", display: "flex", justifyContent: "center",
+                        alignItems: "center", zIndex: 1000
+                    }}>
+                        <div style={{
+                            backgroundColor: "white", padding: "25px", borderRadius: "8px",
+                            width: "400px", maxWidth: "90%", boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
+                        }}>
+                            <h2 style={{ marginBottom: "20px", fontSize: "1.2rem", color: "#333" }}>Create New Lead</h2>
+                            <form onSubmit={handleAddLead} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                                <input placeholder="Name" required value={newLead.name} onChange={e => setNewLead({ ...newLead, name: e.target.value })} style={{ padding: "10px", border: "1px solid #ddd", borderRadius: "4px" }} />
+                                <input placeholder="Email" type="email" required value={newLead.email} onChange={e => setNewLead({ ...newLead, email: e.target.value })} style={{ padding: "10px", border: "1px solid #ddd", borderRadius: "4px" }} />
+                                <input placeholder="Phone" type="tel" value={newLead.phone} onChange={e => setNewLead({ ...newLead, phone: e.target.value })} style={{ padding: "10px", border: "1px solid #ddd", borderRadius: "4px" }} />
+                                <input placeholder="Company" value={newLead.company} onChange={e => setNewLead({ ...newLead, company: e.target.value })} style={{ padding: "10px", border: "1px solid #ddd", borderRadius: "4px" }} />
+                                
+                                <select value={newLead.source} onChange={e => setNewLead({ ...newLead, source: e.target.value })} style={{ padding: "10px", border: "1px solid #ddd", borderRadius: "4px" }}>
+                                    <option value="Website">Website</option>
+                                    <option value="Instagram">Instagram</option>
+                                    <option value="Campaign">Campaign</option>
+                                    <option value="Referral">Referral</option>
+                                </select>
+
+                                <select value={newLead.status} onChange={e => setNewLead({ ...newLead, status: e.target.value })} style={{ padding: "10px", border: "1px solid #ddd", borderRadius: "4px" }}>
+                                    <option value="New">New</option>
+                                    <option value="Hot">Hot</option>
+                                    <option value="Follow-up">Follow-up</option>
+                                    <option value="Converted">Converted</option>
+                                    <option value="Lost">Lost</option>
+                                </select>
+
+                                <textarea placeholder="Description" value={newLead.description} onChange={e => setNewLead({ ...newLead, description: e.target.value })} style={{ padding: "10px", border: "1px solid #ddd", borderRadius: "4px", minHeight: "60px" }} />
+
+                                <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "10px" }}>
+                                    <button type="button" onClick={() => setShowModal(false)} style={{ padding: "8px 16px", border: "none", background: "#f0f0f0", borderRadius: "4px", cursor: "pointer" }}>Cancel</button>
+                                    <button type="submit" style={{ padding: "8px 16px", border: "none", background: "#6b5cff", color: "white", borderRadius: "4px", cursor: "pointer" }}>Add Lead</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                )}
             </div>
         </>
     )

@@ -406,36 +406,36 @@ export default function Deals({ branch }) {
           </div>
 
           <div className={styles.automationList}>
-            <div className={styles.automationCard}>
+            <div className={styles.automationCard} style={{ position: "relative" }}>
               <div className={styles.ruleIcon}></div>
               <div className={styles.ruleContent}>
                 <strong>When deal is marked as “Won”</strong>
                 <span>→ Move deal to Won stage</span>
                 <span>→ Add amount to revenue forecast</span>
               </div>
-              <span className={`${styles.ruleStatus} ${styles.active}`}>
+              <span className={`${styles.ruleStatus} ${styles.active}`} style={{ position: "absolute", top: "12px", right: "12px" }}>
                 Active
               </span>
             </div>
 
-            <div className={styles.automationCard}>
+            <div className={styles.automationCard} style={{ position: "relative" }}>
               <div className={styles.ruleIcon}></div>
               <div className={styles.ruleContent}>
                 <strong>If no activity for 7 days</strong>
                 <span>→ Mark deal as Stalled</span>
               </div>
-              <span className={`${styles.ruleStatus} ${styles.active}`}>
+              <span className={`${styles.ruleStatus} ${styles.active}`} style={{ position: "absolute", top: "12px", right: "12px" }}>
                 Active
               </span>
             </div>
 
-            <div className={styles.automationCard}>
+            <div className={styles.automationCard} style={{ position: "relative" }}>
               <div className={styles.ruleIcon}></div>
               <div className={styles.ruleContent}>
                 <strong>When status = “Proposal Sent”</strong>
                 <span>→ Move deal to Proposal stage</span>
               </div>
-              <span className={`${styles.ruleStatus} ${styles.inactive}`}>
+              <span className={`${styles.ruleStatus} ${styles.inactive}`} style={{ position: "absolute", top: "12px", right: "12px" }}>
                 Inactive
               </span>
             </div>
@@ -446,7 +446,6 @@ export default function Deals({ branch }) {
           </p>
         </div>
 
-        {/* ---------- Deal Forecast ---------- */}
         {/* ---------- Deal Forecast ---------- */}
         <div className={styles.forecastSection}>
           <div className={styles.forecastHeader}>

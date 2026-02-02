@@ -8,13 +8,13 @@ export default function ForgotPassword() {
 
     const navigate = useNavigate();
 
-    // ✅ STATES
+    //  STATES
     const [email, setEmail] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const [sent, setSent] = useState(false);
 
-    // ✅ SUBMIT HANDLER
+    //  SUBMIT HANDLER
     const handleForgotPassword = async (e) => {
         e.preventDefault();
         setError("");
@@ -28,7 +28,7 @@ export default function ForgotPassword() {
             setLoading(true);
 
             const res = await axios.post(
-                "http://192.168.1.46:5000/auth/forgot-password",
+                "http://192.168.1.6:5000/auth/forgot-password",
                 { email }
             );
 
@@ -37,10 +37,9 @@ export default function ForgotPassword() {
             // show success state
             setSent(true);
 
-            // move to OTP page
-            navigate("/otp", {
-                state: { email },
-            });
+            // Save email for next steps
+            localStorage.setItem("resetEmail", email);
+            navigate("/reset-otp");
 
         } catch (err) {
             console.error(err);
@@ -83,7 +82,7 @@ export default function ForgotPassword() {
                                 <button
                                     type="submit"
                                     className={styles.primaryBtn}
-                                     disabled={loading}
+                                    disabled={loading}
                                 >
                                     {loading ? "Sending..." : "Send OTP"}
                                 </button>

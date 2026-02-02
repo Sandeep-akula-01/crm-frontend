@@ -181,7 +181,6 @@
 
 
 /* CAMPAIGN PANEL */
-/* CAMPAIGN PANEL */
 .campaignPanel {
   background: #fff;
   border-radius: 22px;
@@ -451,6 +450,7 @@
 .converted { background: linear-gradient(135deg,#5f72ff,#9b8cff); }
 .lost { background:#b5b7c9; }
 .follow-up { background:linear-gradient(135deg,#f2a154,#ffcc8a); }
+.new { background: linear-gradient(135deg, #34c6b1, #97ece1); }
 
 
 

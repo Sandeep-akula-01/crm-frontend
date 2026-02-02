@@ -29,18 +29,18 @@ export default function ResetOtp() {
             setLoading(true);
 
             const res = await axios.post(
-                "http://192.168.1.46:5000/auth/verify-reset-otp",
+                "http://192.168.1.6:5000/auth/verify-reset-otp",
                 { email, otp }
             );
 
             console.log("RESET OTP RESPONSE:", res.data);
 
-            if (!res.data.success) {
+            if (res.data.success === false) {
                 setError(res.data.message || "Invalid or expired OTP");
                 return;
             }
 
-            navigate("/change-password");
+            navigate("/change-password", { state: { email, otp } });
 
         } catch (err) {
             setError(err.response?.data?.message || "Invalid or expired OTP");
@@ -55,28 +55,14 @@ export default function ResetOtp() {
         setInfo("");
 
         try {
-            const res = await fetch("http://192.168.1.46:5000/auth/forgot-password", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ email }),
+            await axios.post("http://192.168.1.6:5000/auth/forgot-password", {
+                email,
             });
-
-            const data = await res.json();
-
-            if (!res.ok) {
-                throw new Error(data.message || "Failed to resend OTP");
-            }
-
-            navigate("/change-password");
-
 
             setInfo("A new OTP has been sent to your email.");
 
-
         } catch (err) {
-            setError(err.message);
+            setError(err.response?.data?.message || "Failed to resend OTP");
         }
     };
 
@@ -93,12 +79,12 @@ export default function ResetOtp() {
 
                 <form onSubmit={handleVerifyOtp} className={styles.form}>
                     <input
+                        className={styles.otpInput}
                         type="text"
                         value={otp}
                         onChange={(e) => setOtp(e.target.value)}
                         maxLength={6}
                         placeholder="Enter 6-digit code"
-
                     />
 
                     {error && <p className={styles.error}>{error}</p>}
