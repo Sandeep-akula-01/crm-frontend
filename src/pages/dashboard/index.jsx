@@ -21,6 +21,7 @@ const navItems = [
     "Tasks",
     "Contacts",
     "Reports",
+    "Calendar",
     "Team",
     "Organization",
     "Campaigns",
@@ -81,6 +82,8 @@ export default function Dashboard() {
                 return <h2>Contacts</h2>;
             case "Reports":
                 return <h2>Reports & Insights</h2>;
+            case "Calendar":
+                return <h2>Calendar</h2>;
             case "Team":
                 return <h2>Team Management</h2>;
             case "Organization":
@@ -142,7 +145,7 @@ export default function Dashboard() {
 
                     <nav className={styles.nav}>
                         {/* Main */}
-                        {["Dashboard", "Leads", "Deals", "Tasks", "Contacts", "Reports"].map(item => (
+                        {["Dashboard", "Leads", "Deals", "Tasks", "Contacts", "Reports", "Calendar"].map(item => (
                             <button
                                 key={item}
                                 className={`${styles.navItem} ${active === item ? styles.active : ""}`}

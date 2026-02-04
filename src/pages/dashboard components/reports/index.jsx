@@ -1,6 +1,74 @@
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import {
+  LineChart,
+  Line,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 import styles from "./Reports.module.css";
 
 export default function Reports() {
+
+  const [summary, setSummary] = useState({
+    total_leads: 0,
+    conversion_rate: "0%",
+    revenue: "₹0",
+    active_deals: 0
+  });
+  const [trendData, setTrendData] = useState([]);
+  const [sources, setSources] = useState([]);
+  const [insights, setInsights] = useState([]);
+
+  const [mounted, setMounted] = useState(false);
+
+  // 👈 hook 1
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // 👈 hook 2 (ALWAYS runs now)
+  useEffect(() => {
+    if (!mounted) return;
+
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const headers = { Authorization: `Bearer ${token}` };
+        const BASE_URL = "http://192.168.1.19:5000";
+
+        const [resSummary, resTrend, resSources, resInsights] =
+          await Promise.all([
+            axios.get(`${BASE_URL}/api/reports/summary`, { headers }),
+            axios.get(`${BASE_URL}/api/reports/leads-trend`, { headers }),
+            axios.get(`${BASE_URL}/api/reports/lead-sources`, { headers }),
+            axios.get(`${BASE_URL}/api/reports/insights`, { headers })
+          ]);
+
+        setSummary(resSummary.data || {});
+        setTrendData(resTrend.data || []);
+
+
+        setSources(
+          (resSources.data || []).map(item => ({
+            name: item.source || "Direct",
+            value: item.leads
+          }))
+        );
+
+        setInsights(resInsights.data || []);
+      } catch (error) {
+        console.error("Error fetching reports:", error);
+      }
+    };
+
+    fetchData();
+  }, [mounted]);
+
+
+
+
+
   return (
     <div className={styles.reportsPage}>
 
@@ -8,19 +76,19 @@ export default function Reports() {
       <div className={styles.reportStats}>
         <div className={styles.statCard}>
           <span>Total Leads</span>
-          <b>1,284</b>
+          <b>{summary.total_leads}</b>
         </div>
         <div className={styles.statCard}>
           <span>Conversion Rate</span>
-          <b>24%</b>
+          <b>{summary.conversion_rate}</b>
         </div>
         <div className={styles.statCard}>
           <span>Revenue</span>
-          <b>₹ 12.4L</b>
+          <b>{summary.revenue}</b>
         </div>
         <div className={styles.statCard}>
           <span>Active Deals</span>
-          <b>32</b>
+          <b>{summary.active_deals}</b>
         </div>
       </div>
 
@@ -35,19 +103,27 @@ export default function Reports() {
           </div>
 
           <div className={styles.trendGraph}>
-            <svg viewBox="0 0 100 100" preserveAspectRatio="none">
-              <polyline
-                points="0,70 20,60 40,65 60,45 80,38 100,30"
-                fill="none"
-                stroke="#6b5cff"
-                strokeWidth="2"
-              />
-            </svg>
+            {mounted && trendData.length > 0 && (
+              <ResponsiveContainer width="100%" height={140}>
+                <LineChart data={trendData}>
+                  <Tooltip />
+                  <Line
+                    type="monotone"
+                    dataKey="leads"
+                    stroke="#6b5cff"
+                    strokeWidth={2}
+                    dot={{ r: 4 }}
+                  />
+
+                </LineChart>
+              </ResponsiveContainer>
+            )}
           </div>
 
           <div className={styles.months}>
-            <span>Aug</span><span>Sep</span><span>Oct</span>
-            <span>Nov</span><span>Dec</span><span>Jan</span>
+            {trendData.map((item, index) => (
+              <span key={index}>{item.month}</span>
+            ))}
           </div>
         </div>
 
@@ -59,26 +135,13 @@ export default function Reports() {
           </div>
 
           <div className={styles.sourcesList}>
-            <div>
-              <span className={styles.dot} />
-              Instagram Ads
-              <b>32%</b>
-            </div>
-            <div>
-              <span className={styles.dot} />
-              Website Forms
-              <b>41%</b>
-            </div>
-            <div>
-              <span className={styles.dot} />
-              Email Campaigns
-              <b>18%</b>
-            </div>
-            <div>
-              <span className={styles.dot} />
-              Referrals
-              <b>9%</b>
-            </div>
+            {sources.map((source, i) => (
+              <div key={i}>
+                <span className={styles.dot} />
+                {source.name}
+                <b>{source.value}</b>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -89,16 +152,11 @@ export default function Reports() {
         <h3>Insights</h3>
 
         <ul>
-          <li>
-            Website Forms generate the highest quality leads with
-            <strong> 41% contribution</strong>.
-          </li>
-          <li>
-            Conversion rate improved by <strong>6%</strong> compared to last month.
-          </li>
-          <li>
-            Instagram Ads performance dropped slightly in the last 2 weeks.
-          </li>
+          {insights.map((insight, i) => (
+            <li key={i}>
+              {typeof insight === 'string' ? insight : insight.text}
+            </li>
+          ))}
         </ul>
       </div>
 

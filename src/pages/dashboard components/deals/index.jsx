@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import styles from "./deals.module.css";
 import * as XLSX from "xlsx";
 
@@ -10,84 +11,222 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-/* deals pipeline */
-const dealsData = [
-  {
-    name: "CRM Setup",
-    company: "Acme Corp",
-    stage: "Proposal",
-    value: "₹1,20,000",
-    owner: "Varshini",
-    close: "12 Feb",
-  },
-  {
-    name: "Website Redesign",
-    company: "Nova Labs",
-    stage: "Won",
-    value: "₹85,000",
-    owner: "Ravi",
-    close: "05 Feb",
-  },
-  {
-    name: "Landing Page",
-    company: "Pixel Studio",
-    stage: "Negotiation",
-    value: "₹45,000",
-    owner: "Anu",
-    close: "18 Feb",
-  },
-];
-
-const salesData = [
-  { name: "Mobile App", company: "Zen Corp", stage: "Proposal", value: "₹2,40,000", close: "22 Feb" },
-  { name: "SEO Retainer", company: "Rankly", stage: "Negotiation", value: "₹60,000", close: "28 Feb" },
-  { name: "Dashboard Revamp", company: "Finova", stage: "Won", value: "₹1,80,000", close: "10 Feb" },
-];
-
-const partnershipData = [
-  { name: "Agency Tie-up", company: "DesignHub", stage: "Proposal", value: "—", close: "—" },
-  { name: "Tech Partner", company: "CloudNine", stage: "Negotiation", value: "—", close: "—" },
-  { name: "Referral Partner", company: "GrowthX", stage: "Won", value: "—", close: "—" },
-];
-
-const enterpriseData = [
-  { name: "ERP System", company: "MegaCorp", stage: "Proposal", value: "₹12,00,000", close: "Mar" },
-  { name: "Internal CRM", company: "Axis Group", stage: "Negotiation", value: "₹8,50,000", close: "Apr" },
-  { name: "AI Platform", company: "OmniTech", stage: "Won", value: "₹18,00,000", close: "Jan" },
-];
-
-
-
-const winLossData = [
-  { name: "Won", value: 52 },
-  { name: "Lost", value: 33 },
-  { name: "In Progress", value: 15 },
-];
-
-const WIN_LOSS_COLORS = ["#10b981", "#f97316", "#6366f1"];
-
-const winReasons = [
-  { label: "Pricing Fit", value: 35, color: "#10b981" }, // green
-  { label: "Product Match", value: 25, color: "#3b82f6" }, // blue
-  { label: "Fast Follow-up", value: 18, color: "#f97316" }, // orange
-];
-
-const lossReasons = [
-  { label: "Budget Issues", value: 30, color: "#f97316" },
-  { label: "Competitor Chosen", value: 22, color: "#ef4444" },
-  { label: "Delayed Response", value: 15, color: "#6366f1" },
-];
-
-
 export default function Deals({ branch }) {
+  const [deals, setDeals] = useState([]);
+  const [pipelineMap, setPipelineMap] = useState({});
+  const [activePipeline, setActivePipeline] = useState("");
+  {/* const [analytics, setAnalytics] = useState({
+    winLoss: [],
+    winReasons: [],
+    lossReasons: []
+  }); */}
+  // ✅ SAFE DEFAULT ANALYTICS
+  const DEFAULT_ANALYTICS = {
+    winLoss: [
+      { name: "Won", value: 0 },
+      { name: "Lost", value: 0 },
+      { name: "In Progress", value: 0 }
+    ],
+    winReasons: [],
+    lossReasons: []
+  };
+
+  const [analytics, setAnalytics] = useState(DEFAULT_ANALYTICS);
+
+  // Automation Rules State
+  const [automationRules, setAutomationRules] = useState([
+    {
+      id: 1,
+      trigger: "When deal is marked as “Won”",
+      actions: ["→ Move deal to Won stage", "→ Add amount to revenue forecast"],
+      active: true
+    },
+    {
+      id: 2,
+      trigger: "If no activity for 7 days",
+      actions: ["→ Mark deal as Stalled"],
+      active: true
+    },
+    {
+      id: 3,
+      trigger: "When status = “Proposal Sent”",
+      actions: ["→ Move deal to Proposal stage"],
+      active: false
+    }
+  ]);
+
+  // Rule Modal State
+  const [showRuleModal, setShowRuleModal] = useState(false);
+  const [editingRuleId, setEditingRuleId] = useState(null);
+  const [ruleForm, setRuleForm] = useState({
+    trigger: "",
+    actions: "",
+    active: true
+  });
+
+  // Modal State
+  const [showModal, setShowModal] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentDealId, setCurrentDealId] = useState(null);
+  const [formData, setFormData] = useState({
+    deal_name: "",
+    company: "",
+    stage: "Proposal",
+    value: "",
+    owner: "",
+    close: "",
+    pipeline: ""
+  });
+
+  // Fetch Data
+  const fetchData = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const headers = { Authorization: `Bearer ${token}` };
+
+      // 1. Fetch Pipelines (Grouped Deals)
+      const pipelineRes = await axios.get("http://192.168.1.19:5000/api/deals/pipelines", { headers });
+      const pMap = pipelineRes.data || {};
+      setPipelineMap(pMap);
+
+      // Set active pipeline to first key if not set
+      const pipelineKeys = Object.keys(pMap);
+      {/* if (pipelineKeys.length > 0 && !activePipeline) {
+        setActivePipeline(pipelineKeys[0]);
+      } */}
+
+      if (pipelineKeys.length > 0 && !activePipeline) {
+        setActivePipeline(prev => prev || pipelineKeys[0]);
+      }
+
+
+      // 2. Fetch Analytics
+      const analyticsRes = await axios.get("http://192.168.1.19:5000/api/deals/analytics", { headers });
+      //setAnalytics(analyticsRes.data || { winLoss: [], winReasons: [], lossReasons: [] });
+
+      // ✅ MERGE analytics safely
+      const a = analyticsRes.data || {};
+
+      setAnalytics({
+        winLoss: Array.isArray(a.winLoss) && a.winLoss.length ? a.winLoss : DEFAULT_ANALYTICS.winLoss,
+        winReasons: Array.isArray(a.winReasons) ? a.winReasons : [],
+        lossReasons: Array.isArray(a.lossReasons) ? a.lossReasons : []
+      });
+
+
+    } catch (error) {
+      console.error("Error fetching deals data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  // Update deals list when active pipeline changes
+  {/* useEffect(() => {
+    if (activePipeline && pipelineMap[activePipeline]) {
+      setDeals(pipelineMap[activePipeline]);
+    } else {
+      setDeals([]);
+    }
+  }, [activePipeline, pipelineMap]); */}
+
+  useEffect(() => {
+    if (!activePipeline) return;
+
+    const pipelineDeals = pipelineMap[activePipeline];
+    if (Array.isArray(pipelineDeals)) {
+      setDeals(pipelineDeals);
+    }
+  }, [activePipeline, pipelineMap]);
+
+  // Create a flat array of all deals from all pipelines, adding the pipeline name to each deal
+  const allDeals = Object.entries(pipelineMap).flatMap(([pipelineName, dealsInPipeline]) =>
+    (dealsInPipeline || []).map(deal => ({ ...deal, pipeline: pipelineName }))
+  );
+
+
+
+  // Handlers
+  const handleSaveDeal = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem("token");
+      const headers = { Authorization: `Bearer ${token}` };
+      const payload = { ...formData };
+
+      if (isEditing && currentDealId) {
+        await axios.put(`http://192.168.1.19:5000/api/deals/${currentDealId}`, payload, { headers });
+      } else {
+        await axios.post("http://192.168.1.19:5000/api/deals", payload, { headers });
+      }
+
+      setShowModal(false);
+      resetForm();
+      fetchData(); // Refresh data
+    } catch (error) {
+      console.error("Error saving deal:", error);
+      alert("Failed to save deal");
+    }
+  };
+
+  const handleDeleteDeal = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this deal?")) return;
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`http://192.168.1.19:5000/api/deals/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      fetchData();
+    } catch (error) {
+      console.error("Error deleting deal:", error);
+    }
+  };
+
+  const openCreateModal = () => {
+    resetForm();
+    setIsEditing(false);
+    setShowModal(true);
+  };
+
+  const openEditModal = (deal) => {
+    setFormData({
+      deal_name: deal.deal_name,
+      company: deal.company,
+      stage: deal.stage,
+      value: deal.value,
+      owner: deal.owner,
+      close: deal.close,
+      pipeline: deal.pipeline
+    });
+    setCurrentDealId(deal.id);
+    setIsEditing(true);
+    setShowModal(true);
+  };
+
+  const resetForm = () => {
+    setFormData({
+      deal_name: "",
+      company: "",
+      stage: "Proposal",
+      value: "",
+      owner: "",
+      close: "",
+      pipeline: activePipeline
+    });
+    setCurrentDealId(null);
+  };
+
   const handleExportDeals = () => {
-    const formattedData = dealsData.map((d) => ({
-      Deal: d.name,
+    const formattedData = allDeals.map((d) => ({
+      Deal: d.deal_name,
       Company: d.company,
       Stage: d.stage,
       Value: d.value,
       Owner: d.owner,
       "Close Date": d.close,
+      Pipeline: d.pipeline,
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(formattedData);
@@ -104,12 +243,50 @@ export default function Deals({ branch }) {
     URL.revokeObjectURL(url);
   };
 
+  const handleAddRule = () => {
+    setEditingRuleId(null);
+    setRuleForm({ trigger: "", actions: "", active: true });
+    setShowRuleModal(true);
+  };
+
+  const handleEditRule = (rule) => {
+    setEditingRuleId(rule.id);
+    setRuleForm({
+      trigger: rule.trigger,
+      actions: rule.actions.join("\n"),
+      active: rule.active
+    });
+    setShowRuleModal(true);
+  };
+
+  const handleSaveRule = (e) => {
+    e.preventDefault();
+    const actionsList = ruleForm.actions.split("\n").filter(a => a.trim());
+    const newRuleData = {
+      trigger: ruleForm.trigger,
+      actions: actionsList,
+      active: ruleForm.active
+    };
+
+    if (editingRuleId) {
+      setAutomationRules(prev => prev.map(r => r.id === editingRuleId ? { ...r, ...newRuleData } : r));
+    } else {
+      setAutomationRules(prev => [...prev, { id: Date.now(), ...newRuleData }]);
+    }
+    setShowRuleModal(false);
+  };
+
+  const handleDeleteRule = (id) => {
+    if (window.confirm("Are you sure you want to delete this rule?")) {
+      setAutomationRules(prev => prev.filter(r => r.id !== id));
+    }
+  };
 
   // ---------- Forecast logic ----------
 
   // convert ₹ strings to numbers
   const parseAmount = (value) =>
-    Number(value.replace(/[₹,]/g, ""));
+    Number(String(value).replace(/[₹,]/g, ""));
 
   // stage probabilities
   const STAGE_PROBABILITY = {
@@ -119,36 +296,34 @@ export default function Deals({ branch }) {
   };
 
   // total pipeline value
-  const totalPipelineValue = dealsData.reduce(
+  const totalPipelineValue = allDeals.reduce(
     (sum, d) => sum + parseAmount(d.value),
     0
   );
 
   // expected (forecasted) revenue
-  const expectedRevenue = dealsData.reduce((sum, d) => {
-    const prob = STAGE_PROBABILITY[d.stage.toLowerCase()] || 0;
+  const expectedRevenue = allDeals.reduce((sum, d) => {
+    const prob = STAGE_PROBABILITY[(d.stage || "").toLowerCase()] || 0;
     return sum + parseAmount(d.value) * prob;
   }, 0);
 
   // deals closing this month (simple, readable)
-  const dealsClosingThisMonth = dealsData.filter((d) =>
-    d.close.toLowerCase().includes("feb")
-  ).length;
+  const dealsClosingThisMonth = allDeals.filter((d) => {
+    if (!d.close || typeof d.close !== 'string') return false;
+    try {
+      const closeDate = new Date(d.close);
+      const today = new Date();
+      return closeDate.getFullYear() === today.getFullYear() &&
+        closeDate.getMonth() === today.getMonth();
+    } catch (e) {
+      return false;
+    }
+  }).length;
 
-  /* deals pipeline */
-  const [activePipeline, setActivePipeline] = React.useState("deals");
-
-  const pipelineMap = {
-    deals: dealsData,
-    sales: salesData,
-    partnership: partnershipData,
-    enterprise: enterpriseData,
-  };
-
-  const activeData = pipelineMap[activePipeline];
-
-
-
+  // Top stats calculations
+  const openDealsCount = allDeals.filter(d => d.stage !== 'Won' && d.stage !== 'Lost').length;
+  const wonDealsCount = allDeals.filter(d => d.stage === 'Won').length;
+  const lostDealsCount = allDeals.filter(d => d.stage === 'Lost').length;
 
   return (
     <div className={styles.dealsPage}>
@@ -157,24 +332,27 @@ export default function Deals({ branch }) {
       <div className={styles.stats}>
         <div className={styles.statCard}>
           <span>Total Value</span>
-          <b>₹2.5L</b>
+          <b>₹{totalPipelineValue.toLocaleString()}</b>
         </div>
         <div className={styles.statCard}>
           <span>Open Deals</span>
-          <b>8</b>
+          <b>{openDealsCount}</b>
         </div>
         <div className={styles.statCard}>
           <span>Won</span>
-          <b>5</b>
+          <b>{wonDealsCount}</b>
         </div>
         <div className={styles.statCard}>
           <span>Lost</span>
-          <b>2</b>
+          <b>{lostDealsCount}</b>
         </div>
       </div>
 
       {/* Export Deals */}
       <div className={styles.exportSection}>
+        <button className={styles.exportBtn} onClick={openCreateModal} style={{ marginRight: "1rem", background: "#1f2a44" }}>
+          + Create Deal
+        </button>
         <div className={styles.exportText}>
           <h3>Export Deals</h3>
           <p>
@@ -188,60 +366,20 @@ export default function Deals({ branch }) {
       </div>
 
 
-      {/* Deals Pipeline 
-      <div className={styles.pipelineSection}>
-        <h3 className={styles.pipelineTitle}>Deals Pipeline</h3>
-
-        <div className={styles.pipelineBoard}>
-          {["Proposal", "Negotiation", "Won"].map((stage) => (
-            <div
-              key={stage}
-              className={`${styles.pipelineColumn} ${styles[stage.toLowerCase()]}`}
-            >
-
-              <div className={styles.pipelineHeader}>
-                <span>{stage}</span>
-                <b>{dealsData.filter(d => d.stage === stage).length}</b>
-              </div>
-
-              <div className={styles.pipelineCards}>
-                {dealsData
-                  .filter(d => d.stage === stage)
-                  .map((deal, i) => (
-                    <div key={i} className={styles.pipelineCard}>
-                      <strong>{deal.name}</strong>
-                      <span className={styles.pipelineCompany}>{deal.company}</span>
-
-                      <div className={styles.pipelineMeta}>
-                        <span>{deal.value}</span>
-                        <span>{deal.close}</span>
-                      </div>
-                    </div>
-                  ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div> */}
 
       {/* Pipelines Section */}
       <div className={styles.pipelineSection}>
 
         {/* Pipeline Tabs */}
         <div className={styles.pipelineTabs}>
-          {[
-            { id: "deals", label: "Deals Pipeline" },
-            { id: "sales", label: "Sales Pipeline" },
-            { id: "partnership", label: "Partnership" },
-            { id: "enterprise", label: "Enterprise" },
-          ].map(tab => (
+          {Object.keys(pipelineMap).map(key => (
             <button
-              key={tab.id}
-              onClick={() => setActivePipeline(tab.id)}
-              className={`${styles.pipelineTab} ${activePipeline === tab.id ? styles.activeTab : ""
+              key={key}
+              onClick={() => setActivePipeline(key)}
+              className={`${styles.pipelineTab} ${activePipeline === key ? styles.activeTab : ""
                 }`}
             >
-              {tab.label}
+              {key}
             </button>
           ))}
         </div>
@@ -257,15 +395,31 @@ export default function Deals({ branch }) {
               >
                 <div className={styles.pipelineHeader}>
                   <span>{stage}</span>
-                  <b>{activeData.filter(d => d.stage === stage).length}</b>
+                  <b>{deals.filter(d => (d.stage || "").toLowerCase() === stage.toLowerCase()).length}</b>
                 </div>
 
                 <div className={styles.pipelineCards}>
-                  {activeData
-                    .filter(d => d.stage === stage)
+                  {deals
+                    .filter(d => (d.stage || "").toLowerCase() === stage.toLowerCase())
                     .map((deal, i) => (
-                      <div key={i} className={styles.pipelineCard}>
-                        <strong>{deal.name}</strong>
+                      <div key={deal.id || i} className={styles.pipelineCard}>
+                        <div className={styles.cardActions}>
+                          <button
+                            className={styles.cardActionBtn}
+                            onClick={(e) => { e.stopPropagation(); openEditModal(deal); }}
+                            title="Edit"
+                          >
+                            ✏️
+                          </button>
+                          <button
+                            className={styles.cardActionBtn}
+                            onClick={(e) => { e.stopPropagation(); handleDeleteDeal(deal.id); }}
+                            title="Delete"
+                          >
+                            🗑️
+                          </button>
+                        </div>
+                        <strong>{deal.deal_name}</strong>
                         <span className={styles.pipelineCompany}>{deal.company}</span>
 
                         <div className={styles.pipelineMeta}>
@@ -304,6 +458,7 @@ export default function Deals({ branch }) {
               </span>
             </div>
 
+            <div style={{ width: "100%", height: 240 }}>
             <ResponsiveContainer width="100%" height={240}>
               <PieChart>
 
@@ -325,8 +480,8 @@ export default function Deals({ branch }) {
                   </linearGradient>
                 </defs>
 
-                <Pie
-                  data={winLossData}
+                {/* <Pie
+                  data={(analytics.winLoss || []).length > 0 ? analytics.winLoss : [{ name: "No Data", value: 1 }]}
                   innerRadius={70}
                   outerRadius={100}
                   paddingAngle={4}
@@ -335,11 +490,28 @@ export default function Deals({ branch }) {
                   <Cell fill="url(#wonGradient)" />
                   <Cell fill="url(#lostGradient)" />
                   <Cell fill="url(#progressGradient)" />
+                </Pie> */}
+
+                <Pie data={analytics.winLoss} innerRadius={70} outerRadius={100} paddingAngle={4} dataKey="value">
+                  {analytics.winLoss.map((entry, index) => (
+                    <Cell
+                      key={index}
+                      fill={
+                        entry.name === "Won"
+                          ? "url(#wonGradient)"
+                          : entry.name === "Lost"
+                            ? "url(#lostGradient)"
+                            : "url(#progressGradient)"
+                      }
+                    />
+                  ))}
                 </Pie>
+
 
                 <Tooltip />
               </PieChart>
             </ResponsiveContainer>
+            </div>
 
 
             <div className={styles.chartCenter}>
@@ -356,7 +528,7 @@ export default function Deals({ branch }) {
               <h4 className={styles.winTitle}>Top Win Reasons</h4>
 
               <ul className={styles.reasonList}>
-                {winReasons.map((r, i) => (
+                {(analytics.winReasons || []).map((r, i) => (
                   <li key={i}>
                     <span className={styles.reasonLabel}>{r.label}</span>
                     <em className={styles.reasonValue}>{r.value}%</em>
@@ -370,7 +542,7 @@ export default function Deals({ branch }) {
               <h4 className={styles.lossTitle}>Top Loss Reasons</h4>
 
               <ul className={styles.reasonList}>
-                {lossReasons.map((r, i) => (
+                {(analytics.lossReasons || []).map((r, i) => (
                   <li key={i}>
                     <span className={styles.reasonLabel}>{r.label}</span>
                     <em className={styles.reasonValue}>{r.value}%</em>
@@ -392,7 +564,6 @@ export default function Deals({ branch }) {
       <div className={styles.insightsRow}>
 
         {/* ---------- Pipeline Automation ---------- */}
-        {/* ---------- Pipeline Automation ---------- */}
         <div className={styles.automationSection}>
           <div className={styles.automationHeader}>
             <div>
@@ -400,45 +571,29 @@ export default function Deals({ branch }) {
               <p>Automated rules that manage deal movement and revenue</p>
             </div>
 
-            <button className={styles.addRuleBtn} disabled>
+            <button className={styles.addRuleBtn} onClick={handleAddRule}>
               + Add Rule
             </button>
           </div>
 
           <div className={styles.automationList}>
-            <div className={styles.automationCard} style={{ position: "relative" }}>
-              <div className={styles.ruleIcon}></div>
-              <div className={styles.ruleContent}>
-                <strong>When deal is marked as “Won”</strong>
-                <span>→ Move deal to Won stage</span>
-                <span>→ Add amount to revenue forecast</span>
+            {automationRules.map((rule) => (
+              <div key={rule.id} className={styles.automationCard} style={{ position: "relative" }}>
+                <div className={styles.ruleContent}>
+                  <strong>{rule.trigger}</strong>
+                  {rule.actions.map((action, idx) => (
+                    <span key={idx}>{action}</span>
+                  ))}
+                </div>
+                <span className={`${styles.ruleStatus} ${rule.active ? styles.active : styles.inactive}`} style={{ position: "absolute", top: "12px", right: "12px" }}>
+                  {rule.active ? "Active" : "Inactive"}
+                </span>
+                <div className={styles.ruleActions}>
+                  <button className={styles.ruleActionBtn} onClick={() => handleEditRule(rule)} title="Edit">✏️</button>
+                  <button className={styles.ruleActionBtn} onClick={() => handleDeleteRule(rule.id)} title="Delete">🗑️</button>
+                </div>
               </div>
-              <span className={`${styles.ruleStatus} ${styles.active}`} style={{ position: "absolute", top: "12px", right: "12px" }}>
-                Active
-              </span>
-            </div>
-
-            <div className={styles.automationCard} style={{ position: "relative" }}>
-              <div className={styles.ruleIcon}></div>
-              <div className={styles.ruleContent}>
-                <strong>If no activity for 7 days</strong>
-                <span>→ Mark deal as Stalled</span>
-              </div>
-              <span className={`${styles.ruleStatus} ${styles.active}`} style={{ position: "absolute", top: "12px", right: "12px" }}>
-                Active
-              </span>
-            </div>
-
-            <div className={styles.automationCard} style={{ position: "relative" }}>
-              <div className={styles.ruleIcon}></div>
-              <div className={styles.ruleContent}>
-                <strong>When status = “Proposal Sent”</strong>
-                <span>→ Move deal to Proposal stage</span>
-              </div>
-              <span className={`${styles.ruleStatus} ${styles.inactive}`} style={{ position: "absolute", top: "12px", right: "12px" }}>
-                Inactive
-              </span>
-            </div>
+            ))}
           </div>
 
           <p className={styles.automationNote}>
@@ -492,26 +647,110 @@ export default function Deals({ branch }) {
               <th>Value</th>
               <th>Owner</th>
               <th>Close Date</th>
+              <th>Pipeline</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {dealsData.map((d, i) => (
-              <tr key={i}>
-                <td>{d.name}</td>
+            {allDeals.map((d, i) => (
+              <tr key={d.id || i}>
+                <td>{d.deal_name}</td>
                 <td>{d.company}</td>
                 <td>
-                  <span className={`${styles.stage} ${styles[d.stage.toLowerCase()]}`}>
+                  <span className={`${styles.stage} ${styles[(d.stage || "").toLowerCase()]}`}>
                     {d.stage}
                   </span>
                 </td>
                 <td>{d.value}</td>
                 <td>{d.owner}</td>
                 <td>{d.close}</td>
+                <td>{d.pipeline}</td>
+                <td>
+                  <div style={{ display: "flex", gap: "0.5rem" }}>
+                    <button onClick={() => openEditModal(d)} style={{ border: "none", background: "none", cursor: "pointer" }}>✏️</button>
+                    <button onClick={() => handleDeleteDeal(d.id)} style={{ border: "none", background: "none", cursor: "pointer" }}>🗑️</button>
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {/* Create/Edit Modal */}
+      {showModal && (
+        <div style={{
+          position: "fixed", top: 0, left: 0, width: "100%", height: "100%",
+          backgroundColor: "rgba(0,0,0,0.5)", display: "flex", justifyContent: "center",
+          alignItems: "center", zIndex: 1000
+        }} onClick={() => setShowModal(false)}>
+          <div style={{
+            backgroundColor: "white", padding: "25px", borderRadius: "12px",
+            width: "400px", maxWidth: "90%", boxShadow: "0 4px 20px rgba(0,0,0,0.15)"
+          }} onClick={e => e.stopPropagation()}>
+            <h3 style={{ marginBottom: "1.5rem", color: "#1f2a44" }}>{isEditing ? "Edit Deal" : "Create New Deal"}</h3>
+            <form onSubmit={handleSaveDeal} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              <input placeholder="Deal Name" required value={formData.deal_name} onChange={e => setFormData({ ...formData, deal_name: e.target.value })} style={{ padding: "0.8rem", border: "1px solid #e0e2e9", borderRadius: "8px" }} />
+              <input placeholder="Company" required value={formData.company} onChange={e => setFormData({ ...formData, company: e.target.value })} style={{ padding: "0.8rem", border: "1px solid #e0e2e9", borderRadius: "8px" }} />
+
+              <select value={formData.pipeline} onChange={e => setFormData({ ...formData, pipeline: e.target.value })} style={{ padding: "0.8rem", border: "1px solid #e0e2e9", borderRadius: "8px" }}>
+                <option value="" disabled>Select Pipeline</option>
+                {Object.keys(pipelineMap).map(p => (
+                  <option key={p} value={p}>{p}</option>
+                ))}
+              </select>
+
+              <select value={formData.stage} onChange={e => setFormData({ ...formData, stage: e.target.value })} style={{ padding: "0.8rem", border: "1px solid #e0e2e9", borderRadius: "8px" }}>
+                <option value="Proposal">Proposal</option>
+                <option value="Negotiation">Negotiation</option>
+                <option value="Won">Won</option>
+                <option value="Lost">Lost</option>
+              </select>
+
+              <input placeholder="Value (e.g. 120000)" required value={formData.value} onChange={e => setFormData({ ...formData, value: e.target.value })} style={{ padding: "0.8rem", border: "1px solid #e0e2e9", borderRadius: "8px" }} />
+              <input placeholder="Owner" required value={formData.owner} onChange={e => setFormData({ ...formData, owner: e.target.value })} style={{ padding: "0.8rem", border: "1px solid #e0e2e9", borderRadius: "8px" }} />
+              <input placeholder="Close Date" type="date" value={formData.close} onChange={e => setFormData({ ...formData, close: e.target.value })} style={{ padding: "0.8rem", border: "1px solid #e0e2e9", borderRadius: "8px" }} />
+
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "1rem" }}>
+                <button type="button" onClick={() => setShowModal(false)} style={{ padding: "0.6rem 1.2rem", border: "none", background: "#f6f7ff", color: "#7a7fa3", borderRadius: "8px", cursor: "pointer" }}>Cancel</button>
+                <button type="submit" style={{ padding: "0.6rem 1.2rem", border: "none", background: "linear-gradient(135deg, #6b5cff, #9b8cff)", color: "white", borderRadius: "8px", cursor: "pointer" }}>
+                  {isEditing ? "Save Changes" : "Create Deal"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Rule Modal */}
+      {showRuleModal && (
+        <div style={{
+          position: "fixed", top: 0, left: 0, width: "100%", height: "100%",
+          backgroundColor: "rgba(0,0,0,0.5)", display: "flex", justifyContent: "center",
+          alignItems: "center", zIndex: 1000
+        }} onClick={() => setShowRuleModal(false)}>
+          <div style={{
+            backgroundColor: "white", padding: "25px", borderRadius: "12px",
+            width: "400px", maxWidth: "90%", boxShadow: "0 4px 20px rgba(0,0,0,0.15)"
+          }} onClick={e => e.stopPropagation()}>
+            <h3 style={{ marginBottom: "1.5rem", color: "#1f2a44" }}>{editingRuleId ? "Edit Rule" : "Add Automation Rule"}</h3>
+            <form onSubmit={handleSaveRule} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              <input placeholder="Trigger (e.g. When deal is Won)" required value={ruleForm.trigger} onChange={e => setRuleForm({ ...ruleForm, trigger: e.target.value })} style={{ padding: "0.8rem", border: "1px solid #e0e2e9", borderRadius: "8px" }} />
+              <textarea placeholder="Actions (one per line)" rows={3} required value={ruleForm.actions} onChange={e => setRuleForm({ ...ruleForm, actions: e.target.value })} style={{ padding: "0.8rem", border: "1px solid #e0e2e9", borderRadius: "8px", resize: "vertical" }} />
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <input type="checkbox" checked={ruleForm.active} onChange={e => setRuleForm({ ...ruleForm, active: e.target.checked })} id="ruleActive" style={{ width: "16px", height: "16px" }} />
+                <label htmlFor="ruleActive" style={{ fontSize: '0.9rem', color: '#333', cursor: 'pointer' }}>Active</label>
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "1rem" }}>
+                <button type="button" onClick={() => setShowRuleModal(false)} style={{ padding: "0.6rem 1.2rem", border: "none", background: "#f6f7ff", color: "#7a7fa3", borderRadius: "8px", cursor: "pointer" }}>Cancel</button>
+                <button type="submit" style={{ padding: "0.6rem 1.2rem", border: "none", background: "linear-gradient(135deg, #6b5cff, #9b8cff)", color: "white", borderRadius: "8px", cursor: "pointer" }}>Save Rule</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
     </div>
   );

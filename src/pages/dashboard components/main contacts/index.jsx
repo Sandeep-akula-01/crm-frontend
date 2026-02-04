@@ -1,4 +1,5 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import axios from "axios";
 import styles from "./mainContacts.module.css";
 import ContactProfile from "../contact profile";
 
@@ -6,44 +7,54 @@ import * as XLSX from "xlsx";
 
 /* ------------------ INITIAL DATA ------------------ */
 
-const initialContacts = [
-    {
-        name: "Riya Sharma",
-        company: "Acme Corp",
-        email: "riya@acme.com",
-        phone: "+91 98765 43210",
-        owner: "Varshini",
-        lastContact: "2 days ago",
-        status: "Active",
-    },
-    {
-        name: "Aman Patel",
-        company: "Zeta Labs",
-        email: "aman@zeta.io",
-        phone: "+91 99887 66554",
-        owner: "Ravi",
-        lastContact: "Today",
-        status: "New",
-    },
-    {
-        name: "Sneha Rao",
-        company: "PixelWorks",
-        email: "sneha@pixel.com",
-        phone: "+91 91234 56789",
-        owner: "Anu",
-        lastContact: "1 week ago",
-        status: "Inactive",
-    },
-];
-
 export default function Contacts() {
-    const [contacts, setContacts] = useState(initialContacts);
+    const [contacts, setContacts] = useState([]);
     const [selectedContact, setSelectedContact] = useState(null);
     const fileInputRef = useRef(null);
 
 
     const [searchQuery, setSearchQuery] = useState("");
     const [showDuplicatesOnly, setShowDuplicatesOnly] = useState(false);
+
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [editIndex, setEditIndex] = useState(null); // Track which contact is being edited
+    const [newContact, setNewContact] = useState({
+        name: "",
+        company: "",
+        email: "",
+        phone: "",
+        owner: "",
+        lastContact: "",
+        status: "New",
+    });
+
+    /* ------------------ BACKEND FETCH ------------------ */
+    const fetchContacts = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            let url = "http://192.168.1.19:5000/api/contacts";
+
+            if (showDuplicatesOnly) {
+                url = "http://192.168.1.19:5000/api/contacts/duplicates";
+            } else if (searchQuery) {
+                url = `http://192.168.1.19:5000/api/contacts/search?q=${searchQuery}`;
+            }
+
+            const res = await axios.get(url, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setContacts(Array.isArray(res.data) ? res.data : []);
+        } catch (err) {
+            console.error("Failed to fetch contacts", err);
+        }
+    };
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchContacts();
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [searchQuery, showDuplicatesOnly]);
 
     /* ---------- DEDUPE HELPERS ---------- */
     const getDedupeKey = (c) =>
@@ -117,27 +128,84 @@ export default function Contacts() {
 
     /*------- dedupe */
 
-    const filteredContacts = contacts.filter((c) => {
-        const query = searchQuery.toLowerCase();
-
-        const matchesSearch =
-            c.name.toLowerCase().includes(query) ||
-            c.email.toLowerCase().includes(query) ||
-            c.phone.includes(query) ||
-            c.company.toLowerCase().includes(query);
-
-        const isDuplicate = duplicateMap[getDedupeKey(c)] > 1;
-
-        if (showDuplicatesOnly) {
-            return matchesSearch && isDuplicate;
+    const handleSaveContact = async () => {
+        if (!newContact.name) {
+            alert("Name is required");
+            return;
         }
+        const token = localStorage.getItem("token");
 
-        return matchesSearch;
-    });
+        try {
+            if (editIndex !== null) {
+                // Update existing
+                const contactId = contacts[editIndex].id;
+                if (contactId) {
+                    await axios.put(`http://192.168.1.19:5000/api/contacts/${contactId}`, newContact, {
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+                    fetchContacts();
+                }
+            } else {
+                // Create new
+                await axios.post("http://192.168.1.19:5000/api/contacts", {
+                    ...newContact,
+                    owner: newContact.owner || "Unassigned",
+                    lastContact: newContact.lastContact || "Just now",
+                }, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                fetchContacts();
+            }
+        } catch (err) {
+            console.error("Error saving contact", err);
+        }
+        
+        setShowCreateModal(false);
+        setNewContact({ name: "", company: "", email: "", phone: "", owner: "", lastContact: "", status: "New" });
+        setEditIndex(null);
+    };
 
+    const handleEditClick = (contact, e) => {
+        e.stopPropagation(); // Prevent row click
+        const index = contacts.findIndex((c) => c === contact);
+        setEditIndex(index);
+        setNewContact(contact);
+        setShowCreateModal(true);
+    };
 
+    const handleDeleteClick = async (contact, e) => {
+        e.stopPropagation(); // Prevent row click
+        if (window.confirm(`Are you sure you want to delete ${contact.name}?`)) {
+            try {
+                const token = localStorage.getItem("token");
+                if (contact.id) {
+                    await axios.delete(`http://192.168.1.19:5000/api/contacts/${contact.id}`, {
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+                }
+                setContacts(contacts.filter((c) => c !== contact));
+            } catch (err) {
+                console.error("Error deleting contact", err);
+            }
+        }
+    };
 
-
+    const handleRowClick = async (c) => {
+        if (c.id) {
+            try {
+                const token = localStorage.getItem("token");
+                const res = await axios.get(`http://192.168.1.19:5000/api/contacts/${c.id}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                setSelectedContact(res.data);
+            } catch (err) {
+                console.error("Error fetching contact profile", err);
+                setSelectedContact(c);
+            }
+        } else {
+            setSelectedContact(c);
+        }
+    };
 
     return (
         <div className={styles.contactsPage}>
@@ -215,22 +283,35 @@ export default function Contacts() {
 
 
             <div className={styles.searchBarRight}>
-                <button
-                    className={`${styles.dedupeToggle} ${showDuplicatesOnly ? styles.activeToggle : ""
-                        }`}
-                    onClick={() => setShowDuplicatesOnly(!showDuplicatesOnly)}
+                <button 
+                    className={styles.createBtn}
+                    onClick={() => {
+                        setEditIndex(null);
+                        setNewContact({ name: "", company: "", email: "", phone: "", owner: "", lastContact: "", status: "New" });
+                        setShowCreateModal(true);
+                    }}
                 >
-                    ♻️ Duplicates
+                    + Create
                 </button>
 
-                <div className={styles.searchInputWrap}>
-                    <span className={styles.searchIcon}>🔍</span>
-                    <input
-                        type="text"
-                        placeholder="Search contacts…"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
+                <div style={{ display: "flex", gap: "0.6rem", alignItems: "center" }}>
+                    <button
+                        className={`${styles.dedupeToggle} ${showDuplicatesOnly ? styles.activeToggle : ""
+                            }`}
+                        onClick={() => setShowDuplicatesOnly(!showDuplicatesOnly)}
+                    >
+                        ♻️ Duplicates
+                    </button>
+
+                    <div className={styles.searchInputWrap}>
+                        <span className={styles.searchIcon}>🔍</span>
+                        <input
+                            type="text"
+                            placeholder="Search contacts…"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -248,21 +329,22 @@ export default function Contacts() {
                             <th>Owner</th>
                             <th>Last Contact</th>
                             <th>Status</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
 
                     <tbody>
-                        {filteredContacts.map((c, i) => {
+                        {contacts.map((c, i) => {
                             const isDuplicate = duplicateMap[getDedupeKey(c)] > 1;
                             return (
 
                                 <tr
                                     key={i}
                                     className={styles.rowClickable}
-                                    onClick={() => setSelectedContact(c)}
+                                    onClick={() => handleRowClick(c)}
                                 >
                                     <td className={styles.contactCell}>
-                                        <div className={styles.avatar}>{c.name[0]}</div>
+                                        <div className={styles.avatar}>{c.name?.[0]}</div>
                                         <span>{c.name}</span>
                                     </td>
                                     <td>{c.company}</td>
@@ -273,9 +355,9 @@ export default function Contacts() {
                                     <td>
                                         <div className={styles.statusWrap}>
                                             <span
-                                                className={`${styles.status} ${styles[c.status.toLowerCase()]}`}
+                                                className={`${styles.status} ${styles[(c.status || "New").toLowerCase()]}`}
                                             >
-                                                {c.status}
+                                                {c.status || "New"}
                                             </span>
 
                                             {isDuplicate && (
@@ -283,6 +365,20 @@ export default function Contacts() {
                                                     Duplicate
                                                 </span>
                                             )}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div className={styles.actionCell}>
+                                            <button 
+                                                className={styles.iconBtn} 
+                                                title="Edit"
+                                                onClick={(e) => handleEditClick(c, e)}
+                                            >✏️</button>
+                                            <button 
+                                                className={styles.iconBtn} 
+                                                title="Delete"
+                                                onClick={(e) => handleDeleteClick(c, e)}
+                                            >🗑️</button>
                                         </div>
                                     </td>
                                 </tr>
@@ -298,7 +394,95 @@ export default function Contacts() {
                     onClose={() => setSelectedContact(null)}
                 />
             )}
+
+            {showCreateModal && (
+                <div className={styles.modalOverlay} onClick={() => { setShowCreateModal(false); setEditIndex(null); }}>
+                    <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+                        <h3 className={styles.modalTitle}>
+                            {editIndex !== null ? "Edit Contact" : "Create New Contact"}
+                        </h3>
+                        
+                        <div className={styles.formGroup}>
+                            <label>Name</label>
+                            <input 
+                                type="text" 
+                                placeholder="e.g. John Doe"
+                                value={newContact.name}
+                                onChange={(e) => setNewContact({...newContact, name: e.target.value})}
+                            />
+                        </div>
+
+                        <div className={styles.formGroup}>
+                            <label>Company</label>
+                            <input 
+                                type="text" 
+                                placeholder="e.g. Acme Inc"
+                                value={newContact.company}
+                                onChange={(e) => setNewContact({...newContact, company: e.target.value})}
+                            />
+                        </div>
+
+                        <div className={styles.formGroup}>
+                            <label>Email</label>
+                            <input 
+                                type="email" 
+                                placeholder="john@example.com"
+                                value={newContact.email}
+                                onChange={(e) => setNewContact({...newContact, email: e.target.value})}
+                            />
+                        </div>
+
+                        <div className={styles.formGroup}>
+                            <label>Phone</label>
+                            <input 
+                                type="text" 
+                                placeholder="+1 234 567 890"
+                                value={newContact.phone}
+                                onChange={(e) => setNewContact({...newContact, phone: e.target.value})}
+                            />
+                        </div>
+
+                        <div className={styles.formGroup}>
+                            <label>Owner</label>
+                            <input 
+                                type="text" 
+                                placeholder="e.g. Varshini"
+                                value={newContact.owner}
+                                onChange={(e) => setNewContact({...newContact, owner: e.target.value})}
+                            />
+                        </div>
+
+                        <div className={styles.formGroup}>
+                            <label>Status</label>
+                            <select
+                                value={newContact.status}
+                                onChange={(e) => setNewContact({...newContact, status: e.target.value})}
+                            >
+                                <option value="New">New</option>
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
+                            </select>
+                        </div>
+
+                        <div className={styles.formGroup}>
+                            <label>Last Contact</label>
+                            <input 
+                                type="text" 
+                                placeholder="e.g. 2 days ago"
+                                value={newContact.lastContact}
+                                onChange={(e) => setNewContact({...newContact, lastContact: e.target.value})}
+                            />
+                        </div>
+
+                        <div className={styles.modalActions}>
+                            <button className={styles.cancelBtn} onClick={() => { setShowCreateModal(false); setEditIndex(null); }}>Cancel</button>
+                            <button className={styles.saveBtn} onClick={handleSaveContact}>
+                                {editIndex !== null ? "Save Changes" : "Create Contact"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
-

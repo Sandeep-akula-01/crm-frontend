@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import styles from "./leads.module.css";
 import {
     LineChart,
@@ -19,79 +20,42 @@ const leadTrend = [
     { week: "W6", all: 68, qualified: 52 },
 ]; ''
 
-const tempLeads = [
-    {
-        name: "Riya Sharma",
-        email: "riya@gmail.com",
-        phone: "9876543210",
-        company: "Pixel Labs",
-        source: "Instagram",
-        status: "Hot",
-        score: "High",
-        sla: "On Track",
-        owner: "Varshini",
-        createdAt: "2 days ago",
-        description: "Interested in website redesign",
-    },
-    {
-        name: "Aman Patel",
-        email: "aman@corp.com",
-        phone: "9876543211",
-        company: "CorpEdge",
-        source: "Campaign",
-        status: "Follow-up",
-        score: "Medium",
-        sla: "Delayed",
-        owner: "Ravi",
-        createdAt: "Today",
-        description: "Needs pricing details",
-    },
-    {
-        name: "Neha Verma",
-        email: "neha@mail.com",
-        phone: "9876543212",
-        company: "Bloom Co",
-        source: "Website",
-        status: "Converted",
-        score: "High",
-        sla: "On Track",
-        owner: "Anu",
-        createdAt: "5 days ago",
-        description: "Closed premium plan",
-    },
-    {
-        name: "Rahul Singh",
-        email: "rahul@xyz.com",
-        phone: "9876543213",
-        company: "XYZ Pvt Ltd",
-        source: "Referral",
-        status: "Lost",
-        score: "Low",
-        sla: "Delayed",
-        owner: "Varshini",
-        createdAt: "1 week ago",
-        description: "Budget mismatch",
-    },
-];
-
-
 export default function Leads({ branch }) {
 
-    const [leads, setLeads] = useState(() => {
-        // On initial load, try to get leads from localStorage
-        try {
-            const savedLeads = localStorage.getItem("crm-leads");
-            return savedLeads ? JSON.parse(savedLeads) : tempLeads;
-        } catch (error) {
-            console.error("Could not parse leads from localStorage", error);
-            return tempLeads;
-        }
-    });
+    const [leads, setLeads] = useState([]);
 
-    // This effect runs whenever the 'leads' state changes, saving it to localStorage
+    const fetchLeads = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            const res = await axios.get("http://192.168.1.19:5000/api/leads", {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            // Map backend data to frontend structure
+            const mappedLeads = (res.data || []).map(lead => ({
+                id: lead.id,
+                name: lead.name || `${lead.first_name || ''} ${lead.last_name || ''}`.trim(),
+                email: lead.email || '',
+                phone: lead.phone || '',
+                company: lead.company || '',
+                source: lead.source || lead.lead_source || 'Unknown',
+                status: lead.status || 'New',
+                score: lead.score || 'Medium',
+                sla: lead.sla || 'On Track',
+                owner: lead.owner || 'Unassigned',
+                createdAt: lead.created_at || 'N/A',
+                description: lead.description || '',
+            }));
+            setLeads(mappedLeads);
+        } catch (error) {
+            console.error("Failed to fetch leads:", error);
+        }
+    };
+
     useEffect(() => {
-        localStorage.setItem("crm-leads", JSON.stringify(leads));
-    }, [leads]);
+        fetchLeads();
+    }, []);
+
     const [search, setSearch] = useState("");
     const [statusFilter, setStatusFilter] = useState("All");
     const [sourceFilter, setSourceFilter] = useState("All");
@@ -110,11 +74,34 @@ export default function Leads({ branch }) {
         description: ""
     });
 
-    const handleAddLead = (e) => {
+    const handleAddLead = async (e) => {
         e.preventDefault();
-        setLeads([{ ...newLead, createdAt: "Just now" }, ...leads]);
-        setShowModal(false);
-        setNewLead({ name: "", email: "", phone: "", company: "", source: "Website", status: "New", score: "Medium", sla: "On Track", owner: "You", description: "" });
+        try {
+            const token = localStorage.getItem("token");
+            const payload = {
+                name: newLead.name,
+                email: newLead.email,
+                phone: newLead.phone,
+                company: newLead.company,
+                source: newLead.source,
+                status: newLead.status,
+                score: newLead.score,
+                sla: newLead.sla,
+                owner: newLead.owner,
+                description: newLead.description
+            };
+
+            await axios.post("http://192.168.1.19:5000/api/leads", payload, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            setShowModal(false);
+            setNewLead({ name: "", email: "", phone: "", company: "", source: "Website", status: "New", score: "Medium", sla: "On Track", owner: "You", description: "" });
+            fetchLeads(); // Refresh list after adding
+        } catch (error) {
+            console.error("Failed to create lead:", error);
+            alert("Could not create lead. Please check the console for more details.");
+        }
     };
 
     const filtered = leads.filter(l =>
