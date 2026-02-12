@@ -364,3 +364,538 @@
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
 }
+
+/* ================= META INFO ================= */
+
+.metaInfo {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.metaItem {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+.metaIcon {
+    color: #9ca3af;
+}
+
+/* ================= DRAWER ================= */
+.drawerOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 2000;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.drawer {
+    width: 420px;
+    background: white;
+    height: 100%;
+    padding: 1.5rem;
+    overflow-y: auto;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+.drawerHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.drawerHeader h2 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: #111827;
+}
+
+.closeDrawerBtn {
+    background: none;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.closeDrawerBtn:hover {
+    background: #f3f4f6;
+    color: #111827;
+}
+
+.drawerHeader span {
+    font-size: 0.9rem;
+    color: #6b7280;
+}
+
+.drawer section {
+    margin-top: 1.5rem;
+}
+
+.drawer h4 {
+    margin-bottom: 0.5rem;
+    color: #374151;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.drawer p {
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.drawer input,
+.drawer textarea,
+.drawer select {
+    width: 100%;
+    margin-bottom: 0.75rem;
+    padding: 0.6rem;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.drawer input:focus,
+.drawer textarea:focus,
+.drawer select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* ===== CHECKBOX & RADIO ===== */
+.checkbox,
+.radio {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #374151;
+}
+
+.checkbox input[type="checkbox"],
+.radio input[type="radio"] {
+    width: auto;
+    margin: 0;
+    cursor: pointer;
+}
+
+/* ===== METRICS ===== */
+.metrics {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: #6b7280;
+    padding-top: 0.75rem;
+    border-top: 1px solid #f3f4f6;
+}
+
+/* ===== ACTIVATE ===== */
+.activateBtn {
+    margin-top: 1.5rem;
+    width: 100%;
+    background: #22c55e;
+    color: white;
+    padding: 0.75rem;
+    border-radius: 10px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.activateBtn:hover {
+    background: #16a34a;
+}
+
+/* ================= WHATSAPP CONFIG ================= */
+.channelSection {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.channelSection h3 {
+    font-size: 1.1rem;
+    margin-bottom: 1.25rem;
+    color: #111827;
+}
+
+.pTextArea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    resize: vertical;
+}
+
+.whatsappMeta {
+    margin-top: 0.5rem;
+    display: flex;
+    gap: 0.75rem;
+    font-size: 0.7rem;
+    color: #6b7280;
+}
+
+/* ================= LANDING SECTION ================= */
+
+.landingHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 40px;
+}
+
+.landingHeader h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.primaryBtn {
+    background: #6f24b1;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.primaryBtn:hover {
+    background: #3e0ebe;
+}
+
+.landingGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.landingCard {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 16px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.landingCard:hover {
+    transform: translateY(-3px);
+    border-color: #94a3b8;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+}
+
+.landingCard h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #111827;
+}
+
+.landingCard p {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-top: 4px;
+}
+
+.lpCardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.lpCardActions {
+    display: flex;
+    gap: 0.5rem;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.landingCard:hover .lpCardActions {
+    opacity: 1;
+}
+
+.lpEditBtn,
+.lpDeleteBtn {
+    padding: 4px;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+    background: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6b7280;
+    transition: all 0.2s;
+}
+
+.lpEditBtn:hover {
+    background: #f3f4f6;
+    color: #3b82f6;
+    border-color: #3b82f6;
+}
+
+.lpDeleteBtn:hover {
+    background: #fee2e2;
+    color: #ef4444;
+    border-color: #ef4444;
+}
+
+.status {
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    display: inline-block;
+    margin-top: 6px;
+    font-weight: 600;
+}
+
+/* Specific Status Colors */
+.running,
+.statusPublished {
+    background: #dcfce7 !important;
+    color: #15803d !important;
+}
+
+.draft,
+.statusDraft {
+    background: #fef3c7 !important;
+    color: #92400e !important;
+}
+
+
+.metrics {
+    margin-top: 12px;
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    color: #6b7280;
+    border-top: 1px solid #f3f4f6;
+    padding-top: 12px;
+}
+
+/* ================= EDITOR ================= */
+
+.editorWrapper {
+    margin-top: 40px;
+    background: white;
+    border-radius: 18px;
+    padding: 24px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.editorHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.editorHeader h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #111827;
+}
+
+.closeBtn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #6b7280;
+    padding: 4px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.closeBtn:hover {
+    background: #f3f4f6;
+    color: #111827;
+}
+
+.tabsEditor {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.tabEditor {
+    padding-bottom: 10px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #6b7280;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.tabEditor:hover {
+    color: #111827;
+}
+
+.activeTabEditor {
+    border-bottom: 2px solid #3b82f6;
+    color: #111827;
+    font-weight: 600;
+}
+
+.tabContent {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.tabContent label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: -4px;
+}
+
+.tabContent input,
+.tabContent textarea,
+.tabContent select {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    font-size: 14px;
+    width: 100%;
+    transition: all 0.2s;
+}
+
+.tabContent input:focus,
+.tabContent textarea:focus,
+.tabContent select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.tabContent textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.checkboxGroup {
+    display: flex;
+    gap: 20px;
+    background: #f9fafb;
+    padding: 16px;
+    border-radius: 10px;
+}
+
+.checkboxGroup label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.checkboxGroup input[type="checkbox"] {
+    width: auto;
+}
+
+.analyticsBox {
+    display: flex;
+    gap: 40px;
+    font-size: 14px;
+    color: #374151;
+    background: #eff6ff;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #dbeafe;
+}
+
+.analyticsBox div {
+    display: flex;
+    flex-direction: column;
+}
+
+.analyticsBox div:first-child {
+    font-weight: 600;
+}
+
+.editorActions {
+    margin-top: 24px;
+    display: flex;
+    gap: 12px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.saveBtn {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.saveBtn:hover {
+    background: #1d4ed8;
+}
+
+.publishBtn {
+    background: #10b981;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.publishBtn:hover {
+    background: #059669;
+}

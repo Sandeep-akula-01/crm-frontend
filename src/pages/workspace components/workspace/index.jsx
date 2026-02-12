@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { Team } from "../teams";
 import { Inbox } from "../inbox";
-import { Organization } from "../organization";
+import { Marketing } from "../marketing";
 import { Campaigns } from "../campaigns";
 import { Settings } from "../settings";
+import { Profile } from "../profile";
+import { States } from "../states";
 import styles from "./workspace.module.css";
 import { Plus, Edit2, Trash2, X, ChevronRight, Zap, Filter, CheckCircle, ArrowRight } from "lucide-react";
 
@@ -388,18 +390,20 @@ export default function Workspace({ active, branch }) {
     case "Inbox":
       return <Inbox branch={branch} />;
 
-    case "Organization":
-      return <Organization branch={branch} />;
-
-    case "Inbox":
-      return <Inbox branch={branch} />;
+    case "Marketing":
+      return <Marketing branch={branch} />;
 
     case "Campaigns":
-    case "States":
       return <Campaigns branch={branch} />;
+
+    case "States":
+      return <States branch={branch} />;
 
     case "Settings":
       return <Settings branch={branch} />;
+
+    case "Profile":
+      return <Profile branch={branch} />;
 
     default:
       return null;

@@ -1,0 +1,298 @@
+.container {
+    padding: 24px;
+    background: #f9fafb;
+    min-height: 100%;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 28px;
+}
+
+.header h2 {
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.branchTag {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #6b7280;
+    background: #f3f4f6;
+    padding: 2px 10px;
+    border-radius: 999px;
+    display: inline-block;
+}
+
+.inviteBtn {
+    background: #1d37b6;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 6px -1px rgba(29, 78, 216, 0.2);
+}
+
+.inviteBtn:hover {
+    background: #1e40af;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 12px -2px rgba(29, 78, 216, 0.3);
+}
+
+/* Stats Cards */
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 32px;
+}
+
+.statCard {
+    background: white;
+    padding: 20px;
+    border-radius: 18px;
+    border: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: transform 0.2s;
+}
+
+.statCard:hover {
+    transform: translateY(-2px);
+}
+
+.statIcon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.statInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.statLabel {
+    font-size: 0.85rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.statValue {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+/* Directory Section */
+.directoryCard {
+    background: white;
+    border-radius: 18px;
+    border: 1px solid #e5e7eb;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.directoryHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.searchBar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    padding: 8px 16px;
+    border-radius: 12px;
+    width: 320px;
+    transition: all 0.2s;
+}
+
+.searchBar:focus-within {
+    border-color: #1d4ed8;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.1);
+}
+
+.searchBar input {
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 0.9rem;
+    color: #111827;
+    width: 100%;
+}
+
+.filterGroup {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    padding: 6px 14px;
+    border-radius: 10px;
+}
+
+.roleSelect {
+    border: none;
+    outline: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #4b5563;
+    cursor: pointer;
+}
+
+/* Table */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th {
+    text-align: left;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #94a3b8;
+    letter-spacing: 0.05em;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.table td {
+    padding: 16px 0;
+    border-bottom: 1px solid #f8fafc;
+}
+
+.memberInfo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.memberNameWrap {
+    display: flex;
+    flex-direction: column;
+}
+
+.memberName {
+    font-weight: 600;
+    color: #111827;
+    font-size: 0.9rem;
+}
+
+.memberEmail {
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+.roleBadge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+    display: inline-block;
+}
+
+.admin {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.manager {
+    background: #e0f2fe;
+    color: #0ea5e9;
+}
+
+.agent {
+    background: #dcfce7;
+    color: #10b981;
+}
+
+.statusWrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.statusDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.statusText {
+    font-size: 0.85rem;
+    color: #4b5563;
+    font-weight: 500;
+}
+
+.contactIcons {
+    display: flex;
+    gap: 12px;
+    color: #94a3b8;
+}
+
+.contactIcons svg {
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.contactIcons svg:hover {
+    color: #1d4ed8;
+}
+
+.lastActive {
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+.moreBtn {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.moreBtn:hover {
+    background: #f1f5f9;
+    color: #111827;
+}
+
+@media (max-width: 1024px) {
+    .statsGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

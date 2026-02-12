@@ -46,6 +46,9 @@ export default function Leads({ branch }) {
                 owner: lead.owner || 'Unassigned',
                 createdAt: lead.created_at || 'N/A',
                 description: lead.description || '',
+                city: lead.city || 'N/A',
+                state: lead.state || 'N/A',
+                country: lead.country || 'N/A',
             }));
             setLeads(mappedLeads);
         } catch (error) {
@@ -398,6 +401,7 @@ export default function Leads({ branch }) {
                                     <th>Score</th>
                                     <th>SLA</th>
                                     <th>Owner</th>
+                                    <th>Location</th>
                                     <th>Created</th>
                                     <th>Description</th>
                                     <th>Actions</th>
@@ -432,6 +436,11 @@ export default function Leads({ branch }) {
                                             </td>
 
                                             <td>{l.owner}</td>
+                                            <td className={styles.muted}>
+                                                {l.city !== 'N/A' || l.state !== 'N/A' || l.country !== 'N/A'
+                                                    ? `${l.city}, ${l.state}, ${l.country}`
+                                                    : 'N/A'}
+                                            </td>
                                             <td className={styles.muted}>{l.createdAt}</td>
                                             <td className={styles.desc}>{l.description}</td>
                                             <td>
@@ -456,7 +465,7 @@ export default function Leads({ branch }) {
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan="12" style={{ textAlign: "center", padding: "20px", color: "#666" }}>
+                                        <td colSpan="14" style={{ textAlign: "center", padding: "20px", color: "#666" }}>
                                             No leads found matching "{search}"
                                         </td>
                                     </tr>

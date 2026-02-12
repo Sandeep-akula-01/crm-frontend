@@ -1,0 +1,282 @@
+.marketingPage {
+    padding: 24px;
+    background: #f8fafc;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+/* KPI CARDS */
+.kpiGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.kpiCard {
+    padding: 20px;
+    border-radius: 18px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    transition: 0.3s ease;
+}
+
+.kpiCard:hover {
+    transform: translateY(-5px);
+}
+
+.kpiCard h4 {
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.kpiCard h2 {
+    font-size: 24px;
+    margin-bottom: 6px;
+}
+
+.blue {
+    background: #e0f2fe;
+}
+
+.green {
+    background: #dcfce7;
+}
+
+.orange {
+    background: #ffedd5;
+}
+
+.pink {
+    background: #fce7f3;
+}
+
+/* GRAPH + FUNNEL */
+.middleSection {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 24px;
+}
+
+.chartCard {
+    background: white;
+    padding: 24px;
+    border-radius: 18px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f1f5f9;
+}
+
+.funnelCardWide {
+    background: white;
+    padding: 24px;
+    border-radius: 18px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f1f5f9;
+    overflow: hidden;
+}
+
+.funnelHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.funnelLegend {
+    display: flex;
+    gap: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #94a3b8;
+    letter-spacing: 0.05em;
+}
+
+.salesFunnelContainer {
+    display: flex;
+    gap: 24px;
+    height: 300px;
+    position: relative;
+    padding-left: 20px;
+}
+
+.funnelIndicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 20px;
+    height: 100%;
+}
+
+.arrowLine {
+    width: 2px;
+    flex: 1;
+    background: linear-gradient(to bottom, #4f46e520, #4f46e5);
+    border-radius: 2px;
+}
+
+.arrowHead {
+    color: #4f46e5;
+    margin-top: -2px;
+}
+
+.funnelStages {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.funnelRow {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.funnelBar {
+    height: 100%;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.funnelBar:hover {
+    transform: translateX(4px) scaleY(1.02);
+    z-index: 10;
+}
+
+.stageLabel {
+    color: white;
+    font-size: 13px;
+    font-weight: 700;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.funnelPercentageTrack {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+}
+
+.ghostBar {
+    flex: 1;
+    height: 38px;
+    background: #f1f5f9;
+    border-radius: 6px;
+    opacity: 0.6;
+}
+
+.percentageValue {
+    font-size: 13px;
+    font-weight: 800;
+    color: #4338ca;
+    min-width: 40px;
+    text-align: right;
+}
+
+/* CHANNEL SECTION */
+.channelSection {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.channelBox {
+    background: white;
+    border: 1px solid #e5e7eb;
+    padding: 20px;
+    border-radius: 18px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease;
+}
+
+.channelBox:hover {
+    transform: translateY(-5px);
+}
+
+.channelLabel {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.channelStatsGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 20px;
+}
+
+.channelStat {
+    font-size: 14px;
+    color: #1e293b;
+    font-weight: 600;
+}
+
+.channelStat span {
+    color: #64748b;
+    font-weight: 500;
+    margin-right: 4px;
+}
+
+/* TABLE */
+.tableCard {
+    background: white;
+    padding: 20px;
+    border-radius: 18px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+}
+
+th {
+    text-align: left;
+    font-size: 13px;
+    padding: 12px;
+    background: #f1f5f9;
+}
+
+td {
+    padding: 12px;
+    font-size: 13px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+/* STATUS BADGES */
+.status {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.active {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.scheduled {
+    background: #dbeafe;
+    color: #1e3a8a;
+}
+
+.draft {
+    background: #e5e7eb;
+    color: #374151;
+}

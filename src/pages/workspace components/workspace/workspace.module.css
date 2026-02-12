@@ -1,7 +1,6 @@
 .container {
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
+  padding: 1rem 1.5rem;
+  width: 100%;
   font-family: 'Inter', sans-serif;
   color: #1f2a44;
 }
@@ -19,6 +18,7 @@
   font-weight: 700;
   background: linear-gradient(135deg, #0a2066, #7c3aed);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 
   margin-bottom: 0.5rem;

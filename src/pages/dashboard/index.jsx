@@ -3,6 +3,23 @@ import styles from "./dashboard.module.css";
 import { useNavigate } from "react-router-dom";
 import Main from "../dashboard components/main";
 import Workspace from "../workspace components/workspace";
+import {
+    User,
+    LogOut,
+    LayoutDashboard,
+    UserPlus,
+    DollarSign,
+    CheckCircle2,
+    Users,
+    BarChart2,
+    Calendar,
+    Layout,
+    Inbox,
+    Zap,
+    Rocket,
+    Settings,
+    MapPin
+} from "lucide-react";
 
 
 
@@ -27,7 +44,7 @@ const navItems = [
     "Workspace",
     "Team",
     "Inbox",
-    "Organization",
+    "Marketing",
     "Campaigns",
     "Settings",
 ];
@@ -94,12 +111,14 @@ export default function Dashboard() {
                 return <h2>Team Management</h2>;
             case "Inbox":
                 return <h2>Inbox</h2>;
-            case "Organization":
-                return <h2>Organization Settings</h2>;
+            case "Marketing":
+                return <h2>Marketing & Performance</h2>;
             case "Campaigns":
                 return <h2>Marketing Campaigns</h2>;
             case "Settings":
                 return <h2>App Settings</h2>;
+            case "Profile":
+                return <h2>User Profile & Organization</h2>;
             default:
                 return null;
         }
@@ -153,13 +172,22 @@ export default function Dashboard() {
 
                     <nav className={styles.nav}>
                         {/* Main */}
-                        {["Dashboard", "Leads", "Deals", "Tasks", "Contacts", "Reports", "Calendar"].map(item => (
+                        {[
+                            { name: "Dashboard", Icon: LayoutDashboard },
+                            { name: "Leads", Icon: UserPlus },
+                            { name: "Deals", Icon: DollarSign },
+                            { name: "Tasks", Icon: CheckCircle2 },
+                            { name: "Contacts", Icon: Users },
+                            { name: "Reports", Icon: BarChart2 },
+                            { name: "Calendar", Icon: Calendar },
+                        ].map(({ name, Icon }) => (
                             <button
-                                key={item}
-                                className={`${styles.navItem} ${active === item ? styles.active : ""}`}
-                                onClick={() => setActive(item)}
+                                key={name}
+                                className={`${styles.navItem} ${active === name ? styles.active : ""}`}
+                                onClick={() => setActive(name)}
                             >
-                                {item}
+                                <Icon size={18} />
+                                <span>{name}</span>
                             </button>
                         ))}
 
@@ -174,31 +202,14 @@ export default function Dashboard() {
                             {/* States Hover */}
 
                             <div className={styles.statesWrap}>
-                                <div className={styles.navItem}>
-                                    States <span className={styles.arrow}>▸</span>
-                                </div>
-
-                                <div className={styles.statesDropdown}>
-                                    {workspace.states.map(s => (
-                                        <div key={s.name} className={styles.stateBlock}>
-                                            <div className={styles.stateName}>{s.name}</div>
-
-                                            {s.branches.map(b => (
-                                                <div
-                                                    key={b}
-                                                    className={styles.branchItem}
-                                                    onClick={() => setBranch({ name: b, state: s.name })}
-                                                >
-                                                    {b}
-                                                </div>
-                                            ))}
-
-                                            <div className={styles.addMini}>+ Add Branch</div>
-                                        </div>
-                                    ))}
-
-                                    <div className={styles.addState}>+ Add State</div>
-                                </div>
+                                <button
+                                    className={`${styles.navItem} ${active === "States" ? styles.active : ""}`}
+                                    onClick={() => setActive("States")}
+                                >
+                                    <MapPin size={18} />
+                                    <span>States</span>
+                                    <span className={styles.arrow}>▸</span>
+                                </button>
                             </div>
 
                             {/*<button className={styles.navItem}>Workspace</button>
@@ -211,42 +222,48 @@ export default function Dashboard() {
                                 className={`${styles.navItem} ${active === "Workspace" ? styles.active : ""}`}
                                 onClick={() => setActive("Workspace")}
                             >
-                                Workspace
+                                <Layout size={18} />
+                                <span>Workspace</span>
                             </button>
 
                             <button
                                 className={`${styles.navItem} ${active === "Team" ? styles.active : ""}`}
                                 onClick={() => setActive("Team")}
                             >
-                                Team
+                                <Users size={18} />
+                                <span>Team</span>
                             </button>
 
                             <button
                                 className={`${styles.navItem} ${active === "Inbox" ? styles.active : ""}`}
                                 onClick={() => setActive("Inbox")}
                             >
-                                Inbox
+                                <Inbox size={18} />
+                                <span>Inbox</span>
                             </button>
 
                             <button
-                                className={`${styles.navItem} ${active === "Organization" ? styles.active : ""}`}
-                                onClick={() => setActive("Organization")}
+                                className={`${styles.navItem} ${active === "Marketing" ? styles.active : ""}`}
+                                onClick={() => setActive("Marketing")}
                             >
-                                Organization
+                                <Zap size={18} />
+                                <span>Marketing</span>
                             </button>
 
                             <button
                                 className={`${styles.navItem} ${active === "Campaigns" ? styles.active : ""}`}
                                 onClick={() => setActive("Campaigns")}
                             >
-                                Campaigns
+                                <Rocket size={18} />
+                                <span>Campaigns</span>
                             </button>
 
                             <button
                                 className={`${styles.navItem} ${active === "Settings" ? styles.active : ""}`}
                                 onClick={() => setActive("Settings")}
                             >
-                                Settings
+                                <Settings size={18} />
+                                <span>Settings</span>
                             </button>
 
                         </div>
@@ -256,8 +273,20 @@ export default function Dashboard() {
                     {/* Bottom */}
                     <div className={styles.bottomNav}>
                         <div className={styles.divider} />
-                        <button className={styles.navItem}>Profile</button>
-                        <button className={styles.logout}>Logout</button>
+                        <div className={styles.footerActions}>
+                            <button
+                                className={`${styles.navItem} ${active === "Profile" ? styles.active : ""}`}
+                                onClick={() => setActive("Profile")}
+                                title="Profile"
+                            >
+                                <User size={18} />
+                                <span>Profile</span>
+                            </button>
+                            <button className={styles.logout} title="Logout">
+                                <LogOut size={18} />
+                                <span>Logout</span>
+                            </button>
+                        </div>
                     </div>
                 </aside>
 

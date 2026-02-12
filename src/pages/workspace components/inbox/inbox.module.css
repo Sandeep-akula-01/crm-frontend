@@ -1,6 +1,6 @@
 .inboxWrap {
     display: flex;
-    height: 100%;
+    height: 92%;
     background: linear-gradient(135deg,
             #f5f3ff,
             #eef2ff,
@@ -112,7 +112,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    background: #f9fafb;
+    background: #ebf3fc;
 }
 
 .chatHeader {
@@ -186,4 +186,229 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
+}
+
+/* TABS */
+.tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 12px;
+}
+
+.tabs button {
+    background: white;
+    border: 1px solid #e5e7eb;
+    padding: 0.5rem 1.2rem;
+    border-radius: 999px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.activeTab {
+    background: #ecfeff;
+    border-color: #67e8f9;
+    color: #0369a1;
+}
+
+/* CALL STATUS BADGE */
+.callStatus {
+    font-size: 0.65rem;
+    background: #fde68a;
+    padding: 4px 8px;
+    border-radius: 999px;
+}
+
+/* CALL PANEL */
+.callPanel {
+    padding: 2rem;
+}
+
+.callPanel h3 {
+    font-size: 1.2rem;
+    margin-bottom: 4px;
+}
+
+.callPanel p {
+    color: #6b7280;
+    font-size: 0.8rem;
+}
+
+/* DIALER BUTTONS */
+.dialerActions {
+    margin-top: 1.5rem;
+}
+
+.callBtn {
+    background: #bbf7d0;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 999px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.endBtn {
+    background: #fecaca;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 999px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* CALL NOTES */
+.callLog {
+    margin-top: 1.5rem;
+}
+
+.callLog textarea {
+    width: 100%;
+    min-height: 80px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    padding: 0.7rem;
+    font-size: 0.8rem;
+}
+
+/* MANUAL DIALER */
+.manualDialer {
+    margin-bottom: 1.5rem;
+}
+
+.manualDialer label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.dialInput {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.4rem;
+}
+
+.dialInput input {
+    flex: 1;
+    padding: 0.6rem 0.8rem;
+    border-radius: 999px;
+    border: 1px solid #e5e7eb;
+    font-size: 0.8rem;
+}
+
+.dialInput button {
+    background: #bae6fd;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+/* ================= TOP TABS ================= */
+.topTabs {
+    display: flex;
+    gap: 0.6rem;
+    padding: 0.6rem;
+    background: #ffffff;
+    border-radius: 16px;
+    margin-bottom: 0.8rem;
+}
+
+.tabBtn {
+    padding: 0.45rem 1.2rem;
+    border-radius: 999px;
+    border: 1px solid #e5e7eb;
+    background: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: #6b7280;
+}
+
+.activeTab {
+    background: #dbeafe;
+    border-color: #93c5fd;
+    color: #1d4ed8;
+}
+
+/* ================= CONTACTS ================= */
+.contactsPanel {
+    background: white;
+    border-radius: 20px;
+    padding: 1rem;
+    height: 100%;
+}
+
+.contactList {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+}
+
+.contactItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f9fafb;
+    padding: 0.8rem 1rem;
+    border-radius: 14px;
+    border: 1px solid #e5e7eb;
+}
+
+.contactItem strong {
+    display: block;
+    font-size: 0.85rem;
+}
+
+.contactItem span {
+    font-size: 0.7rem;
+    color: #6b7280;
+}
+
+.tag {
+    background: #fee2e2;
+    color: #991b1b;
+    font-size: 0.65rem;
+    padding: 3px 10px;
+    border-radius: 999px;
+}
+
+/* ================= SUB TABS ================= */
+.subTabs {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0 1rem 0.6rem;
+    border-bottom: 1px solid #f1f1f5;
+}
+
+.subTabs button {
+    padding: 0.3rem 0.8rem;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+    background: #f9fafb;
+    font-size: 0.7rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: #6b7280;
+    flex: 1;
+    transition: all 0.2s;
+}
+
+.subTabs button:hover {
+    background: #f3f4f6;
+}
+
+.activeSubTab {
+    background: #7c3aed !important;
+    color: white !important;
+    border-color: #7c3aed !important;
+}
+
+.scrollList {
+    flex: 1;
+    overflow-y: auto;
 }

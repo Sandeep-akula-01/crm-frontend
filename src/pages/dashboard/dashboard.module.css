@@ -52,7 +52,15 @@
   padding: 0.65rem 0.8rem;
   border-radius: 10px;
   cursor: pointer;
+  width: 100%;
   transition: 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.navItem span {
+  font-size: 0.85rem;
 }
 
 .navItem:hover {
@@ -205,11 +213,36 @@
   padding: 0.65rem 0.8rem;
   border-radius: 10px;
   cursor: pointer;
+  font-size: 14px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
 }
 
 .logout:hover {
   background: rgba(255, 80, 80, 0.15);
 }
+
+.footerActions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.footerActions .navItem {
+  flex: 1;
+  width: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.footerActions span {
+  font-size: 0.85rem;
+}
+
+
 
 
 
@@ -359,7 +392,7 @@
 }
 
 .arrow {
-  float: right;
+  margin-left: auto;
   opacity: 0.6;
 }
 

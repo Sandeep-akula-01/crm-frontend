@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styles from "./campaigns.module.css";
 import CampaignBuilder from "./builder/CampaignBuilder";
 import {
@@ -10,9 +10,13 @@ import {
     PauseCircle,
     Edit2,
     Trash2,
+    X,
+    Globe,
+    FileText,
 } from "lucide-react";
 
 const STORAGE_KEY = "crm_campaigns";
+const LP_STORAGE_KEY = "crm_landing_pages";
 
 // Helper function to get color based on channel
 const getColorForChannel = (channel) => {
@@ -53,6 +57,68 @@ export const Campaigns = ({ branch }) => {
         month: currentMonth,
         year: currentYear,
     });
+
+    const [whatsappConfig, setWhatsappConfig] = useState({
+        messageType: "Broadcast",
+        audience: "all",
+        message: "Hi {{name}}, thanks for your interest. Our team will contact you shortly.",
+    });
+
+    // ================= CAMPAIGN DETAILS DRAWER =================
+    const [openCampaign, setOpenCampaign] = useState(null);
+
+    const [campaignConfig, setCampaignConfig] = useState({
+        // Social
+        platform: "Instagram",
+        postType: "Reel",
+        contentStatus: "Pending",
+        publishDate: "",
+
+        // Email
+        audience: [],
+        template: "Default Template",
+        subject: "",
+        body: "",
+
+        // Scheduler
+        sendType: "now",
+        scheduleDate: "",
+        scheduleTime: "",
+        recurring: "Weekly",
+
+        notes: "",
+    });
+
+    /* ================= LANDING PAGES ================= */
+
+    const [landingPages, setLandingPages] = useState(() => {
+        const defaultPages = [
+            {
+                id: 1,
+                name: "Diwali Offer Page",
+                slug: "diwali-offer",
+                campaign: "Diwali Email Blast",
+                status: "Published",
+                leads: 12,
+                conversion: "5.3%",
+            },
+        ];
+
+        const saved = localStorage.getItem(LP_STORAGE_KEY);
+        return saved ? JSON.parse(saved) : defaultPages;
+    });
+
+    const [activeLanding, setActiveLanding] = useState(null);
+    const [activeLPTab, setActiveLPTab] = useState("overview");
+    const editorRef = useRef(null);
+
+    const handleDeleteLanding = (id) => {
+        setLandingPages(landingPages.filter((lp) => lp.id !== id));
+        if (activeLanding?.id === id) {
+            setActiveLanding(null);
+        }
+    };
+
 
     // Load campaigns from localStorage on mount
     const [campaigns, setCampaigns] = useState(() => {
@@ -105,6 +171,11 @@ export const Campaigns = ({ branch }) => {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(campaigns));
     }, [campaigns]);
 
+    // Save landing pages to localStorage whenever they change
+    useEffect(() => {
+        localStorage.setItem(LP_STORAGE_KEY, JSON.stringify(landingPages));
+    }, [landingPages]);
+
     /* ---------------- CREATE CAMPAIGN ---------------- */
     const openCreateModal = () => {
         setIsCreating(true);
@@ -114,6 +185,11 @@ export const Campaigns = ({ branch }) => {
             status: "Draft",
             month: currentMonth,
             year: currentYear,
+        });
+        setWhatsappConfig({
+            messageType: "Broadcast",
+            audience: "all",
+            message: "Hi {{name}}, thanks for your interest. Our team will contact you shortly.",
         });
     };
 
@@ -130,6 +206,7 @@ export const Campaigns = ({ branch }) => {
             color: getColorForChannel(createFormData.channel),
             month: createFormData.month,
             year: createFormData.year,
+            whatsappConfig: createFormData.channel === "WhatsApp" ? whatsappConfig : null,
         };
         setCampaigns([newCampaign, ...campaigns]);
         setIsCreating(false);
@@ -174,6 +251,63 @@ export const Campaigns = ({ branch }) => {
             month: camp.month || currentMonth,
             year: camp.year || currentYear,
         });
+        if (camp.channel === "WhatsApp" && camp.whatsappConfig) {
+            setWhatsappConfig(camp.whatsappConfig);
+        } else {
+            setWhatsappConfig({
+                messageType: "Broadcast",
+                audience: "all",
+                message: "Hi {{name}}, thanks for your interest. Our team will contact you shortly.",
+            });
+        }
+    };
+
+    const openCampaignDetails = (campaign) => {
+        setOpenCampaign(campaign);
+        if (campaign.config) {
+            setCampaignConfig(campaign.config);
+        } else {
+            // Reset to defaults if no config exists
+            setCampaignConfig({
+                platform: "Instagram",
+                postType: "Reel",
+                contentStatus: "Pending",
+                publishDate: "",
+                audience: [],
+                template: "Default Template",
+                subject: "",
+                body: "",
+                sendType: "now",
+                scheduleDate: "",
+                scheduleTime: "",
+                recurring: "Weekly",
+                notes: "",
+            });
+        }
+    };
+
+    const handleActivateCampaign = () => {
+        if (!openCampaign) return;
+
+        // Update the campaign with the new configuration
+        setCampaigns((prev) =>
+            prev.map((c) =>
+                c.id === openCampaign.id
+                    ? {
+                        ...c,
+                        status: "Running",
+                        // Store the campaign config
+                        config: campaignConfig,
+                    }
+                    : c
+            )
+        );
+
+        // Close the drawer
+        setOpenCampaign(null);
+
+        // Optional: Show success message
+        alert(`Campaign "${openCampaign.name}" has been activated!`);
     };
 
     const handleOpenBuilder = (camp) => {
@@ -196,6 +330,7 @@ export const Campaigns = ({ branch }) => {
                         color: getColorForChannel(editFormData.channel),
                         month: editFormData.month,
                         year: editFormData.year,
+                        whatsappConfig: editFormData.channel === "WhatsApp" ? whatsappConfig : c.whatsappConfig,
                     }
                     : c
             )
@@ -338,19 +473,35 @@ export const Campaigns = ({ branch }) => {
                         <h3>{camp.name}</h3>
                         <p className={styles.channel}>{camp.channel} Campaign</p>
 
+                        {camp.channel === "WhatsApp" && camp.whatsappConfig && (
+                            <div className={styles.whatsappMeta}>
+                                <span>📤 {camp.whatsappConfig.messageType}</span>
+                                <span>👥 {camp.whatsappConfig.audience === "hot" ? "Hot Leads" : "All Leads"}</span>
+                            </div>
+                        )}
+
                         <div className={styles.metaInfo}>
                             <div className={styles.metaItem}>
                                 <Calendar size={14} className={styles.metaIcon} />
-                                <span>{camp.sendType === "later" ? `Scheduled: ${camp.schedule?.date || camp.month + '/' + camp.year}` : "Send Now"}</span>
+                                <span>
+                                    {camp.config?.sendType
+                                        ? (camp.config.sendType === "now" ? "Send Now" : camp.config.sendType === "later" ? `Scheduled: ${camp.config.scheduleDate || 'Soon'}` : "Recurring")
+                                        : "Send Now"}
+                                </span>
                             </div>
                             <div className={styles.metaItem}>
                                 <Mail size={14} className={styles.metaIcon} />
-                                <span>Target: {camp.audience?.label || "All Leads"}</span>
+                                <span>Target: {camp.config?.audience?.length > 0 ? camp.config.audience.join(", ") : "All Leads"}</span>
                             </div>
                             <div className={styles.metaItem}>
                                 <Edit2 size={14} className={styles.metaIcon} />
-                                <span>Content: {camp.email?.isEdited ? "Custom Template" : "Default Template"}</span>
+                                <span>Content: {camp.config?.subject ? "Custom Content" : "Default Template"}</span>
                             </div>
+                        </div>
+
+                        <div className={styles.metrics}>
+                            <span>📊 Reach: —</span>
+                            <span>📩 Leads: —</span>
                         </div>
 
                         <div className={styles.cardFooter}>
@@ -375,8 +526,8 @@ export const Campaigns = ({ branch }) => {
                             <div className={styles.cardActions}>
                                 <button
                                     className={styles.editBtn}
-                                    onClick={() => handleEditCampaign(camp)}
-                                    title="Edit basic info"
+                                    onClick={() => openCampaignDetails(camp)}
+                                    title="Edit campaign details"
                                 >
                                     <Edit2 size={16} />
                                 </button>
@@ -482,6 +633,54 @@ export const Campaigns = ({ branch }) => {
                             </div>
                         </div>
 
+                        {/* ================= WHATSAPP CONFIG (CREATE) ================= */}
+                        {createFormData.channel === "WhatsApp" && (
+                            <div className={styles.channelSection}>
+                                <h3>WhatsApp Campaign Settings</h3>
+
+                                <div className={styles.formGroup}>
+                                    <label>Message Type</label>
+                                    <select
+                                        value={whatsappConfig.messageType}
+                                        onChange={(e) =>
+                                            setWhatsappConfig({ ...whatsappConfig, messageType: e.target.value })
+                                        }
+                                    >
+                                        <option value="Broadcast">Broadcast</option>
+                                        <option value="Follow-up">Follow-up</option>
+                                        <option value="Promotional">Promotional</option>
+                                    </select>
+                                </div>
+
+                                <div className={styles.formGroup}>
+                                    <label>Audience</label>
+                                    <select
+                                        value={whatsappConfig.audience}
+                                        onChange={(e) =>
+                                            setWhatsappConfig({ ...whatsappConfig, audience: e.target.value })
+                                        }
+                                    >
+                                        <option value="all">All Leads</option>
+                                        <option value="hot">Hot Leads</option>
+                                        <option value="custom">Custom Filter</option>
+                                    </select>
+                                </div>
+
+                                <div className={styles.formGroup}>
+                                    <label>Message Preview</label>
+                                    <textarea
+                                        rows="4"
+                                        value={whatsappConfig.message}
+                                        onChange={(e) =>
+                                            setWhatsappConfig({ ...whatsappConfig, message: e.target.value })
+                                        }
+                                        className={styles.pTextArea}
+                                    />
+                                    <small>Variables like {"{{name}}"} will be auto-filled</small>
+                                </div>
+                            </div>
+                        )}
+
                         <div className={styles.modalActions}>
                             <button className={styles.cancelBtn} onClick={handleCancelCreate}>
                                 Cancel
@@ -555,6 +754,54 @@ export const Campaigns = ({ branch }) => {
                             </div>
                         </div>
 
+                        {/* ================= WHATSAPP CONFIG ================= */}
+                        {editFormData.channel === "WhatsApp" && (
+                            <div className={styles.channelSection}>
+                                <h3>WhatsApp Campaign Settings</h3>
+
+                                <div className={styles.formGroup}>
+                                    <label>Message Type</label>
+                                    <select
+                                        value={whatsappConfig.messageType}
+                                        onChange={(e) =>
+                                            setWhatsappConfig({ ...whatsappConfig, messageType: e.target.value })
+                                        }
+                                    >
+                                        <option value="Broadcast">Broadcast</option>
+                                        <option value="Follow-up">Follow-up</option>
+                                        <option value="Promotional">Promotional</option>
+                                    </select>
+                                </div>
+
+                                <div className={styles.formGroup}>
+                                    <label>Audience</label>
+                                    <select
+                                        value={whatsappConfig.audience}
+                                        onChange={(e) =>
+                                            setWhatsappConfig({ ...whatsappConfig, audience: e.target.value })
+                                        }
+                                    >
+                                        <option value="all">All Leads</option>
+                                        <option value="hot">Hot Leads</option>
+                                        <option value="custom">Custom Filter</option>
+                                    </select>
+                                </div>
+
+                                <div className={styles.formGroup}>
+                                    <label>Message Preview</label>
+                                    <textarea
+                                        rows="4"
+                                        value={whatsappConfig.message}
+                                        onChange={(e) =>
+                                            setWhatsappConfig({ ...whatsappConfig, message: e.target.value })
+                                        }
+                                        className={styles.pTextArea}
+                                    />
+                                    <small>Variables like {"{{name}}"} will be auto-filled</small>
+                                </div>
+                            </div>
+                        )}
+
                         <div className={styles.modalActions}>
                             <button className={styles.cancelBtn} onClick={handleCancelEdit}>
                                 Cancel
@@ -580,6 +827,389 @@ export const Campaigns = ({ branch }) => {
                     campaignName={builderCampaign.name}
                     onClose={() => setBuilderCampaign(null)}
                 />
+            )}
+
+            {/* ================= CAMPAIGN DETAILS DRAWER ================= */}
+            {openCampaign && (
+                <div className={styles.drawerOverlay} onClick={() => setOpenCampaign(null)}>
+                    <div className={styles.drawer} onClick={(e) => e.stopPropagation()}>
+
+                        {/* ===== HEADER ===== */}
+                        <div className={styles.drawerHeader}>
+                            <div>
+                                <h2>{openCampaign.name}</h2>
+                                <span>{openCampaign.channel} Campaign</span>
+                            </div>
+                            <button className={styles.closeDrawerBtn} onClick={() => setOpenCampaign(null)}>
+                                <X size={24} />
+                            </button>
+                        </div>
+
+                        {/* ===== OVERVIEW ===== */}
+                        <section>
+                            <h4>Overview</h4>
+                            <p>Status: {openCampaign.status}</p>
+                        </section>
+
+                        {/* ===== SOCIAL CRM ===== */}
+                        {openCampaign.channel === "Social" && (
+                            <section>
+                                <h4>Social Configuration</h4>
+
+                                <select
+                                    value={campaignConfig.platform}
+                                    onChange={(e) =>
+                                        setCampaignConfig({ ...campaignConfig, platform: e.target.value })
+                                    }
+                                >
+                                    <option>Instagram</option>
+                                    <option>Facebook</option>
+                                    <option>LinkedIn</option>
+                                </select>
+
+                                <select
+                                    value={campaignConfig.postType}
+                                    onChange={(e) =>
+                                        setCampaignConfig({ ...campaignConfig, postType: e.target.value })
+                                    }
+                                >
+                                    <option>Reel</option>
+                                    <option>Post</option>
+                                    <option>Story</option>
+                                </select>
+
+                                <select
+                                    value={campaignConfig.contentStatus}
+                                    onChange={(e) =>
+                                        setCampaignConfig({ ...campaignConfig, contentStatus: e.target.value })
+                                    }
+                                >
+                                    <option>Pending</option>
+                                    <option>Designed</option>
+                                    <option>Approved</option>
+                                    <option>Posted</option>
+                                </select>
+
+                                <input
+                                    type="date"
+                                    value={campaignConfig.publishDate}
+                                    onChange={(e) =>
+                                        setCampaignConfig({ ...campaignConfig, publishDate: e.target.value })
+                                    }
+                                />
+                            </section>
+                        )}
+
+                        {/* ===== EMAIL CAMPAIGN ===== */}
+                        {openCampaign.channel === "Email" && (
+                            <section>
+                                <h4>Audience</h4>
+
+                                {["All Leads", "Hot Leads", "Custom Filter"].map((a) => (
+                                    <label key={a} className={styles.checkbox}>
+                                        <input
+                                            type="checkbox"
+                                            checked={campaignConfig.audience.includes(a)}
+                                            onChange={() =>
+                                                setCampaignConfig((prev) => ({
+                                                    ...prev,
+                                                    audience: prev.audience.includes(a)
+                                                        ? prev.audience.filter((x) => x !== a)
+                                                        : [...prev.audience, a],
+                                                }))
+                                            }
+                                        />
+                                        {a}
+                                    </label>
+                                ))}
+
+                                <h4>Email Content</h4>
+
+                                <input
+                                    placeholder="Subject"
+                                    value={campaignConfig.subject}
+                                    onChange={(e) =>
+                                        setCampaignConfig({ ...campaignConfig, subject: e.target.value })
+                                    }
+                                />
+
+                                <textarea
+                                    placeholder="Email body..."
+                                    rows={5}
+                                    value={campaignConfig.body}
+                                    onChange={(e) =>
+                                        setCampaignConfig({ ...campaignConfig, body: e.target.value })
+                                    }
+                                />
+                            </section>
+                        )}
+
+                        {/* ===== SCHEDULER (ALL CHANNELS) ===== */}
+                        <section>
+                            <h4>Scheduler</h4>
+
+                            {["now", "later", "recurring"].map((type) => (
+                                <label key={type} className={styles.radio}>
+                                    <input
+                                        type="radio"
+                                        checked={campaignConfig.sendType === type}
+                                        onChange={() =>
+                                            setCampaignConfig({ ...campaignConfig, sendType: type })
+                                        }
+                                    />
+                                    {type === "now"
+                                        ? "Send Now"
+                                        : type === "later"
+                                            ? "Schedule Later"
+                                            : "Recurring"}
+                                </label>
+                            ))}
+
+                            {campaignConfig.sendType === "later" && (
+                                <>
+                                    <input type="date" />
+                                    <input type="time" />
+                                </>
+                            )}
+
+                            {campaignConfig.sendType === "recurring" && (
+                                <select>
+                                    <option>Weekly</option>
+                                    <option>Monthly</option>
+                                </select>
+                            )}
+                        </section>
+
+                        {/* ===== NOTES ===== */}
+                        <section>
+                            <h4>Notes</h4>
+                            <textarea
+                                rows={3}
+                                placeholder="Internal notes..."
+                                value={campaignConfig.notes}
+                                onChange={(e) =>
+                                    setCampaignConfig({ ...campaignConfig, notes: e.target.value })
+                                }
+                            />
+                        </section>
+
+                        <button className={styles.activateBtn} onClick={handleActivateCampaign}>Activate Campaign</button>
+                    </div>
+                </div>
+            )}
+            {/* ================= LANDING PAGES SECTION ================= */}
+
+            <div className={styles.landingHeader}>
+                <h2>Landing Pages</h2>
+                <button
+                    className={styles.primaryBtn}
+                    onClick={() => {
+                        const newPage = {
+                            id: Date.now(),
+                            name: "New Landing Page",
+                            slug: "new-page",
+                            campaign: "Not Connected",
+                            status: "Draft",
+                            leads: 0,
+                            conversion: "0%",
+                        };
+                        setLandingPages([...landingPages, newPage]);
+                        setActiveLanding(newPage);
+                        setTimeout(() => {
+                            editorRef.current?.scrollIntoView({ behavior: "smooth" });
+                        }, 100);
+                    }}
+                >
+                    + Create Landing Page
+                </button>
+            </div>
+
+            <div className={styles.landingGrid}>
+                {landingPages.map((page) => (
+                    <div
+                        key={page.id}
+                        className={styles.landingCard}
+                        onClick={() => {
+                            setActiveLanding(page);
+                            setTimeout(() => {
+                                editorRef.current?.scrollIntoView({ behavior: "smooth" });
+                            }, 100);
+                        }}
+                    >
+                        <div className={styles.lpCardHeader}>
+                            <h4>{page.name}</h4>
+                            <div className={styles.lpCardActions}>
+                                <button
+                                    className={styles.lpEditBtn}
+                                    title="Edit Page"
+                                >
+                                    <Edit2 size={14} />
+                                </button>
+                                <button
+                                    className={styles.lpDeleteBtn}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDeleteLanding(page.id);
+                                    }}
+                                    title="Delete Page"
+                                >
+                                    <Trash2 size={14} />
+                                </button>
+                            </div>
+                        </div>
+                        <p>/{page.slug}</p>
+                        <span className={`${styles.status} ${page.status === "Published" ? styles.statusPublished : styles.statusDraft}`}>
+                            {page.status}
+                        </span>
+
+                        <div className={styles.metrics}>
+                            <span>Leads: {page.leads}</span>
+                            <span>Conv: {page.conversion}</span>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {/* FULL WIDTH EXPANDABLE EDITOR */}
+            {activeLanding && (
+                <div ref={editorRef} className={styles.editorWrapper}>
+                    <div className={styles.editorHeader}>
+                        <h3>{activeLanding.name}</h3>
+                        <button
+                            className={styles.closeBtn}
+                            onClick={() => setActiveLanding(null)}
+                        >
+                            <X size={18} />
+                        </button>
+                    </div>
+
+                    {/* Tabs */}
+                    <div className={styles.tabsEditor}>
+                        {["overview", "content", "form", "routing", "analytics"].map((tab) => (
+                            <div
+                                key={tab}
+                                className={`${styles.tabEditor} ${activeLPTab === tab ? styles.activeTabEditor : ""
+                                    }`}
+                                onClick={() => setActiveLPTab(tab)}
+                            >
+                                {tab.toUpperCase()}
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className={styles.tabContent}>
+                        {activeLPTab === "overview" && (
+                            <>
+                                <label>Page Name</label>
+                                <input
+                                    value={activeLanding.name}
+                                    onChange={(e) =>
+                                        setActiveLanding({
+                                            ...activeLanding,
+                                            name: e.target.value,
+                                        })
+                                    }
+                                />
+
+                                <label>URL Slug</label>
+                                <input
+                                    value={activeLanding.slug}
+                                    onChange={(e) =>
+                                        setActiveLanding({
+                                            ...activeLanding,
+                                            slug: e.target.value,
+                                        })
+                                    }
+                                />
+
+                                <label>Status</label>
+                                <select
+                                    value={activeLanding.status}
+                                    onChange={(e) =>
+                                        setActiveLanding({
+                                            ...activeLanding,
+                                            status: e.target.value,
+                                        })
+                                    }
+                                >
+                                    <option>Draft</option>
+                                    <option>Published</option>
+                                </select>
+                            </>
+                        )}
+
+                        {activeLPTab === "content" && (
+                            <>
+                                <label>Headline</label>
+                                <input placeholder="Big bold headline here" />
+
+                                <label>Description</label>
+                                <textarea placeholder="Write your landing content..." />
+                            </>
+                        )}
+
+                        {activeLPTab === "form" && (
+                            <>
+                                <label>Select Fields</label>
+                                <div className={styles.checkboxGroup}>
+                                    <label><input type="checkbox" /> Name</label>
+                                    <label><input type="checkbox" /> Email</label>
+                                    <label><input type="checkbox" /> Phone</label>
+                                    <label><input type="checkbox" /> Company</label>
+                                </div>
+                            </>
+                        )}
+
+                        {activeLPTab === "routing" && (
+                            <>
+                                <label>Assign Pipeline</label>
+                                <select>
+                                    <option>Default Pipeline</option>
+                                </select>
+
+                                <label>Assign Campaign</label>
+                                <select>
+                                    <option>Campaign 1</option>
+                                </select>
+                            </>
+                        )}
+
+                        {activeLPTab === "analytics" && (
+                            <div className={styles.analyticsBox}>
+                                <div>Visitors: —</div>
+                                <div>Leads: {activeLanding.leads}</div>
+                                <div>Conversion Rate: {activeLanding.conversion}</div>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className={styles.editorActions}>
+                        <button
+                            className={styles.saveBtn}
+                            onClick={() => {
+                                setLandingPages(
+                                    landingPages.map((lp) =>
+                                        lp.id === activeLanding.id ? activeLanding : lp
+                                    )
+                                );
+                            }}
+                        >
+                            Save Changes
+                        </button>
+
+                        <button
+                            className={styles.publishBtn}
+                            onClick={() =>
+                                setActiveLanding({
+                                    ...activeLanding,
+                                    status: "Published",
+                                })
+                            }
+                        >
+                            Publish
+                        </button>
+                    </div>
+                </div>
             )}
         </div>
     );
