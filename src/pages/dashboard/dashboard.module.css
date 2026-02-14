@@ -27,7 +27,7 @@
 }
 
 .orgBlock h3 {
-  font-size: 1.1rem;
+  font-size: 1.5rem;
   margin-bottom: 0.4rem;
 }
 
@@ -113,7 +113,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  position: relative;
+  /* Ensure header stacking context is high enough for tooltips to show over workspace tabs */
+  z-index: 100;
 }
 
 .header h1 {
@@ -497,4 +501,336 @@
 
 .addState:hover {
   text-decoration: underline;
+}
+
+/* ----- Header Icons ----- */
+.headerIcons {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.iconBtn {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  color: #4b3fa7;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.iconBtn:hover {
+  background: #f2efff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  color: #3a2f6e;
+}
+
+.iconBtn:active {
+  transform: translateY(0);
+}
+
+.activeIcon {
+  /* This will be overridden by specific color classes usually,
+     but we can keep a generic fallback or just rely on the specific classes */
+  filter: brightness(0.95);
+  transform: translateY(1px);
+}
+
+/* --- Pastel Color Themes --- */
+
+/* Settings: Purple */
+.btnSettings {
+  background: #f3e8ff;
+  color: #9333ea;
+  border-color: #e9d5ff;
+}
+
+.btnSettings:hover {
+  background: #e9d5ff;
+  color: #7e22ce;
+}
+
+/* Calendar: Pink */
+.btnCalendar {
+  background: #fce7f3;
+  color: #db2777;
+  border-color: #fbcfe8;
+}
+
+.btnCalendar:hover {
+  background: #fbcfe8;
+  color: #be185d;
+}
+
+/* Inbox (Phone): Blue */
+.btnInbox {
+  background: #dbeafe;
+  color: #2563eb;
+  border-color: #bfdbfe;
+}
+
+.btnInbox:hover {
+  background: #bfdbfe;
+  color: #1d4ed8;
+}
+
+/* Notifications (Bell): Orange/Yellow => Let's go Pastel Orange */
+.btnNotify {
+  background: #ffedd5;
+  color: #ea580c;
+  border-color: #fed7aa;
+}
+
+.btnNotify:hover {
+  background: #fed7aa;
+  color: #c2410c;
+}
+
+/* Profile (User): Green */
+.btnProfile {
+  background: #dcfce7;
+  color: #16a34a;
+  border-color: #bbf7d0;
+}
+
+.btnProfile:hover {
+  background: #bbf7d0;
+  color: #15803d;
+}
+
+
+/* --- Custom Tooltips --- */
+.iconBtn {
+  position: relative;
+}
+
+.iconBtn[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: 115%;
+  /* Below the icon */
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.3rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  white-space: nowrap;
+  opacity: 1;
+  pointer-events: none;
+  z-index: 9999;
+  font-weight: 600;
+
+  /* Slight generic box shadow */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  animation: tooltipFade 0.2s ease forwards;
+}
+
+@keyframes tooltipFade {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* Tooltip Colors matching the icon themes (Darker Pill) */
+
+.btnSettings[data-tooltip]:hover::after {
+  background: #9333ea;
+  color: #fff;
+}
+
+.btnCalendar[data-tooltip]:hover::after {
+  background: #db2777;
+  color: #fff;
+}
+
+.btnInbox[data-tooltip]:hover::after {
+  background: #2563eb;
+  color: #fff;
+}
+
+.btnNotify[data-tooltip]:hover::after {
+  background: #ea580c;
+  color: #fff;
+}
+
+.btnProfile[data-tooltip]:hover::after {
+  background: #16a34a;
+  color: #fff;
+}
+
+
+.relativeWrap {
+  position: relative;
+}
+
+/* ----- Dropdowns ----- */
+.notificationDropdown,
+.profileDropdown {
+  position: absolute;
+  top: 120%;
+  right: 0;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.notificationDropdown {
+  width: 340px;
+  display: flex;
+  flex-direction: column;
+}
+
+.profileDropdown {
+  width: 260px;
+}
+
+/* ----- Notification Styles ----- */
+.dropdownHeader {
+  padding: 1rem 1.2rem;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dropdownHeader h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1f2a44;
+}
+
+.markRead {
+  font-size: 0.75rem;
+  color: #6b5fd3;
+  cursor: pointer;
+}
+
+.markRead:hover {
+  text-decoration: underline;
+}
+
+.notificationList {
+  min-height: 200px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  color: #8890a5;
+  gap: 1rem;
+}
+
+.emptyIcon {
+  background: #f7f6ff;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b5fd3;
+}
+
+/* ----- Profile Styles ----- */
+.profileHeader {
+  padding: 1.2rem;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.avatarCircle {
+  width: 42px;
+  height: 42px;
+  background: #f2efff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4b3fa7;
+}
+
+.profileInfo h4 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1f2a44;
+  margin-bottom: 0.1rem;
+}
+
+.profileInfo span {
+  font-size: 0.75rem;
+  color: #8890a5;
+  display: block;
+}
+
+.menuItems {
+  padding: 0.5rem;
+}
+
+.menuItem {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.6rem 0.8rem;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: #4b5563;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.menuItem:hover {
+  background: #f7f6ff;
+  color: #1f2a44;
+}
+
+.dropdownFooter {
+  padding: 0.5rem;
+  border-top: 1px solid #f0f0f0;
+}
+
+.logoutBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.6rem 0.8rem;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: #ef4444;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.logoutBtn:hover {
+  background: #fef2f2;
 }

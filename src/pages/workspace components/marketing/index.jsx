@@ -53,6 +53,8 @@ export const Marketing = () => {
     return (
         <div className={styles.marketingPage}>
 
+            <h1 className={styles.pageTitle}>Marketing Analysis</h1>
+
             {/* KPI CARDS */}
             <div className={styles.kpiGrid}>
                 <div className={`${styles.kpiCard} ${styles.blue}`}>

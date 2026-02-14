@@ -5,7 +5,7 @@ import { useInView } from "react-intersection-observer";
 import { NavLink, useNavigate } from "react-router-dom";
 
 
-import whyUs from "../../assets/Why_us.jpg";
+import whyUs from "../../assets/why_us.jpg";
 
 /* BRAND LOGOS */
 import google from "../../assets/Chargebee_logo.png";

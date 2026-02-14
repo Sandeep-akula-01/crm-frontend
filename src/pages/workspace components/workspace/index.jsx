@@ -28,7 +28,7 @@ import axios from "axios";
 
 
 
-const WorkspaceHome = ({ branch }) => {
+const AutomationHome = ({ branch }) => {
   // Tabs
   const [activeWorkflow, setActiveWorkflow] = useState(null);
 
@@ -447,33 +447,70 @@ const WorkspaceHome = ({ branch }) => {
   );
 };
 
-export default function Workspace({ active, branch }) {
-  switch (active) {
-    case "Workspace":
-      return <WorkspaceHome branch={branch} />;
+export default function Workspace({ active, branch, setActive }) {
+  // Define tabs available in the Workspace section
+  const workspaceTabs = ["Marketing", "Campaigns", "Workspace", "Team"];
 
-    case "Team":
-      return <Team branch={branch} />;
+  // Check if current active page is a workspace tab
+  const isWorkspaceTab = workspaceTabs.includes(active);
 
-    case "Inbox":
-      return <Inbox branch={branch} />;
-
-    case "Marketing":
-      return <Marketing branch={branch} />;
-
-    case "Campaigns":
-      return <Campaigns branch={branch} />;
-
-    case "States":
-      return <States branch={branch} />;
-
-    case "Settings":
-      return <Settings branch={branch} />;
-
-    case "Profile":
-      return <Profile branch={branch} />;
-
-    default:
-      return null;
+  // If active page is NOT a workspace tab (e.g. Settings, Profile, States, Inbox), routing happens here
+  if (!isWorkspaceTab) {
+    switch (active) {
+      case "Inbox":
+        return <Inbox branch={branch} />;
+      case "States":
+        return <States branch={branch} />;
+      case "Settings":
+        return <Settings branch={branch} />;
+      case "Profile":
+        return <Profile branch={branch} />;
+      default:
+        return null;
+    }
   }
+
+  return (
+    <div className={styles.workspaceLayout}>
+      {/* Top Horizontal Tabs */}
+      <div className={styles.tabsContainer}>
+        <div className={styles.tabsNav}>
+          {workspaceTabs.map((tab) => (
+            <div
+              key={tab}
+              className={`${styles.tabItem} ${active === tab ? styles.activeTab : ""}`}
+              onClick={() => setActive(tab)}
+            >
+              {tab === "Workspace" ? "Automation" : tab}
+              {active === tab && (
+                <motion.div
+                  className={styles.activeIndicator}
+                  layoutId="activeTabIndicator"
+                />
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Tab Content */}
+      <div className={styles.tabContent}>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={active}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            style={{ width: "100%" }}
+          >
+            {active === "Marketing" && <Marketing branch={branch} />}
+            {active === "Campaigns" && <Campaigns branch={branch} />}
+            {active === "Workspace" && <AutomationHome branch={branch} />}
+            {active === "Team" && <Team branch={branch} />}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </div>
+  );
 }

@@ -18,14 +18,20 @@ import {
     Zap,
     Rocket,
     Settings,
-    MapPin
+    MapPin,
+    Bell,
+    Phone,
+    Shield,
+    HelpCircle,
+    FileText
 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 
 
 
 const fakeOrg = {
-    name: "Acme Corp",
+    name: "Rvh Crm",
     branches: [
         { id: 1, name: "Hyderabad", state: "Telangana" },
         { id: 2, name: "Warangal", state: "Telangana" },
@@ -78,6 +84,7 @@ export default function Dashboard() {
 
     const [openState, setOpenState] = useState(null);
     const [openWorkspace, setOpenWorkspace] = useState(true);
+    const [openDropdown, setOpenDropdown] = useState(null); // "notification" | "profile" | null
 
 
     const renderContent = () => {
@@ -294,10 +301,140 @@ export default function Dashboard() {
                 <main className={styles.main}>
                     <div className={styles.workspace}>
                         <div className={styles.header}>
-                            <h1>{active}</h1>
-                            <span className={styles.branchTag}>
-                                {branch.name}, {branch.state}
-                            </span>
+                            <h1>{active === "Inbox" ? "Inbox (Calls)" : active}</h1>
+
+                            <div className={styles.headerIcons}>
+                                <button
+                                    className={`${styles.iconBtn} ${styles.btnSettings}`}
+                                    onClick={() => setActive("Settings")}
+                                    data-tooltip="Settings"
+                                >
+                                    <Settings size={20} />
+                                </button>
+
+                                <button
+                                    className={`${styles.iconBtn} ${styles.btnCalendar} ${active === "Calendar" ? styles.activeIcon : ""}`}
+                                    onClick={() => setActive("Calendar")}
+                                    data-tooltip="Calendar"
+                                >
+                                    <Calendar size={20} />
+                                </button>
+
+                                <button
+                                    className={`${styles.iconBtn} ${styles.btnInbox} ${active === "Inbox" ? styles.activeIcon : ""}`}
+                                    onClick={() => setActive("Inbox")}
+                                    data-tooltip="Communications"
+                                >
+                                    <Phone size={20} />
+                                </button>
+
+                                <div className={styles.relativeWrap}>
+                                    <button
+                                        className={`${styles.iconBtn} ${styles.btnNotify} ${openDropdown === "notification" ? styles.activeIcon : ""}`}
+                                        onClick={() => setOpenDropdown(openDropdown === "notification" ? null : "notification")}
+                                        data-tooltip="Notifications"
+                                    >
+                                        <Bell size={20} />
+                                    </button>
+
+                                    <AnimatePresence>
+                                        {openDropdown === "notification" && (
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                                exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                                transition={{ duration: 0.2 }}
+                                                className={styles.notificationDropdown}
+                                            >
+                                                <div className={styles.dropdownHeader}>
+                                                    <h3>Notifications</h3>
+                                                    <span className={styles.markRead}>Mark all as read</span>
+                                                </div>
+                                                <div className={styles.notificationList}>
+                                                    <div className={styles.emptyState}>
+                                                        <motion.div
+                                                            animate={{ scale: [1, 1.1, 1] }}
+                                                            transition={{ repeat: Infinity, duration: 2 }}
+                                                            className={styles.emptyIcon}
+                                                        >
+                                                            <Bell size={24} />
+                                                        </motion.div>
+                                                        <p>No notifications yet</p>
+                                                    </div>
+                                                </div>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+
+                                <div className={styles.relativeWrap}>
+                                    <button
+                                        className={`${styles.iconBtn} ${styles.btnProfile} ${openDropdown === "profile" ? styles.activeIcon : ""}`}
+                                        onClick={() => setOpenDropdown(openDropdown === "profile" ? null : "profile")}
+                                        data-tooltip="Profile"
+                                    >
+                                        <User size={20} />
+                                    </button>
+
+                                    <AnimatePresence>
+                                        {openDropdown === "profile" && (
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                                exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                                transition={{ duration: 0.2 }}
+                                                className={styles.profileDropdown}
+                                            >
+                                                <div className={styles.profileHeader}>
+                                                    <div className={styles.avatarCircle}>
+                                                        <User size={24} />
+                                                    </div>
+                                                    <div className={styles.profileInfo}>
+                                                        <h4>Varshini</h4>
+                                                        <span>varshini@acmecorp.com</span>
+                                                    </div>
+                                                </div>
+                                                <div className={styles.menuItems}>
+                                                    <button
+                                                        className={styles.menuItem}
+                                                        onClick={() => {
+                                                            setActive("Profile");
+                                                            setOpenDropdown(null);
+                                                        }}
+                                                    >
+                                                        <User size={16} />
+                                                        Personal Settings
+                                                    </button>
+                                                    <button
+                                                        className={styles.menuItem}
+                                                        onClick={() => {
+                                                            setActive("States");
+                                                            setOpenDropdown(null);
+                                                        }}
+                                                    >
+                                                        <MapPin size={16} />
+                                                        Branches
+                                                    </button>
+                                                    <button className={styles.menuItem}>
+                                                        <HelpCircle size={16} />
+                                                        Support Ticket
+                                                    </button>
+                                                    <button className={styles.menuItem}>
+                                                        <Shield size={16} />
+                                                        Privacy Policy
+                                                    </button>
+                                                </div>
+                                                <div className={styles.dropdownFooter}>
+                                                    <button className={styles.logoutBtn}>
+                                                        <LogOut size={16} />
+                                                        Log out
+                                                    </button>
+                                                </div>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+                            </div>
                         </div>
 
                         <div className={styles.content}>
@@ -307,7 +444,7 @@ export default function Dashboard() {
                                 {["Dashboard", "Leads", "Deals", "Tasks", "Contacts", "Reports", "Calendar"].includes(active) ? (
                                     <Main active={active} branch={branch} />
                                 ) : (
-                                    <Workspace active={active} branch={branch} />
+                                    <Workspace active={active} branch={branch} setActive={setActive} />
                                 )}
                             </div>
 
