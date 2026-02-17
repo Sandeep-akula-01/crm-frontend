@@ -1,4 +1,3 @@
-<h1>CRM Frontend</h1>
 import { Routes, Route } from "react-router-dom";
 import { Home, Features, Pricing, Contact, SignUp, Otp, Login, ForgotPassword, ResetOtp, ChangePassword, OrganisationSetup, Dashboard } from "./pages";
 import "./App.css";
