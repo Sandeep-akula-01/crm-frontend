@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crm-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: crm-frontend
+  template:
+    metadata:
+      labels:
+        app: crm-frontend
+    spec:
+      containers:
+      - name: crm-frontend
+        image: sandeepakula01/crm:latest
+        ports:
+        - containerPort: 80
