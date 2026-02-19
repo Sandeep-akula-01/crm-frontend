@@ -10,6 +10,9 @@ import Calendar from "../calendar";
 
 
 
+import Analytics from "../analytics";
+import Pipelines from "../pipelines";
+
 export default function Main({ active, branch }) {
 
     const [summary, setSummary] = useState({});
@@ -270,6 +273,12 @@ export default function Main({ active, branch }) {
 
         case "Calendar":
             return <Calendar branch={branch} />;
+
+        case "Analytics":
+            return <Analytics />;
+
+        case "Pipelines":
+            return <Pipelines />;
 
         default:
             return null;

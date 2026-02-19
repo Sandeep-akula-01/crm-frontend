@@ -248,84 +248,6 @@ export default function Leads({ branch }) {
 
                 {/* TREND + CAMPAIGN ROW */}
 
-                <div className={styles.leadsInsightsRow}>
-                    {/* Leads Over Time */}
-                    <div className={styles.leadsTrendCard}>
-                        <div className={styles.trendHeader}>
-                            <div>
-                                <h3>Leads Over Time</h3>
-                                <span>Last 6 Weeks</span>
-                            </div>
-                        </div>
-
-                        <div className={styles.trendGraphWrap}>
-                            <ResponsiveContainer width="100%" height={190}>
-                                <LineChart data={leadTrend}>
-                                    <XAxis dataKey="week" tick={{ fontSize: 10 }} />
-                                    <YAxis hide />
-                                    <Tooltip />
-
-                                    <Line
-                                        type="monotone"
-                                        dataKey="all"
-                                        stroke="#6b5cff"
-                                        strokeWidth={2.5}
-                                        dot={{ r: 3 }}
-                                    />
-
-                                    <Line
-                                        type="monotone"
-                                        dataKey="qualified"
-                                        stroke="#3bbfa0"
-                                        strokeWidth={2.5}
-                                        dot={{ r: 3 }}
-                                    />
-                                </LineChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </div>
-
-
-
-                    {/* Campaign Panel */}
-
-                    <div className={styles.campaignPanel}>
-                        <div className={styles.campaignHeader}>
-                            <h3>Top Campaigns</h3>
-                            <span>Last 30 days</span>
-                        </div>
-
-                        <div className={styles.campaignRow}>
-                            <div className={styles.campaignLeft}>
-                                <span className={styles.campaignDot}></span>
-                                <strong>Instagram Ad</strong>
-                            </div>
-                            <span className={styles.campaignMeta}>124 leads • 18%</span>
-                        </div>
-
-                        <div className={styles.campaignRow}>
-                            <div className={styles.campaignLeft}>
-                                <span className={styles.campaignDot}></span>
-                                <strong>Email Blast</strong>
-                            </div>
-                            <span className={styles.campaignMeta}>86 leads • 24%</span>
-                        </div>
-
-                        <div className={styles.campaignRow}>
-                            <div className={styles.campaignLeft}>
-                                <span className={styles.campaignDot}></span>
-                                <strong>Website Form</strong>
-                            </div>
-                            <span className={styles.campaignMeta}>310 leads • 32%</span>
-                        </div>
-
-                        <button className={styles.campaignBtn}>View All Campaigns</button>
-                    </div>
-
-
-
-
-                </div>
 
 
 
@@ -395,7 +317,6 @@ export default function Leads({ branch }) {
                                     <th>Name</th>
                                     <th>Email</th>
                                     <th>Phone</th>
-                                    <th>Company</th>
                                     <th>Source</th>
                                     <th>Status</th>
                                     <th>Score</th>
@@ -403,7 +324,6 @@ export default function Leads({ branch }) {
                                     <th>Owner</th>
                                     <th>Location</th>
                                     <th>Created</th>
-                                    <th>Description</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -415,7 +335,6 @@ export default function Leads({ branch }) {
                                             <td className={styles.leadName}>{l.name}</td>
                                             <td className={styles.muted}>{l.email}</td>
                                             <td className={styles.muted}>{l.phone}</td>
-                                            <td>{l.company}</td>
                                             <td><span className={styles.sourceChip}>{l.source}</span></td>
                                             <td>
                                                 <span
@@ -442,7 +361,6 @@ export default function Leads({ branch }) {
                                                     : 'N/A'}
                                             </td>
                                             <td className={styles.muted}>{l.createdAt}</td>
-                                            <td className={styles.desc}>{l.description}</td>
                                             <td>
                                                 <div style={{ display: "flex", gap: "10px" }}>
                                                     <button
@@ -465,7 +383,7 @@ export default function Leads({ branch }) {
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan="14" style={{ textAlign: "center", padding: "20px", color: "#666" }}>
+                                        <td colSpan="12" style={{ textAlign: "center", padding: "20px", color: "#666" }}>
                                             No leads found matching "{search}"
                                         </td>
                                     </tr>

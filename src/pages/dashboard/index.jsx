@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styles from "./dashboard.module.css";
 import { useNavigate } from "react-router-dom";
 import Main from "../dashboard components/main";
@@ -85,6 +85,24 @@ export default function Dashboard() {
     const [openState, setOpenState] = useState(null);
     const [openWorkspace, setOpenWorkspace] = useState(true);
     const [openDropdown, setOpenDropdown] = useState(null); // "notification" | "profile" | null
+
+    // Refs for dropdowns
+    const notificationRef = useRef(null);
+    const profileRef = useRef(null);
+
+    // Click outside handler
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (openDropdown === "notification" && notificationRef.current && !notificationRef.current.contains(event.target)) {
+                setOpenDropdown(null);
+            }
+            if (openDropdown === "profile" && profileRef.current && !profileRef.current.contains(event.target)) {
+                setOpenDropdown(null);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [openDropdown]);
 
 
     const renderContent = () => {
@@ -187,6 +205,8 @@ export default function Dashboard() {
                             { name: "Contacts", Icon: Users },
                             { name: "Reports", Icon: BarChart2 },
                             { name: "Calendar", Icon: Calendar },
+                            { name: "Analytics", Icon: BarChart2 },
+                            { name: "Pipelines", Icon: Layout },
                         ].map(({ name, Icon }) => (
                             <button
                                 key={name}
@@ -328,7 +348,7 @@ export default function Dashboard() {
                                     <Phone size={20} />
                                 </button>
 
-                                <div className={styles.relativeWrap}>
+                                <div className={styles.relativeWrap} ref={notificationRef}>
                                     <button
                                         className={`${styles.iconBtn} ${styles.btnNotify} ${openDropdown === "notification" ? styles.activeIcon : ""}`}
                                         onClick={() => setOpenDropdown(openDropdown === "notification" ? null : "notification")}
@@ -367,7 +387,7 @@ export default function Dashboard() {
                                     </AnimatePresence>
                                 </div>
 
-                                <div className={styles.relativeWrap}>
+                                <div className={styles.relativeWrap} ref={profileRef}>
                                     <button
                                         className={`${styles.iconBtn} ${styles.btnProfile} ${openDropdown === "profile" ? styles.activeIcon : ""}`}
                                         onClick={() => setOpenDropdown(openDropdown === "profile" ? null : "profile")}
@@ -441,7 +461,7 @@ export default function Dashboard() {
                             {/*{renderContent()} */}
 
                             <div className={styles.mainContent}>
-                                {["Dashboard", "Leads", "Deals", "Tasks", "Contacts", "Reports", "Calendar"].includes(active) ? (
+                                {["Dashboard", "Leads", "Deals", "Tasks", "Contacts", "Reports", "Calendar", "Analytics", "Pipelines"].includes(active) ? (
                                     <Main active={active} branch={branch} />
                                 ) : (
                                     <Workspace active={active} branch={branch} setActive={setActive} />
