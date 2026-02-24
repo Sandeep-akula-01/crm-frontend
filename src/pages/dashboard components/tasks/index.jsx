@@ -104,7 +104,7 @@ export default function Tasks() {
   const fetchFiles = async () => {
     try {
       const res = await axios.get(
-        "http://192.168.1.15:5000/api/files",
+        "http://192.168.1.61:5000/api/files",
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -131,7 +131,7 @@ export default function Tasks() {
 
       try {
         const res = await axios.post(
-          "http://192.168.1.15:5000/api/files",
+          "http://192.168.1.61:5000/api/files",
           formData,
           {
             headers: {
@@ -152,7 +152,7 @@ export default function Tasks() {
     if (!noteText.trim()) return;
     try {
       await axios.post(
-        "http://192.168.1.15:5000/api/notes",
+        "http://192.168.1.61:5000/api/notes",
         { note: noteText },
         {
           headers: {
@@ -177,7 +177,7 @@ export default function Tasks() {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.get(
-        "http://192.168.1.15:5000/api/notes",
+        "http://192.168.1.61:5000/api/notes",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -358,7 +358,7 @@ export default function Tasks() {
                         try {
                           const noteId = notes[i].id;
                           await axios.put(
-                            `http://192.168.1.15:5000/api/notes/${noteId}`,
+                            `http://192.168.1.61:5000/api/notes/${noteId}`,
                             { note: noteText },
                             { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
                           );
@@ -395,7 +395,7 @@ export default function Tasks() {
                         onClick={async () => {
                           try {
                             const noteId = notes[i].id;
-                            await axios.delete(`http://192.168.1.15:5000/api/notes/${noteId}`, {
+                            await axios.delete(`http://192.168.1.61:5000/api/notes/${noteId}`, {
                               headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
                             });
                             setNotes(notes.filter((_, index) => index !== i));
@@ -443,7 +443,7 @@ export default function Tasks() {
                       onClick={async () => {
                         try {
                           const res = await axios.get(
-                            `http://192.168.1.15:5000/api/files/${f.id}/download`,
+                            `http://192.168.1.61:5000/api/files/${f.id}/download`,
                             {
                               responseType: "blob",
                               headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -468,7 +468,7 @@ export default function Tasks() {
                     <button className={styles.deleteBtn}
                       onClick={async () => {
                         try {
-                          await axios.delete(`http://192.168.1.15:5000/api/files/${f.id}`, {
+                          await axios.delete(`http://192.168.1.61:5000/api/files/${f.id}`, {
                             headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
                           });
                           setFiles(files.filter((_, index) => index !== i));

@@ -38,7 +38,7 @@ export default function Otp() {
             setLoading(true);
 
             const res = await axios.post(
-                "http://192.168.1.15:5000/auth/verify-otp",
+                "http://192.168.1.61:5000/auth/verify-otp",
                 {
                     email,
                     otp, // change to code: otp if backend expects that
@@ -69,7 +69,7 @@ export default function Otp() {
 
         try {
             await axios.post(
-                "http://192.168.1.15:5000/auth/forgot-password",
+                "http://192.168.1.61:5000/auth/forgot-password",
                 { email }
             );
 

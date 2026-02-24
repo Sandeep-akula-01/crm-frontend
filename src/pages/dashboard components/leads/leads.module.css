@@ -545,3 +545,30 @@
   background: rgba(248, 87, 166, .18);
   color: #f857a6;
 }
+
+.paymentBtn {
+  background: #34c6b1;
+  color: #fff;
+  border: none;
+  padding: 0.3rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.paymentBtn:hover {
+  background: #28a08d;
+  transform: translateY(-1px);
+}
+
+.sentBtn {
+  background: #e6e8f0;
+  color: #8a8fb2;
+  padding: 0.3rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: inline-block;
+}

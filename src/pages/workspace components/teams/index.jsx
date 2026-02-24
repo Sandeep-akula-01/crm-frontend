@@ -93,15 +93,26 @@ export const Team = ({ branch }) => {
         }
     };
 
+    const [showInviteModal, setShowInviteModal] = useState(false);
+    const [inviteForm, setInviteForm] = useState({ name: "", email: "", role: "Employee" });
+
+    const handleSendInvite = (e) => {
+        e.preventDefault();
+        const inviteLink = `http://${window.location.host}/signup?invite=${btoa(inviteForm.email)}`;
+        alert(`Invite sent successfully!\n\nInvite Link: ${inviteLink}\nSent to: ${inviteForm.name} (${inviteForm.email}) as ${inviteForm.role}`);
+        setShowInviteModal(false);
+        setInviteForm({ name: "", email: "", role: "Employee" });
+    };
+
     return (
         <div className={styles.container}>
             {/* Header Section */}
             <div className={styles.header}>
                 <div className={styles.headerInfo}>
                     <h2>Team Management</h2>
-                    <div className={styles.branchTag}>{branch.name} Branch</div>
+                    <div className={styles.branchTag}>{branch?.name || "Main"} Branch</div>
                 </div>
-                <button className={styles.inviteBtn}>
+                <button className={styles.inviteBtn} onClick={() => setShowInviteModal(true)}>
                     <UserPlus size={18} /> Invite Member
                 </button>
             </div>
@@ -146,6 +157,56 @@ export const Team = ({ branch }) => {
                 </div>
             </div>
 
+            {/* Invite Modal */}
+            {showInviteModal && (
+                <div className={styles.modalOverlay} onClick={() => setShowInviteModal(false)}>
+                    <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+                        <h3 className={styles.modalTitle}>Invite New Member</h3>
+                        <form onSubmit={handleSendInvite} className={styles.form}>
+                            <div className={styles.formGroup}>
+                                <label>Full Name</label>
+                                <input
+                                    type="text"
+                                    placeholder="Enter name"
+                                    required
+                                    value={inviteForm.name}
+                                    onChange={e => setInviteForm({ ...inviteForm, name: e.target.value })}
+                                />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label>Email Address</label>
+                                <input
+                                    type="email"
+                                    placeholder="Enter email"
+                                    required
+                                    value={inviteForm.email}
+                                    onChange={e => setInviteForm({ ...inviteForm, email: e.target.value })}
+                                />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label>Role</label>
+                                <select
+                                    value={inviteForm.role}
+                                    onChange={e => setInviteForm({ ...inviteForm, role: e.target.value })}
+                                >
+                                    <option value="Admin">Admin</option>
+                                    <option value="Manager">Manager</option>
+                                    <option value="Employee">Employee</option>
+                                </select>
+                            </div>
+                            <div className={styles.modalActions}>
+                                <button type="button" onClick={() => setShowInviteModal(false)} className={styles.cancelBtn}>
+                                    Cancel
+                                </button>
+                                <button type="submit" className={styles.saveBtn}>
+                                    Send Invite Link
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
             {/* Directory Section */}
             <div className={styles.directoryCard}>
                 <div className={styles.directoryHeader}>
@@ -169,6 +230,7 @@ export const Team = ({ branch }) => {
                                 <option value="All">All Roles</option>
                                 <option value="Admin">Admin</option>
                                 <option value="Manager">Manager</option>
+                                <option value="Employee">Employee</option>
                                 <option value="Agent">Agent</option>
                             </select>
                         </div>
@@ -204,7 +266,7 @@ export const Team = ({ branch }) => {
                                     </div>
                                 </td>
                                 <td>
-                                    <span className={`${styles.roleBadge} ${styles[member.role.toLowerCase()]}`}>
+                                    <span className={`${styles.roleBadge} ${styles[member.role.toLowerCase()] || styles.agent}`}>
                                         {member.role}
                                     </span>
                                 </td>

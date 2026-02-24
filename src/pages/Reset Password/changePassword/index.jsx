@@ -39,7 +39,7 @@ export default function ChangePassword() {
         setLoading(true);
 
         try {
-            await axios.post("http://192.168.1.15:5000/auth/reset-password", {
+            await axios.post("http://192.168.1.61:5000/auth/reset-password", {
                 email,
                 otp,
                 new_password: password,

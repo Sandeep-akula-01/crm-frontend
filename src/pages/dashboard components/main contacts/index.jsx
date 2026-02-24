@@ -8,7 +8,14 @@ import * as XLSX from "xlsx";
 /* ------------------ INITIAL DATA ------------------ */
 
 export default function Contacts() {
-    const [contacts, setContacts] = useState([]);
+    const DUMMY_CONTACTS = [
+        { id: 1, name: "Amit Patel", company: "Reliance Ind", email: "amit@reliance.com", phone: "+91 98765 43210", owner: "Varshini", lastContact: "2 hours ago", status: "Active" },
+        { id: 2, name: "Sneha Reddy", company: "TCS", email: "sneha.r@tcs.com", phone: "+91 87654 32109", owner: "Ravi", lastContact: "Yesterday", status: "New" },
+        { id: 3, name: "John Smith", company: "Z-Tech Solutions", email: "jsmith@ztech.io", phone: "+1 415 555 0199", owner: "Anu", lastContact: "3 days ago", status: "Active" },
+        { id: 4, name: "Priya Sharma", company: "Infosys", email: "priya@infosys.com", phone: "+91 76543 21098", owner: "Varshini", lastContact: "1 week ago", status: "Inactive" },
+    ];
+
+    const [contacts, setContacts] = useState(DUMMY_CONTACTS);
     const [selectedContact, setSelectedContact] = useState(null);
     const fileInputRef = useRef(null);
 
@@ -32,12 +39,12 @@ export default function Contacts() {
     const fetchContacts = async () => {
         try {
             const token = localStorage.getItem("token");
-            let url = "http://192.168.1.15:5000/api/contacts";
+            let url = "http://192.168.1.61:5000/api/contacts";
 
             if (showDuplicatesOnly) {
-                url = "http://192.168.1.15:5000/api/contacts/duplicates";
+                url = "http://192.168.1.61:5000/api/contacts/duplicates";
             } else if (searchQuery) {
-                url = `http://192.168.1.15:5000/api/contacts/search?q=${searchQuery}`;
+                url = `http://192.168.1.61:5000/api/contacts/search?q=${searchQuery}`;
             }
 
             const res = await axios.get(url, {
@@ -62,10 +69,13 @@ export default function Contacts() {
             console.error("Failed to fetch contacts", err);
             // Fallback for network errors
             if (!searchQuery && !showDuplicatesOnly) {
-                setContacts([
+                const dummyContacts = [
                     { id: 1, name: "Amit Patel", company: "Reliance Ind", email: "amit@reliance.com", phone: "+91 98765 43210", owner: "Varshini", lastContact: "2 hours ago", status: "Active" },
-                    { id: 2, name: "Sneha Reddy", company: "TCS", email: "sneha.r@tcs.com", phone: "+91 87654 32109", owner: "Ravi", lastContact: "Yesterday", status: "New" }
-                ]);
+                    { id: 2, name: "Sneha Reddy", company: "TCS", email: "sneha.r@tcs.com", phone: "+91 87654 32109", owner: "Ravi", lastContact: "Yesterday", status: "New" },
+                    { id: 3, name: "John Smith", company: "Z-Tech Solutions", email: "jsmith@ztech.io", phone: "+1 415 555 0199", owner: "Anu", lastContact: "3 days ago", status: "Active" },
+                    { id: 4, name: "Priya Sharma", company: "Infosys", email: "priya@infosys.com", phone: "+91 76543 21098", owner: "Varshini", lastContact: "1 week ago", status: "Inactive" },
+                ];
+                setContacts(dummyContacts);
             }
         }
     };
@@ -161,14 +171,14 @@ export default function Contacts() {
                 // Update existing
                 const contactId = contacts[editIndex].id;
                 if (contactId) {
-                    await axios.put(`http://192.168.1.15:5000/api/contacts/${contactId}`, newContact, {
+                    await axios.put(`http://192.168.1.61:5000/api/contacts/${contactId}`, newContact, {
                         headers: { Authorization: `Bearer ${token}` },
                     });
                     fetchContacts();
                 }
             } else {
                 // Create new
-                await axios.post("http://192.168.1.15:5000/api/contacts", {
+                await axios.post("http://192.168.1.61:5000/api/contacts", {
                     ...newContact,
                     owner: newContact.owner || "Unassigned",
                     lastContact: newContact.lastContact || "Just now",
@@ -200,7 +210,7 @@ export default function Contacts() {
             try {
                 const token = localStorage.getItem("token");
                 if (contact.id) {
-                    await axios.delete(`http://192.168.1.15:5000/api/contacts/${contact.id}`, {
+                    await axios.delete(`http://192.168.1.61:5000/api/contacts/${contact.id}`, {
                         headers: { Authorization: `Bearer ${token}` },
                     });
                 }
@@ -215,7 +225,7 @@ export default function Contacts() {
         if (c.id) {
             try {
                 const token = localStorage.getItem("token");
-                const res = await axios.get(`http://192.168.1.15:5000/api/contacts/${c.id}`, {
+                const res = await axios.get(`http://192.168.1.61:5000/api/contacts/${c.id}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setSelectedContact(res.data);

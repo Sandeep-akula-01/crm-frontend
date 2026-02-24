@@ -59,225 +59,527 @@
   --grad: linear-gradient(135deg, #c78bff, #b05cff);
 }
 
-/* Insights Row (Dynamic Cards) */
+/* Insights Row (Modern SaaS Card Grid) */
 .insightsRow {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.insightsCard {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+}
+
+.insightsRowHeader {
+  margin-bottom: 24px;
 }
 
 .insightsRowHeader h3 {
-  font-size: 1.1rem;
-  color: #1a1e3d;
+  font-size: 1.2rem;
+  color: #1e293b;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  font-weight: 600;
 }
 
 .insightsGrid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
 }
 
-.insightCard {
-  background: #fff;
-  border: 1px solid #f1f5f9;
-  border-radius: 18px;
-  padding: 20px;
+.insightItem {
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  align-items: center;
+  gap: 14px;
+  position: relative;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #f1f5f9;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
   transition: all 0.25s ease;
+  overflow: hidden;
 }
 
-.insightCard:hover {
-  transform: translateY(-2px);
-  border-color: #6b5cff44;
-  box-shadow: 0 8px 24px rgba(107, 92, 255, 0.08);
+/* Vertical primary accent on the left */
+.insightItem::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: #3b82f6;
+  opacity: 1;
 }
 
-.insightCard span {
-  font-size: 0.9rem;
-  color: #475569;
+.insightItem:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.04);
+}
+
+.insightItem span {
+  font-size: 0.95rem;
+  color: #334155;
   line-height: 1.5;
+  font-weight: 500;
 }
 
-.fullWidthInsight {
-  grid-column: span 2;
+.chevronIcon {
+  color: #3b82f6;
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1100px) {
+  .insightsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .insightsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .insightsCard {
+    padding: 24px;
+  }
+}
+
+
+/* Export Section (CTA Style - Pink Theme) */
+.exportSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 32px;
+  background: linear-gradient(90deg, #ffffff, #fdf2f8);
+  border-radius: 20px;
+  margin-bottom: 32px;
+  box-shadow: 0 8px 30px rgba(190, 24, 93, 0.04);
+  position: relative;
+}
+
+.exportText h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #000000;
+  letter-spacing: -0.01em;
+}
+
+.exportText p {
+  margin: 4px 0 0 0;
+  font-size: 0.92rem;
+  color: #3c3739;
+  opacity: 0.8;
+  max-width: 500px;
+}
+
+.exportDropdownWrapper {
+  position: relative;
+}
+
+.exportBtn {
+  background: #fdf2f8;
+  /* Very subtle light pink */
+  color: #be185d;
+  border: 1px solid #fce7f3;
+  padding: 10px 24px;
+  border-radius: 14px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 4px rgba(190, 24, 93, 0.05);
+}
+
+.exportBtn:hover {
+  background: #fce7f3;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(190, 24, 93, 0.1);
+}
+
+.exportBtn.active {
+  background: #be185d;
+  color: #ffffff;
+  border-color: #be185d;
+}
+
+/* Dropdown Menu */
+.dropdownMenu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 260px;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  z-index: 100;
+  animation: slideUp 0.2s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdownHeader {
+  padding: 8px 12px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #94a3b8;
+  font-weight: 700;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 8px;
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: all 0.2s;
+}
+
+.dropdownItem:hover {
+  background: #f8fafc;
+}
+
+.dropdownItem span {
+  font-size: 0.9rem;
+  color: #1e293b;
+  font-weight: 500;
+}
+
+.dropdownFooter {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.downloadBtn {
+  width: 100%;
+  padding: 10px;
+  background: #be185d;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.downloadBtn:hover {
+  background: #9d174d;
+}
+
+.checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: #be185d;
+  cursor: pointer;
 }
 
 /* Tabbed Analytics Section */
+/* Tabbed Analytics Section */
 .tabbedContainer {
   display: flex;
-  gap: 24px;
+  gap: 0;
   background: #fff;
   border-radius: 24px;
-  border: 1px solid #f1f5f9;
+  border: 1px solid #e2e8f0;
   overflow: hidden;
-  min-height: 520px;
+  min-height: 600px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
 }
 
 .tabSidebar {
-  width: 240px;
-  background: #f8fafc;
-  border-right: 1px solid #f1f5f9;
+  width: 260px;
+  background: #f0f9ff;
+  /* Very light sky blue */
+  border-right: 1px solid #e0f2fe;
   display: flex;
   flex-direction: column;
-  padding: 24px 0;
-  gap: 4px;
+  padding: 24px 16px;
+  gap: 8px;
 }
 
 .tabLink {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 24px;
+  padding: 14px 20px;
   border: none;
-  background: none;
+  background: transparent;
   color: #64748b;
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 0.9rem;
+  font-weight: 500;
   cursor: pointer;
   text-align: left;
+  border-radius: 12px;
   transition: all 0.2s ease;
 }
 
 .tabLink:hover {
-  background: rgba(107, 92, 255, 0.05);
-  color: #6b5cff;
+  background: #a5d6f6;
+  /* Slightly darker shade of the sidebar bg */
+  color: #0c4a6e;
+  transform: translateX(4px);
 }
 
 .activeTabLink {
-  background: #ffffff;
-  color: #6b5cff;
-  border-left: 4px solid #6b5cff;
+  background: #4eafda;
+  /* Sky Blue 500 - Compliments the light blue bg */
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.25);
+  font-weight: 600;
+}
+
+.activeTabLink svg {
+  color: #a8e9fd;
 }
 
 .tabContent {
   flex: 1;
-  padding: 32px;
+  padding: 40px;
   background: #fff;
+  overflow-y: auto;
 }
 
 .contentBlock {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 32px;
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .contentHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 8px;
 }
 
 .contentTitle {
-  font-size: 1.15rem;
-  color: #1a1e3d;
+  font-size: 1.25rem;
+  color: #0f172a;
   font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .exportIcon {
   color: #94a3b8;
   cursor: pointer;
-  transition: color 0.2s;
+  transition: all 0.2s;
+  padding: 8px;
+  border-radius: 8px;
 }
 
 .exportIcon:hover {
-  color: #6b5cff;
+  color: #3b82f6;
+  background: #eff6ff;
 }
 
 /* Summary Grid */
 .summaryGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 24px;
 }
 
 .summaryBox {
-  padding: 24px;
+  padding: 28px;
   border-radius: 20px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
+  transition: transform 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.summaryBox:hover {
+  transform: translateY(-4px);
 }
 
 .summaryRevenue {
-  background: #f5f3ff;
-  border: 1px solid #e0e7ff;
+  background: #eff6ff;
+  border-color: #dbeafe;
 }
 
 .summaryLeads {
-  background: #ecfdf5;
-  border: 1px solid #d1fae5;
+  background: #f0fdf4;
+  border-color: #dcfce7;
 }
 
 .summaryConv {
   background: #fffbeb;
-  border: 1px solid #fef3c7;
+  border-color: #fef3c7;
 }
 
 .summaryPerf {
-  background: #eff6ff;
-  border: 1px solid #dbeafe;
+  background: #ded2fe7d;
+  border-color: #e2e8f0;
 }
 
 .summaryBox span {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .summaryBox h4 {
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   font-weight: 800;
-  color: #1e293b;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+}
+
+
+/* Responsive Table Adjustments */
+@media (max-width: 1200px) {
+  .pipelineBoard {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .pipelineBoard {
+    grid-template-columns: 1fr;
+  }
 }
 
 .summaryBox small {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 600;
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.6);
+  width: fit-content;
 }
 
-/* Tables */
+/* --- Tables (Design matched to Leads/Deals) --- */
+
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+  /* Subtle shadow */
+  border: 1px solid #f1f5f9;
+}
+
 .reportTable {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  /* Changed for border-radius on rows */
+  border-spacing: 0;
+  min-width: 600px;
+}
+
+.reportTable thread {
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .reportTable th {
   text-align: left;
-  padding: 12px;
-  font-size: 0.75rem;
-  color: #94a3b8;
-  border-bottom: 2px solid #f1f5f9;
+  padding: 16px 24px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #7a64b6;
+  /* Requested Purple */
+  background: linear-gradient(180deg, #f6f4ff, #ffffff);
+  /* Requested Gradient */
+  border-bottom: 1px solid #e2e8f0;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .reportTable td {
-  padding: 16px 12px;
-  font-size: 0.85rem;
-  color: #475569;
-  border-bottom: 1px solid #f8fafc;
+  padding: 16px 24px;
+  font-size: 0.9rem;
+  color: #334155;
+  border-bottom: 1px solid #f1f5f9;
+  transition: all 0.2s;
+}
+
+.reportTable tbody tr {
+  transition: all 0.2s ease;
+}
+
+.reportTable tbody tr:hover {
+  background: #f8fafc;
+}
+
+.reportTable tbody tr:hover td {
+  color: #0f172a;
+}
+
+.reportTable tbody tr:last-child td {
+  border-bottom: none;
 }
 
 .subTitle {
   margin-top: 10px;
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 700;
-  color: #1a1e3d;
+  color: #0f172a;
+  margin-bottom: -10px;
+  padding-left: 4px;
 }
 
 /* Progress and Accents */
 .bold {
-  font-weight: 700;
-  color: #1e293b;
+  font-weight: 600;
+  color: #0f172a;
 }
 
 .accentText {
-  color: #6b5cff;
+  color: #3b82f6;
+  /* Blue */
   font-weight: 700;
 }
 
@@ -291,45 +593,55 @@
 
 .muted {
   color: #94a3b8;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
 }
 
 .targetProgress {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  min-width: 140px;
 }
 
 .progressFill {
-  height: 6px;
-  background: #6b5cff;
-  border-radius: 3px;
-  max-width: 60px;
+  height: 8px;
+  background: #3b82f6;
+  border-radius: 4px;
+  max-width: 100px;
 }
 
 /* Customer Exec Cards */
 .customerGrid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
 }
 
 .customerExecCard {
-  padding: 24px;
-  background: #f8fafc;
+  padding: 30px;
+  background: #fff;
   border-radius: 20px;
   text-align: center;
-  border: 1px solid #f1f5f9;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.01);
+  transition: all 0.2s;
+}
+
+.customerExecCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
 }
 
 .customerExecCard span {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   font-weight: 600;
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  opacity: 0.9;
 }
 
 .customerExecCard h4 {
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   font-weight: 800;
+  letter-spacing: -0.02em;
 }
