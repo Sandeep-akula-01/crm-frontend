@@ -1,0 +1,455 @@
+.pipelinesPage {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    padding: 1.5rem 0;
+}
+
+.pipelineHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pipelineHeader h2 {
+    font-size: 1.6rem;
+    color: #1e293b;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.newDealBtn {
+    background: #6b5cff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(107, 92, 255, 0.2);
+}
+
+.newDealBtn:hover {
+    background: #5a4deb;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(107, 92, 255, 0.3);
+}
+
+/* ---------- Insights Row (Automation & Forecast) ---------- */
+.insightsRow {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 2rem;
+}
+
+.automationSection,
+.forecastSection {
+    background: #ffffff;
+    border-radius: 28px;
+    padding: 1.8rem;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+    display: flex;
+    flex-direction: column;
+}
+
+.automationHeader,
+.forecastHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+}
+
+.automationHeader h3,
+.forecastHeader h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.automationHeader p,
+.forecastHeader p {
+    margin: 4px 0 0;
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+.addRuleBtn {
+    padding: 6px 12px;
+    border-radius: 10px;
+    border: 1.5px dashed #e2e8f0;
+    background: #f8fafc;
+    color: #64748b;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.addRuleBtn:hover {
+    background: #f1f5f9;
+    border-color: #6b5cff;
+    color: #6b5cff;
+}
+
+.automationList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.automationCard {
+    background: #f8fafc;
+    border-radius: 16px;
+    padding: 14px;
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.automationCard:hover {
+    background: #ffffff;
+    border-color: #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.ruleContent {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.ruleContent strong {
+    font-size: 0.85rem;
+    color: #1e293b;
+}
+
+.ruleContent span {
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+.cardStatusActions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.ruleStatus {
+    font-size: 0.65rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+}
+
+.active {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.inactive {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+.ruleActions {
+    display: flex;
+    gap: 6px;
+    background: #ffffff;
+    padding: 4px 6px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.ruleActionBtn {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ruleActionBtn:hover {
+    background: #f1f5f9;
+    transform: scale(1.1);
+}
+
+/* Forecast Grid */
+.forecastCards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    flex: 1;
+}
+
+.forecastCard {
+    background: #f8fafc;
+    border-radius: 20px;
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    border: 1px solid transparent;
+}
+
+.forecastCard span {
+    font-size: 0.75rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.forecastCard b {
+    font-size: 1.3rem;
+    color: #0f172a;
+    font-weight: 750;
+}
+
+.pinkForecast {
+    background: linear-gradient(135deg, #fff1f2, #fff5f5);
+    border: 1.5px solid #fecdd3;
+    box-shadow: 0 10px 25px rgba(251, 113, 133, 0.05);
+}
+
+.skyForecast {
+    grid-column: span 2;
+    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    border: 1.5px solid #bae6fd;
+    box-shadow: 0 12px 30px rgba(14, 165, 233, 0.08);
+}
+
+.skyForecast b {
+    color: #0369a1;
+    font-size: 1.6rem;
+}
+
+/* ---------- Kanban Board ---------- */
+.kanbanBoard {
+    display: flex;
+    gap: 1.8rem;
+    overflow-x: auto;
+    padding-bottom: 2rem;
+    margin-top: 1rem;
+}
+
+.kanbanColumn {
+    min-width: 320px;
+    flex: 1;
+    background: #f8fafc;
+    border-radius: 24px;
+    padding: 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    border: 1px solid #f1f5f9;
+}
+
+.columnHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.columnHeader h3 {
+    font-size: 0.95rem;
+    color: #334155;
+    font-weight: 700;
+}
+
+.countBadge {
+    background: #ffffff;
+    color: #64748b;
+    padding: 4px 10px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+}
+
+.cardContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 1.2rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+    border: 1px solid #f1f5f9;
+    cursor: grab;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cardTop {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.cardTitle {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #0f172a;
+    line-height: 1.4;
+}
+
+.moreBtn {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.moreBtn:hover {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.cardMeta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.contact {
+    font-size: 0.8rem;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.value {
+    color: #059669;
+    font-weight: 750;
+    font-size: 0.9rem;
+}
+
+/* ---------- Modal Styles ---------- */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modalContent {
+    background: white;
+    padding: 2.2rem;
+    border-radius: 28px;
+    width: 440px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.modalContent h3 {
+    margin: 0 0 1.5rem;
+    font-size: 1.25rem;
+    color: #0f172a;
+    font-weight: 800;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 1.2rem;
+}
+
+.formGroup label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #64748b;
+}
+
+.formGroup input,
+.formGroup textarea {
+    padding: 12px 16px;
+    border: 1.5px solid #f1f5f9;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    background: #f8fafc;
+    transition: all 0.2s;
+}
+
+.formGroup input:focus,
+.formGroup textarea:focus {
+    outline: none;
+    border-color: #6b5cff;
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(107, 92, 255, 0.1);
+}
+
+.checkboxGroup {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1.8rem;
+}
+
+.modalActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.modalActions button {
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.modalActions button:first-child {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.submitBtn {
+    background: #6b5cff;
+    color: white;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .insightsRow {
+        grid-template-columns: 1fr;
+    }
+}
