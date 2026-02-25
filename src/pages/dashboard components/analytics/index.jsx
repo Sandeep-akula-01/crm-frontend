@@ -1,5 +1,5 @@
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useRef } from "react";
+import { motion, useInView } from "framer-motion";
 import {
     LineChart,
     Line,
@@ -54,6 +54,24 @@ const itemVariants = {
             ease: "easeOut"
         }
     }
+};
+
+// --- Helper Component for Scroll-Triggered Charts ---
+const ScrollChart = ({ children }) => {
+    const ref = useRef(null);
+    const isInView = useInView(ref, { once: true, amount: 0.2 });
+
+    return (
+        <div ref={ref} style={{ width: '100%', height: '100%', minHeight: '300px', position: 'relative' }}>
+            {isInView ? (
+                <ResponsiveContainer width="99%" height="100%" debounce={100}>
+                    {children}
+                </ResponsiveContainer>
+            ) : (
+                <div style={{ width: '100%', height: '100%', minHeight: '300px' }} />
+            )}
+        </div>
+    );
 };
 
 // --- DUMMY DATA ---
@@ -138,12 +156,19 @@ export default function Analytics() {
         <motion.div
             className={styles.analyticsPage}
             initial="hidden"
-            animate="visible"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.1 }}
             variants={containerVariants}
         >
 
             {/* 3️⃣ Revenue Analytics Section */}
-            <motion.section className={styles.section} variants={itemVariants}>
+            <motion.section
+                className={styles.section}
+                variants={itemVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.2 }}
+            >
                 <div className={styles.sectionHeader}>
                     <h2>Revenue Analytics</h2>
                     <p>Financial performance and trends</p>
@@ -158,7 +183,7 @@ export default function Analytics() {
                     >
                         <h3><DollarSign size={18} color="#2563eb" /> Revenue Trend (Last 12 Months)</h3>
                         <div className={styles.chartContainer}>
-                            <ResponsiveContainer width="100%" height="100%">
+                            <ScrollChart>
                                 <AreaChart data={revenueData}>
                                     <defs>
                                         <linearGradient id="revenueGrad" x1="0" y1="0" x2="0" y2="1">
@@ -181,14 +206,20 @@ export default function Analytics() {
                                         activeDot={{ r: 6, strokeWidth: 0, fill: '#2563eb' }}
                                     />
                                 </AreaChart>
-                            </ResponsiveContainer>
+                            </ScrollChart>
                         </div>
                     </motion.div>
                 </div>
             </motion.section>
 
             {/* 4️⃣ Pipeline Analytics Section */}
-            <motion.section className={styles.section} variants={itemVariants}>
+            <motion.section
+                className={styles.section}
+                variants={itemVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.2 }}
+            >
                 <div className={styles.sectionHeader}>
                     <h2>Pipeline Analytics</h2>
                     <p>Deal flow and conversion stages</p>
@@ -196,26 +227,30 @@ export default function Analytics() {
 
                 <div className={styles.chartsGrid}>
                     {/* Deals by Stage */}
-                    <motion.div className={styles.chartCard} variants={itemVariants} whileHover={{ y: -5, transition: { duration: 0.2 } }}>
+                    <motion.div
+                        className={styles.chartCard}
+                        variants={itemVariants}
+                        whileHover={{ y: -5, transition: { duration: 0.2 } }}
+                    >
                         <h3><BarChart2 size={18} color="#16a34a" /> Deals by Stage</h3>
                         <div className={styles.chartContainer}>
-                            <ResponsiveContainer width="100%" height="100%">
+                            <ScrollChart>
                                 <BarChart data={pipelineStages} layout="vertical" margin={{ left: 20 }}>
                                     <defs>
                                         <linearGradient id="barGrad-0" x1="0" y1="0" x2="1" y2="0">
-                                            <stop offset="0%" stopColor="#bfdbfe" stopOpacity={0.4} />
+                                            <stop offset="0%" stopColor="#b6e3ff" stopOpacity={1} />
                                             <stop offset="100%" stopColor="#2563eb" stopOpacity={1} />
                                         </linearGradient>
                                         <linearGradient id="barGrad-1" x1="0" y1="0" x2="1" y2="0">
-                                            <stop offset="0%" stopColor="#f3e8ff" stopOpacity={0.4} />
+                                            <stop offset="0%" stopColor="#c3b6ff" stopOpacity={1} />
                                             <stop offset="100%" stopColor="#9333ea" stopOpacity={1} />
                                         </linearGradient>
                                         <linearGradient id="barGrad-2" x1="0" y1="0" x2="1" y2="0">
-                                            <stop offset="0%" stopColor="#dcfce7" stopOpacity={0.4} />
+                                            <stop offset="0%" stopColor="#b6ffd8" stopOpacity={1} />
                                             <stop offset="100%" stopColor="#16a34a" stopOpacity={1} />
                                         </linearGradient>
                                         <linearGradient id="barGrad-3" x1="0" y1="0" x2="1" y2="0">
-                                            <stop offset="0%" stopColor="#ffedd5" stopOpacity={0.4} />
+                                            <stop offset="0%" stopColor="#ffdab6" stopOpacity={1} />
                                             <stop offset="100%" stopColor="#ea580c" stopOpacity={1} />
                                         </linearGradient>
                                     </defs>
@@ -229,23 +264,27 @@ export default function Analytics() {
                                         ))}
                                     </Bar>
                                 </BarChart>
-                            </ResponsiveContainer>
+                            </ScrollChart>
                         </div>
                     </motion.div>
 
                     {/* Win vs Lost Ratio */}
-                    <motion.div className={styles.chartCard} variants={itemVariants} whileHover={{ y: -5, transition: { duration: 0.2 } }}>
+                    <motion.div
+                        className={styles.chartCard}
+                        variants={itemVariants}
+                        whileHover={{ y: -5, transition: { duration: 0.2 } }}
+                    >
                         <h3><Target size={18} color="#db2777" /> Win vs Lost Ratio</h3>
                         <div className={styles.chartContainer}>
-                            <ResponsiveContainer width="100%" height="100%">
+                            <ScrollChart>
                                 <PieChart>
                                     <defs>
                                         <linearGradient id="winGrad" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="0%" stopColor="#dcfce7" stopOpacity={0.6} />
+                                            <stop offset="0%" stopColor="#b6ffd8" stopOpacity={1} />
                                             <stop offset="100%" stopColor="#16a34a" stopOpacity={1} />
                                         </linearGradient>
                                         <linearGradient id="lossGrad" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="0%" stopColor="#fce7f3" stopOpacity={0.6} />
+                                            <stop offset="0%" stopColor="#ffb6d5" stopOpacity={1} />
                                             <stop offset="100%" stopColor="#db2777" stopOpacity={1} />
                                         </linearGradient>
                                     </defs>
@@ -267,7 +306,7 @@ export default function Analytics() {
                                     <Tooltip content={<CustomTooltip />} />
                                     <Legend verticalAlign="bottom" height={36} iconType="circle" />
                                 </PieChart>
-                            </ResponsiveContainer>
+                            </ScrollChart>
                         </div>
                     </motion.div>
 
@@ -280,27 +319,27 @@ export default function Analytics() {
                     >
                         <h3><Zap size={18} color="#ea580c" /> Stage Conversion Rate</h3>
                         <div className={styles.chartContainer}>
-                            <ResponsiveContainer width="100%" height="100%">
+                            <ScrollChart>
                                 <FunnelChart>
                                     <defs>
                                         <linearGradient id="funnelGrad-0" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="0%" stopColor="#bfdbfe" stopOpacity={0.5} />
+                                            <stop offset="0%" stopColor="#b6e3ff" stopOpacity={1} />
                                             <stop offset="100%" stopColor="#2563eb" stopOpacity={1} />
                                         </linearGradient>
                                         <linearGradient id="funnelGrad-1" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="0%" stopColor="#dcfce7" stopOpacity={0.5} />
+                                            <stop offset="0%" stopColor="#b6ffd8" stopOpacity={1} />
                                             <stop offset="100%" stopColor="#16a34a" stopOpacity={1} />
                                         </linearGradient>
                                         <linearGradient id="funnelGrad-2" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="0%" stopColor="#f3e8ff" stopOpacity={0.5} />
+                                            <stop offset="0%" stopColor="#c3b6ff" stopOpacity={1} />
                                             <stop offset="100%" stopColor="#9333ea" stopOpacity={1} />
                                         </linearGradient>
                                         <linearGradient id="funnelGrad-3" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="0%" stopColor="#ffedd5" stopOpacity={0.5} />
+                                            <stop offset="0%" stopColor="#ffdab6" stopOpacity={1} />
                                             <stop offset="100%" stopColor="#ea580c" stopOpacity={1} />
                                         </linearGradient>
                                         <linearGradient id="funnelGrad-4" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="0%" stopColor="#fbcfe8" stopOpacity={0.5} />
+                                            <stop offset="0%" stopColor="#ffb6d5" stopOpacity={1} />
                                             <stop offset="100%" stopColor="#db2777" stopOpacity={1} />
                                         </linearGradient>
                                     </defs>
@@ -318,26 +357,40 @@ export default function Analytics() {
                                         <LabelList position="right" fill="#64748b" stroke="none" dataKey="name" />
                                     </Funnel>
                                 </FunnelChart>
-                            </ResponsiveContainer>
+                            </ScrollChart>
                         </div>
                     </motion.div>
                 </div>
             </motion.section>
 
             {/* 5️⃣ Lead Analytics Section */}
-            <motion.section className={styles.section} variants={itemVariants}>
+            <motion.section
+                className={styles.section}
+                variants={itemVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.2 }}
+            >
                 <div className={styles.sectionHeader}>
                     <h2>Lead Analytics</h2>
                     <p>Aquisition and interest tracking</p>
                 </div>
 
                 <div className={styles.kpiRow}>
-                    <motion.div className={styles.statItem} variants={itemVariants} whileHover={{ y: -3, transition: { duration: 0.2 } }}>
+                    <motion.div
+                        className={styles.statItem}
+                        variants={itemVariants}
+                        whileHover={{ y: -3, transition: { duration: 0.2 } }}
+                    >
                         <span className={styles.statLabel}><Target size={18} color="#2563eb" /> Lead Conversion Rate</span>
                         <span className={styles.statValue}>24.8%</span>
                         <span className={styles.statSub} style={{ color: '#16a34a' }}><ArrowUpRight size={14} /> +4.2% since last month</span>
                     </motion.div>
-                    <motion.div className={styles.statItem} variants={itemVariants} whileHover={{ y: -3, transition: { duration: 0.2 } }}>
+                    <motion.div
+                        className={styles.statItem}
+                        variants={itemVariants}
+                        whileHover={{ y: -3, transition: { duration: 0.2 } }}
+                    >
                         <span className={styles.statLabel}><DollarSign size={18} color="#ea580c" /> Avg. Cost per Lead</span>
                         <span className={styles.statValue}>₹450</span>
                         <span className={styles.statSub} style={{ color: '#db2777' }}><TrendingUp size={14} /> +12% increase</span>
@@ -346,26 +399,30 @@ export default function Analytics() {
 
                 <div className={styles.chartsGrid}>
                     {/* Leads by Source */}
-                    <motion.div className={styles.chartCard} variants={itemVariants} whileHover={{ y: -5, transition: { duration: 0.2 } }}>
+                    <motion.div
+                        className={styles.chartCard}
+                        variants={itemVariants}
+                        whileHover={{ y: -5, transition: { duration: 0.2 } }}
+                    >
                         <h3><PieIcon size={18} color="#2563eb" /> Leads by Source</h3>
                         <div className={styles.chartContainer}>
-                            <ResponsiveContainer width="100%" height="100%">
+                            <ScrollChart>
                                 <PieChart>
                                     <defs>
                                         <linearGradient id="srcGrad-0" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="0%" stopColor="#bfdbfe" stopOpacity={0.6} />
+                                            <stop offset="0%" stopColor="#b6e3ff" stopOpacity={1} />
                                             <stop offset="100%" stopColor="#2563eb" stopOpacity={1} />
                                         </linearGradient>
                                         <linearGradient id="srcGrad-1" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="0%" stopColor="#fce7f3" stopOpacity={0.6} />
+                                            <stop offset="0%" stopColor="#ffb6d5" stopOpacity={1} />
                                             <stop offset="100%" stopColor="#db2777" stopOpacity={1} />
                                         </linearGradient>
                                         <linearGradient id="srcGrad-2" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="0%" stopColor="#dcfce7" stopOpacity={0.6} />
+                                            <stop offset="0%" stopColor="#b6ffd8" stopOpacity={1} />
                                             <stop offset="100%" stopColor="#16a34a" stopOpacity={1} />
                                         </linearGradient>
                                         <linearGradient id="srcGrad-3" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="0%" stopColor="#ffedd5" stopOpacity={0.6} />
+                                            <stop offset="0%" stopColor="#ffdab6" stopOpacity={1} />
                                             <stop offset="100%" stopColor="#ea580c" stopOpacity={1} />
                                         </linearGradient>
                                     </defs>
@@ -387,19 +444,23 @@ export default function Analytics() {
                                     <Tooltip content={<CustomTooltip />} />
                                     <Legend iconType="circle" />
                                 </PieChart>
-                            </ResponsiveContainer>
+                            </ScrollChart>
                         </div>
                     </motion.div>
 
                     {/* Leads by Status */}
-                    <motion.div className={styles.chartCard} variants={itemVariants} whileHover={{ y: -5, transition: { duration: 0.2 } }}>
+                    <motion.div
+                        className={styles.chartCard}
+                        variants={itemVariants}
+                        whileHover={{ y: -5, transition: { duration: 0.2 } }}
+                    >
                         <h3><Users size={18} color="#9333ea" /> Leads by Status</h3>
                         <div className={styles.chartContainer}>
-                            <ResponsiveContainer width="100%" height="100%">
+                            <ScrollChart>
                                 <BarChart data={leadStatusData}>
                                     <defs>
                                         <linearGradient id="statusGrad" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="0%" stopColor="#f3e8ff" stopOpacity={0.6} />
+                                            <stop offset="0%" stopColor="#c3b6ff" stopOpacity={1} />
                                             <stop offset="100%" stopColor="#9333ea" stopOpacity={1} />
                                         </linearGradient>
                                     </defs>
@@ -409,7 +470,7 @@ export default function Analytics() {
                                     <Tooltip cursor={{ fill: 'transparent' }} content={<CustomTooltip />} />
                                     <Bar dataKey="count" fill="url(#statusGrad)" radius={[10, 10, 0, 0]} animationDuration={1400} />
                                 </BarChart>
-                            </ResponsiveContainer>
+                            </ScrollChart>
                         </div>
                     </motion.div>
 
@@ -422,54 +483,65 @@ export default function Analytics() {
                     >
                         <h3><TrendingUp size={18} color="#16a34a" /> Leads Created Trend</h3>
                         <div className={styles.chartContainer}>
-                            <ResponsiveContainer width="100%" height="100%">
-                                <AreaChart data={leadTrendData}>
-                                    <defs>
-                                        <linearGradient id="leadTrendGrad" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#dcfce7" stopOpacity={0.8} />
-                                            <stop offset="95%" stopColor="#dcfce7" stopOpacity={0} />
-                                        </linearGradient>
-                                    </defs>
+                            <ScrollChart>
+                                <LineChart data={leadTrendData}>
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                                     <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
                                     <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
                                     <Tooltip content={<CustomTooltip />} />
-                                    <Area
+                                    <Line
                                         type="stepAfter"
                                         dataKey="count"
                                         stroke="#16a34a"
                                         strokeWidth={4}
-                                        fillOpacity={1}
-                                        fill="url(#leadTrendGrad)"
-                                        animationDuration={2000}
+                                        dot={{ r: 4, strokeWidth: 0, fill: '#16a34a' }}
                                         activeDot={{ r: 6, strokeWidth: 0, fill: '#16a34a' }}
+                                        animationDuration={2000}
                                     />
-                                </AreaChart>
-                            </ResponsiveContainer>
+                                </LineChart>
+                            </ScrollChart>
                         </div>
                     </motion.div>
                 </div>
             </motion.section>
 
             {/* 6️⃣ Activity & Productivity Analytics */}
-            <motion.section className={styles.section} variants={itemVariants}>
+            <motion.section
+                className={styles.section}
+                variants={itemVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.2 }}
+            >
                 <div className={styles.sectionHeader}>
                     <h2>Activity & Productivity</h2>
                     <p>Team efficiency and response times</p>
                 </div>
 
                 <div className={styles.kpiRow}>
-                    <motion.div className={styles.statItem} variants={itemVariants} whileHover={{ y: -3, transition: { duration: 0.2 } }}>
+                    <motion.div
+                        className={styles.statItem}
+                        variants={itemVariants}
+                        whileHover={{ y: -3, transition: { duration: 0.2 } }}
+                    >
                         <span className={styles.statLabel}><Clock size={18} color="#2563eb" /> Avg Response Time</span>
                         <span className={styles.statValue}>1h 45m</span>
                         <span className={styles.statSub} style={{ color: '#16a34a' }}><Zap size={14} /> Within SLA target (2h)</span>
                     </motion.div>
-                    <motion.div className={styles.statItem} variants={itemVariants} whileHover={{ y: -3, transition: { duration: 0.2 } }}>
+                    <motion.div
+                        className={styles.statItem}
+                        variants={itemVariants}
+                        whileHover={{ y: -3, transition: { duration: 0.2 } }}
+                    >
                         <span className={styles.statLabel}><BarChart2 size={18} color="#9333ea" /> Total Activities</span>
                         <span className={styles.statValue}>1,452</span>
                         <span className={styles.statSub} style={{ color: '#2563eb' }}><ArrowUpRight size={14} /> +15% this week</span>
                     </motion.div>
-                    <motion.div className={styles.statItem} variants={itemVariants} whileHover={{ y: -3, transition: { duration: 0.2 } }}>
+                    <motion.div
+                        className={styles.statItem}
+                        variants={itemVariants}
+                        whileHover={{ y: -3, transition: { duration: 0.2 } }}
+                    >
                         <span className={styles.statLabel}><Users size={18} color="#16a34a" /> Tasks Completed</span>
                         <span className={styles.statValue}>89%</span>
                         <span className={styles.statSub} style={{ color: '#16a34a' }}><Target size={14} /> High efficiency</span>

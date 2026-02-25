@@ -5,32 +5,40 @@ import styles from "./pipelines.module.css";
 
 const stagesData = [
     {
-        title: "New Lead",
+        id: "Proposal",
+        title: "Proposal",
         count: 4,
         deals: [
-            { id: 1, title: "Acme Corp Expansion", contact: "John Doe", value: "₹2,50,000" },
-            { id: 2, title: "Global Tech Integration", contact: "Jane Smith", value: "₹4,80,000" },
+            { id: 1, title: "Acme Corp Expansion", company: "Acme Corp", value: "₹2,50,000", date: "Mar 12" },
+            { id: 2, title: "Global Tech Integration", company: "Global Tech", value: "₹4,80,000", date: "Mar 15" },
+            { id: 6, title: "HR System Upgrade", company: "Hooli", value: "₹2,10,000", date: "Mar 18" },
         ]
     },
     {
-        title: "Qualified",
+        id: "Negotiation",
+        title: "Negotiation",
         count: 2,
         deals: [
-            { id: 3, title: "Nexus Software License", contact: "Mike Ross", value: "₹1,20,000" },
+            { id: 3, title: "Nexus Software License", company: "Nexus Sw", value: "₹1,20,000", date: "Mar 10" },
+            { id: 7, title: "Cloud Infrastructure", company: "Skyline", value: "₹9,50,000", date: "Mar 22" },
         ]
     },
     {
-        title: "Proposal",
+        id: "Won",
+        title: "Won",
         count: 3,
         deals: [
-            { id: 4, title: "Skyline Cloud Migration", contact: "Harvey Specter", value: "₹8,50,000" },
+            { id: 5, title: "Infinite Loop R&D", company: "Apple", value: "₹12,00,000", date: "Feb 28" },
+            { id: 8, title: "Enterprise CRM Setup", company: "Stark Ind", value: "₹15,00,000", date: "Jan 15" },
         ]
     },
     {
-        title: "Negotiation",
-        count: 1,
+        id: "Lost",
+        title: "Lost",
+        count: 2,
         deals: [
-            { id: 5, title: "Infinite Loop R&D", contact: "Steve Jobs", value: "₹12,00,000" },
+            { id: 9, title: "Legacy System Sync", company: "Wayne Corp", value: "₹90,000", date: "Mar 05" },
+            { id: 10, title: "Old Hardware Upgrade", company: "LexCorp", value: "₹1,50,000", date: "Mar 18" },
         ]
     }
 ];
@@ -101,9 +109,9 @@ export default function Pipelines() {
         const totalValue = allDeals.reduce((sum, d) => sum + parseAmount(d.value), 0);
 
         // Mock probabilities based on stage position
-        const STAGE_PROBS = { "New Lead": 0.2, "Qualified": 0.4, "Proposal": 0.6, "Negotiation": 0.8 };
+        const STAGE_PROBS = { "Proposal": 0.4, "Negotiation": 0.8, "Won": 1, "Lost": 0 };
         const expectedRevenue = stages.reduce((sum, stage) => {
-            const prob = STAGE_PROBS[stage.title] || 0.1;
+            const prob = STAGE_PROBS[stage.title] || 0;
             const stageTotal = stage.deals.reduce((s, d) => s + parseAmount(d.value), 0);
             return sum + (stageTotal * prob);
         }, 0);
@@ -162,6 +170,13 @@ export default function Pipelines() {
             animate="visible"
             variants={containerVariants}
         >
+            <motion.div className={styles.pipelineHeader} variants={itemVariants}>
+                <h2>Deals Pipelines</h2>
+                <button className={styles.newDealBtn}>
+                    <Plus size={18} /> New Deal
+                </button>
+            </motion.div>
+
             {/* ---------- Forecast + Automation Row ---------- */}
             <motion.div className={styles.insightsRow} variants={itemVariants}>
 
@@ -224,6 +239,37 @@ export default function Pipelines() {
                         </div>
                     </div>
                 </div>
+            </motion.div>
+
+            {/* Kanban Board Section */}
+            <motion.div className={styles.kanbanBoard} variants={itemVariants}>
+                {stages.map((stage) => (
+                    <div key={stage.id} className={`${styles.kanbanColumn} ${styles[stage.id]}`}>
+                        <div className={styles.columnHeader}>
+                            <h3>{stage.title}</h3>
+                            <span className={styles.countBadge}>{stage.deals.length}</span>
+                        </div>
+                        <div className={styles.cardContainer}>
+                            {stage.deals.map((deal) => (
+                                <motion.div
+                                    key={deal.id}
+                                    className={styles.card}
+                                    whileHover={{ y: -4, boxShadow: "0 12px 24px rgba(0,0,0,0.08)" }}
+                                >
+                                    <div className={styles.cardTop}>
+                                        <strong className={styles.cardTitle}>{deal.title}</strong>
+                                        <button className={styles.moreBtn}><MoreHorizontal size={14} /></button>
+                                    </div>
+                                    <span className={styles.pipelineCompany}>{deal.company}</span>
+                                    <div className={styles.cardMeta}>
+                                        <span className={styles.value}>{deal.value}</span>
+                                        <span className={styles.contact}>{deal.date}</span>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </div>
+                    </div>
+                ))}
             </motion.div>
 
             {/* Rule Modal */}

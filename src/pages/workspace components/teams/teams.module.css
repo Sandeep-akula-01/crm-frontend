@@ -296,3 +296,114 @@
         grid-template-columns: repeat(2, 1fr);
     }
 }
+
+/* Modal Styles */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.modalContent {
+    background: white;
+    padding: 32px;
+    border-radius: 20px;
+    width: 440px;
+    max-width: 90%;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.modalTitle {
+    margin: 0 0 24px 0;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.formGroup label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #4b5563;
+}
+
+.formGroup input,
+.formGroup select {
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    font-size: 0.95rem;
+    color: #111827;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.formGroup input:focus,
+.formGroup select:focus {
+    border-color: #1d4ed8;
+    box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.1);
+}
+
+.modalActions {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.cancelBtn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    background: white;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.cancelBtn:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+.saveBtn {
+    flex: 2;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    background: #1d37b6;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.saveBtn:hover {
+    background: #1e40af;
+    transform: translateY(-1px);
+}
+
+.employee {
+    background: #f3f4f6;
+    color: #4b5563;
+}

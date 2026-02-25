@@ -23,17 +23,31 @@ const leadTrend = [
 
 export default function Leads({ branch }) {
 
-    const [leads, setLeads] = useState([]);
+    const DUMMY_LEADS = [
+        { id: 101, name: "Anita Kumar", email: "anita@example.com", phone: "+91 91234 56789", company: "Green Energy Corp", source: "Facebook", status: "Hot", score: "High", sla: "On Track", owner: "Varshini", createdAt: "2026-02-23" },
+        { id: 102, name: "Vikram Singh", email: "vikram@singh.in", phone: "+91 82345 67890", company: "Singh & Sons", source: "Direct", status: "New", score: "Medium", sla: "Delayed", owner: "Ravi", createdAt: "2026-02-22" },
+        { id: 103, name: "Sarah Jones", email: "sarahj@tech.com", phone: "+1 555 0102", company: "Tech Flow", source: "Google", status: "Converted", score: "High", sla: "On Track", owner: "Anu", createdAt: "2026-02-20" },
+        { id: 104, name: "Rajesh Iyer", email: "riyer@tcs.com", phone: "+91 73456 78901", company: "TCS", source: "LinkedIn", status: "Lost", score: "Low", sla: "N/A", owner: "Varshini", createdAt: "2026-02-15" },
+    ];
+
+    const [leads, setLeads] = useState(DUMMY_LEADS);
+    const [sentLeads, setSentLeads] = useState(new Set());
+
+    const handleSendPayment = (leadId) => {
+        setSentLeads(prev => new Set(prev).add(leadId));
+    };
 
     const fetchLeads = async () => {
         try {
             const token = localStorage.getItem("token");
-            const res = await axios.get("http://192.168.1.15:5000/api/leads", {
+            const res = await axios.get("http://192.168.1.61:5000/api/leads", {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
+            let data = res.data || [];
+
             // Map backend data to frontend structure
-            const mappedLeads = (res.data || []).map(lead => ({
+            const mappedLeads = data.map(lead => ({
                 id: lead.id,
                 name: lead.name || `${lead.first_name || ''} ${lead.last_name || ''}`.trim(),
                 email: lead.email || '',
@@ -50,9 +64,25 @@ export default function Leads({ branch }) {
                 state: lead.state || 'N/A',
                 country: lead.country || 'N/A',
             }));
-            setLeads(mappedLeads);
+
+            if (mappedLeads.length === 0) {
+                const dummyLeads = [
+                    { id: 101, name: "Anita Kumar", email: "anita@example.com", phone: "+91 91234 56789", company: "Green Energy Corp", source: "Facebook", status: "Hot", score: "High", sla: "On Track", owner: "Varshini", createdAt: "2026-02-23" },
+                    { id: 102, name: "Vikram Singh", email: "vikram@singh.in", phone: "+91 82345 67890", company: "Singh & Sons", source: "Direct", status: "New", score: "Medium", sla: "Delayed", owner: "Ravi", createdAt: "2026-02-22" },
+                    { id: 103, name: "Sarah Jones", email: "sarahj@tech.com", phone: "+1 555 0102", company: "Tech Flow", source: "Google", status: "Converted", score: "High", sla: "On Track", owner: "Anu", createdAt: "2026-02-20" },
+                    { id: 104, name: "Rajesh Iyer", email: "riyer@tcs.com", phone: "+91 73456 78901", company: "TCS", source: "LinkedIn", status: "Lost", score: "Low", sla: "N/A", owner: "Varshini", createdAt: "2026-02-15" },
+                ];
+                setLeads(dummyLeads);
+            } else {
+                setLeads(mappedLeads);
+            }
         } catch (error) {
             console.error("Failed to fetch leads:", error);
+            const dummyLeads = [
+                { id: 101, name: "Anita Kumar", email: "anita@example.com", phone: "+91 91234 56789", company: "Green Energy Corp", source: "Facebook", status: "Hot", score: "High", sla: "On Track", owner: "Varshini", createdAt: "2026-02-23" },
+                { id: 102, name: "Vikram Singh", email: "vikram@singh.in", phone: "+91 82345 67890", company: "Singh & Sons", source: "Direct", status: "New", score: "Medium", sla: "Delayed", owner: "Ravi", createdAt: "2026-02-22" },
+            ];
+            setLeads(dummyLeads);
         }
     };
 
@@ -121,7 +151,7 @@ export default function Leads({ branch }) {
                 country: location.country,
             };
 
-            await axios.post("http://192.168.1.15:5000/api/leads", payload, {
+            await axios.post("http://192.168.1.61:5000/api/leads", payload, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -181,7 +211,7 @@ export default function Leads({ branch }) {
         if (!window.confirm("Are you sure you want to delete this lead?")) return;
         try {
             const token = localStorage.getItem("token");
-            await axios.delete(`http://192.168.1.15:5000/api/leads/${id}`, {
+            await axios.delete(`http://192.168.1.61:5000/api/leads/${id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             fetchLeads();
@@ -197,7 +227,7 @@ export default function Leads({ branch }) {
             const token = localStorage.getItem("token");
             const payload = { ...newLead };
 
-            await axios.put(`http://192.168.1.15:5000/api/leads/${editingLead.id}`, payload, {
+            await axios.put(`http://192.168.1.61:5000/api/leads/${editingLead.id}`, payload, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -324,6 +354,7 @@ export default function Leads({ branch }) {
                                     <th>Owner</th>
                                     <th>Location</th>
                                     <th>Created</th>
+                                    <th>Payment</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -361,6 +392,18 @@ export default function Leads({ branch }) {
                                                     : 'N/A'}
                                             </td>
                                             <td className={styles.muted}>{l.createdAt}</td>
+                                            <td>
+                                                {sentLeads.has(l.id) ? (
+                                                    <span className={styles.sentBtn}>Sent</span>
+                                                ) : (
+                                                    <button
+                                                        className={styles.paymentBtn}
+                                                        onClick={() => handleSendPayment(l.id)}
+                                                    >
+                                                        Send
+                                                    </button>
+                                                )}
+                                            </td>
                                             <td>
                                                 <div style={{ display: "flex", gap: "10px" }}>
                                                     <button

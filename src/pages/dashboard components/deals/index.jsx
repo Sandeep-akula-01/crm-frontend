@@ -13,8 +13,25 @@ import {
 
 export default function Deals({ branch }) {
   const [deals, setDeals] = useState([]);
-  const [pipelineMap, setPipelineMap] = useState({});
-  const [activePipeline, setActivePipeline] = useState("");
+  const DUMMY_PIPELINES = {
+    "Sales Pipeline": [
+      { id: 101, deal_name: "Q1 CRM License", company: "Global Tech Inc", stage: "Proposal", value: "₹4,50,000", owner: "Varshini", close: "2026-03-15" },
+      { id: 102, deal_name: "Annual Maintenance", company: "Cyberdyne", stage: "Negotiation", value: "₹1,20,000", owner: "Ravi", close: "2026-02-28" },
+      { id: 103, deal_name: "Cloud Migration", company: "Wayne Corp", stage: "Won", value: "₹8,00,000", owner: "Anu", close: "2026-01-20" },
+      { id: 104, deal_name: "Security Audit", company: "Stark Ind", stage: "Proposal", value: "₹2,50,000", owner: "Varshini", close: "2026-04-10" },
+      { id: 105, deal_name: "Mobile App Dev", company: "Z-Telecom", stage: "Negotiation", value: "₹6,00,000", owner: "Anu", close: "2026-05-20" },
+      { id: 106, deal_name: "Data Warehousing", company: "Omni Consumer Products", stage: "Proposal", value: "₹12,00,000", owner: "Ravi", close: "2026-06-15" }
+    ],
+    "Partnerships": [
+      { id: 201, deal_name: "Referral Program", company: "Hooli", stage: "Negotiation", value: "₹50,000", owner: "Anu", close: "2026-05-01" },
+      { id: 202, deal_name: "API Integration", company: "Pied Piper", stage: "Won", value: "₹3,00,000", owner: "Ravi", close: "2026-02-10" },
+      { id: 203, deal_name: "Affiliate Marketing", company: "E-Corp", stage: "Proposal", value: "₹1,50,000", owner: "Varshini", close: "2026-04-05" },
+      { id: 204, deal_name: "Sponsorship Deal", company: "Massive Dynamic", stage: "Won", value: "₹5,00,000", owner: "Anu", close: "2026-03-01" }
+    ]
+  };
+
+  const [pipelineMap, setPipelineMap] = useState(DUMMY_PIPELINES);
+  const [activePipeline, setActivePipeline] = useState("Sales Pipeline");
   {/* const [analytics, setAnalytics] = useState({
     winLoss: [],
     winReasons: [],
@@ -85,7 +102,7 @@ export default function Deals({ branch }) {
       const headers = { Authorization: `Bearer ${token}` };
 
       // 1. Fetch Pipelines (Grouped Deals)
-      const pipelineRes = await axios.get("http://192.168.1.15:5000/api/deals/pipelines", { headers });
+      const pipelineRes = await axios.get("http://192.168.1.61:5000/api/deals/pipelines", { headers });
       let pMap = pipelineRes.data || {};
 
       // 🌟 DUMMY DATA INJECTION 🌟
@@ -117,7 +134,7 @@ export default function Deals({ branch }) {
       }
 
       // 2. Fetch Analytics
-      const analyticsRes = await axios.get("http://192.168.1.15:5000/api/deals/analytics", { headers });
+      const analyticsRes = await axios.get("http://192.168.1.61:5000/api/deals/analytics", { headers });
 
       // ✅ MERGE analytics safely
       const a = analyticsRes.data || {};
@@ -196,9 +213,9 @@ export default function Deals({ branch }) {
       const payload = { ...formData };
 
       if (isEditing && currentDealId) {
-        await axios.put(`http://192.168.1.15:5000/api/deals/${currentDealId}`, payload, { headers });
+        await axios.put(`http://192.168.1.61:5000/api/deals/${currentDealId}`, payload, { headers });
       } else {
-        await axios.post("http://192.168.1.15:5000/api/deals", payload, { headers });
+        await axios.post("http://192.168.1.61:5000/api/deals", payload, { headers });
       }
 
       setShowModal(false);
@@ -214,7 +231,7 @@ export default function Deals({ branch }) {
     if (!window.confirm("Are you sure you want to delete this deal?")) return;
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://192.168.1.15:5000/api/deals/${id}`, {
+      await axios.delete(`http://192.168.1.61:5000/api/deals/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchData();
@@ -387,11 +404,7 @@ export default function Deals({ branch }) {
         </div>
       </div>
 
-      {/* Export Deals */}
       <div className={styles.exportSection}>
-        <button className={styles.exportBtn} onClick={openCreateModal} style={{ marginRight: "1rem", background: "#1f2a44" }}>
-          + Create Deal
-        </button>
         <div className={styles.exportText}>
           <h3>Export Deals</h3>
           <p>

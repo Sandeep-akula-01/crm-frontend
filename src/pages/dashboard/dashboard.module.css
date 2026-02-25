@@ -8,13 +8,13 @@
 }
 
 .sidebar {
-  width: 260px;
   background: #0f1f4a;
+  /* Reverted to Navy Blue */
   color: #fff;
-  padding: 1.5rem 1.2rem;
+  padding: 1.5rem 0.8rem;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
   flex-shrink: 0;
 
   position: fixed;
@@ -22,8 +22,19 @@
   bottom: 0;
   left: 0;
   height: 100vh;
-  z-index: 50;
-  overflow: hidden;
+  z-index: 2000;
+  overflow: visible;
+  /* Allow tooltips to overflow */
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebarExpanded {
+  width: 260px;
+}
+
+.sidebarCollapsed {
+  width: 70px;
+  padding: 1.5rem 0.6rem;
 }
 
 .orgBlock h3 {
@@ -48,6 +59,11 @@
   /* Hide scrollbar for a cleaner look */
   scrollbar-width: none;
   -ms-overflow-style: none;
+}
+
+.sidebarCollapsed .nav {
+  overflow: visible;
+  /* Prevent tooltip clipping in collapsed mode */
 }
 
 .nav::-webkit-scrollbar {
@@ -78,6 +94,91 @@
   color: #fff;
 }
 
+/* Tooltip Pill for Collapsed Mode */
+.collapsedNavItem {
+  justify-content: center;
+  padding: 0.8rem 0;
+  position: relative;
+}
+
+.collapsedNavItem[data-label]:hover::after {
+  content: attr(data-label);
+  position: absolute;
+  left: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: #0f1f4a;
+  /* Match reverted navy blue */
+  color: #fff;
+  padding: 0.5rem 1.2rem;
+  border-radius: 99px;
+  /* Pill shape */
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 9999;
+  pointer-events: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  animation: pillFade 0.2s ease forwards;
+}
+
+/* Tooltip for Collapse Button */
+.collapseBtn[data-label]:hover::after {
+  content: attr(data-label);
+  position: absolute;
+  left: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: #0f1f4a;
+  /* Navbar Color */
+  color: #fff;
+  padding: 0.5rem 1.2rem;
+  border-radius: 99px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 9999;
+  pointer-events: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  animation: pillFade 0.2s ease forwards;
+}
+
+/* Tooltip for Logo Circle */
+.logoCircle[data-label]:hover::after {
+  content: attr(data-label);
+  position: absolute;
+  left: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: #0f1f4a;
+  /* Navbar Color */
+  color: #fff;
+  padding: 0.5rem 1.2rem;
+  border-radius: 99px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 9999;
+  pointer-events: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  animation: pillFade 0.2s ease forwards;
+}
+
+@keyframes pillFade {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+}
+
 .active {
   /*background: #ffffff;
   color: #0f1f4a; */
@@ -95,6 +196,11 @@
   overflow: hidden;
   /* Prevent main from scrolling, keep card fixed */
   height: 100%;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.collapsedLayout .main {
+  margin-left: 70px;
 }
 
 .workspace {
@@ -292,13 +398,88 @@
 /* ----- states update ----- */
 /* .sidebar styling merged into main block */
 
+.orgBlock {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.logoCircle {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  /* Subtle light background */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+  position: relative;
+  /* Add this for tooltip positioning */
+}
+
+.sidebarCollapsed .orgBlock {
+  justify-content: center;
+  margin-left: -0.2rem;
+  /* Minor nudge for optical alignment with centered nav items */
+}
+
 .orgName {
   font-size: 1.1rem;
-  margin-bottom: 0.6rem;
+  margin-bottom: 0;
+  white-space: nowrap;
+}
+
+.logoPlaceholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fd7b11;
+  /* Acccent color */
+  margin-bottom: 1rem;
 }
 
 .branchSwitcher {
   position: relative;
+}
+
+.sidebarBottom {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: flex-end;
+  /* Switch to center when collapsed */
+}
+
+.sidebarCollapsed .sidebarBottom {
+  justify-content: center;
+}
+
+.collapseBtn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  /* Add this for tooltip positioning */
+}
+
+.collapseBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
 }
 
 .branchPill {

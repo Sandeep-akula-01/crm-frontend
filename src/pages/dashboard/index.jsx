@@ -23,7 +23,11 @@ import {
     Phone,
     Shield,
     HelpCircle,
-    FileText
+    FileText,
+    ChevronLeft,
+    ChevronRight,
+    Search,
+    Layers
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -43,16 +47,8 @@ const navItems = [
     "Dashboard",
     "Leads",
     "Deals",
-    "Tasks",
-    "Contacts",
     "Reports",
-    "Calendar",
     "Workspace",
-    "Team",
-    "Inbox",
-    "Marketing",
-    "Campaigns",
-    "Settings",
 ];
 
 
@@ -85,6 +81,7 @@ export default function Dashboard() {
     const [openState, setOpenState] = useState(null);
     const [openWorkspace, setOpenWorkspace] = useState(true);
     const [openDropdown, setOpenDropdown] = useState(null); // "notification" | "profile" | null
+    const [isCollapsed, setIsCollapsed] = useState(true);
 
     // Refs for dropdowns
     const notificationRef = useRef(null);
@@ -154,13 +151,16 @@ export default function Dashboard() {
         <>
 
 
-            <div className={styles.layout}>
+            <div className={`${styles.layout} ${isCollapsed ? styles.collapsedLayout : ""}`}>
                 {/* Sidebar */}
-                <aside className={styles.sidebar}>
+                <aside className={`${styles.sidebar} ${isCollapsed ? styles.sidebarCollapsed : styles.sidebarExpanded}`}>
 
                     <div className={styles.orgBlock}>
-                        <h3 className={styles.orgName}>{fakeOrg.name}</h3>
+                        <div className={styles.logoCircle} data-label="Rvh Crm">RVH</div>
+                        {!isCollapsed && <h3 className={styles.orgName}>{fakeOrg.name}</h3>}
+                    </div>
 
+                    {!isCollapsed && (
                         <div className={styles.branchSwitcher}>
                             <button
                                 className={styles.branchPill}
@@ -192,7 +192,7 @@ export default function Dashboard() {
                                 </div>
                             )}
                         </div>
-                    </div>
+                    )}
 
 
                     <nav className={styles.nav}>
@@ -204,121 +204,50 @@ export default function Dashboard() {
                             { name: "Tasks", Icon: CheckCircle2 },
                             { name: "Contacts", Icon: Users },
                             { name: "Reports", Icon: BarChart2 },
-                            { name: "Calendar", Icon: Calendar },
-                            { name: "Analytics", Icon: BarChart2 },
-                            { name: "Pipelines", Icon: Layout },
                         ].map(({ name, Icon }) => (
                             <button
                                 key={name}
-                                className={`${styles.navItem} ${active === name ? styles.active : ""}`}
+                                className={`${styles.navItem} ${name === "Reports"
+                                    ? ["Reports", "Analytics", "Pipelines"].includes(active)
+                                    : active === name
+                                        ? styles.active
+                                        : ""
+                                    } ${isCollapsed ? styles.collapsedNavItem : ""}`}
                                 onClick={() => setActive(name)}
+                                data-label={name}
                             >
-                                <Icon size={18} />
-                                <span>{name}</span>
+                                <Icon size={20} />
+                                {!isCollapsed && <span>{name}</span>}
                             </button>
                         ))}
 
-                        <div className={styles.divider} />
 
-                        {/* Workspace */}
-                        <div className={styles.workspaceSection}>
-                            <div className={styles.workspaceHeading}>Workspace</div>
-
-
-
-                            {/* States Hover */}
-
-                            <div className={styles.statesWrap}>
-                                <button
-                                    className={`${styles.navItem} ${active === "States" ? styles.active : ""}`}
-                                    onClick={() => setActive("States")}
-                                >
-                                    <MapPin size={18} />
-                                    <span>States</span>
-                                    <span className={styles.arrow}>▸</span>
-                                </button>
-                            </div>
-
-                            {/*<button className={styles.navItem}>Workspace</button>
-                            <button className={styles.navItem}>Team</button>
-                            <button className={styles.navItem}>Roles & Permissions</button>
-                            <button className={styles.navItem}>Campaigns</button>
-                            <button className={styles.navItem}>Settings</button> */}
-
-                            <button
-                                className={`${styles.navItem} ${active === "Workspace" ? styles.active : ""}`}
-                                onClick={() => setActive("Workspace")}
-                            >
-                                <Layout size={18} />
-                                <span>Workspace</span>
-                            </button>
-
-                            <button
-                                className={`${styles.navItem} ${active === "Team" ? styles.active : ""}`}
-                                onClick={() => setActive("Team")}
-                            >
-                                <Users size={18} />
-                                <span>Team</span>
-                            </button>
-
-                            <button
-                                className={`${styles.navItem} ${active === "Inbox" ? styles.active : ""}`}
-                                onClick={() => setActive("Inbox")}
-                            >
-                                <Inbox size={18} />
-                                <span>Inbox</span>
-                            </button>
-
-                            <button
-                                className={`${styles.navItem} ${active === "Marketing" ? styles.active : ""}`}
-                                onClick={() => setActive("Marketing")}
-                            >
-                                <Zap size={18} />
-                                <span>Marketing</span>
-                            </button>
-
-                            <button
-                                className={`${styles.navItem} ${active === "Campaigns" ? styles.active : ""}`}
-                                onClick={() => setActive("Campaigns")}
-                            >
-                                <Rocket size={18} />
-                                <span>Campaigns</span>
-                            </button>
-
-                            <button
-                                className={`${styles.navItem} ${active === "Settings" ? styles.active : ""}`}
-                                onClick={() => setActive("Settings")}
-                            >
-                                <Settings size={18} />
-                                <span>Settings</span>
-                            </button>
-
-                        </div>
+                        <button
+                            className={`${styles.navItem} ${["Workspace", "Team", "Marketing", "Campaigns"].includes(active) ? styles.active : ""} ${isCollapsed ? styles.collapsedNavItem : ""}`}
+                            onClick={() => setActive("Workspace")}
+                            data-label="Workspace"
+                        >
+                            <Layout size={20} />
+                            {!isCollapsed && <span>Workspace</span>}
+                        </button>
                     </nav>
 
-
-                    {/* Bottom */}
-                    <div className={styles.bottomNav}>
-                        <div className={styles.divider} />
-                        <div className={styles.footerActions}>
-                            <button
-                                className={`${styles.navItem} ${active === "Profile" ? styles.active : ""}`}
-                                onClick={() => setActive("Profile")}
-                                title="Profile"
-                            >
-                                <User size={18} />
-                                <span>Profile</span>
-                            </button>
-                            <button className={styles.logout} title="Logout">
-                                <LogOut size={18} />
-                                <span>Logout</span>
-                            </button>
-                        </div>
+                    {/* Sidebar Bottom Actions */}
+                    <div className={styles.sidebarBottom}>
+                        <button
+                            className={styles.collapseBtn}
+                            onClick={() => setIsCollapsed(!isCollapsed)}
+                            data-label={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+                        >
+                            {isCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+                        </button>
                     </div>
+
+
                 </aside>
 
                 {/* Main Area */}
-                <main className={styles.main}>
+                < main className={styles.main} >
                     <div className={styles.workspace}>
                         <div className={styles.header}>
                             <h1>{active === "Inbox" ? "Inbox (Calls)" : active}</h1>
@@ -462,7 +391,7 @@ export default function Dashboard() {
 
                             <div className={styles.mainContent}>
                                 {["Dashboard", "Leads", "Deals", "Tasks", "Contacts", "Reports", "Calendar", "Analytics", "Pipelines"].includes(active) ? (
-                                    <Main active={active} branch={branch} />
+                                    <Main active={active} branch={branch} setActive={setActive} />
                                 ) : (
                                     <Workspace active={active} branch={branch} setActive={setActive} />
                                 )}
@@ -470,8 +399,8 @@ export default function Dashboard() {
 
                         </div>
                     </div>
-                </main>
-            </div>
+                </main >
+            </div >
 
 
         </>
