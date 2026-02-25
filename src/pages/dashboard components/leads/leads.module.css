@@ -287,6 +287,73 @@
   cursor: pointer;
 }
 
+/* ---------- Export Section ---------- */
+.exportSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem 1.6rem;
+  background: linear-gradient(to right, #ffffff, #e0f2fe);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  margin: 1.2rem 0;
+}
+
+.exportText h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1f2a44;
+}
+
+.exportText p {
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  color: #6b7280;
+  max-width: 450px;
+}
+
+.exportActionArea {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.exportBtn {
+  background: #0ea5e9;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.2);
+}
+
+.exportBtn:hover {
+  background: #0284c7;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(14, 165, 233, 0.3);
+}
+
+.importBtn {
+  background: #ffffff;
+  color: #0ea5e9;
+  border: 1px solid #0ea5e9;
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.importBtn:hover {
+  background: #f0f9ff;
+  transform: translateY(-2px);
+}
+
 
 
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import styles from "./states.module.css";
 import {
     MapPin,
@@ -11,38 +11,11 @@ import {
     Globe
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-
-const STORAGE_KEY = "crm_workspace_states";
-
-const defaultStates = [
-    {
-        id: 1,
-        name: "Telangana",
-        description: "Southern Region Hub",
-        branches: [
-            { id: 101, name: "Hyderabad", manager: "Ravi Kumar" },
-            { id: 102, name: "Warangal", manager: "Suresh P." }
-        ],
-        theme: "stateBlue"
-    },
-    {
-        id: 2,
-        name: "Karnataka",
-        description: "IT & Tech Hub",
-        branches: [
-            { id: 201, name: "Bangalore", manager: "Anu Sharma" },
-            { id: 202, name: "Mysore", manager: "Deepak S." }
-        ],
-        theme: "statePurple"
-    }
-];
+import axios from "axios";
 
 export const States = () => {
-    const [states, setStates] = useState(() => {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        return saved ? JSON.parse(saved) : defaultStates;
-    });
-
+    const [states, setStates] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [isAddingState, setIsAddingState] = useState(false);
     const [isAddingBranch, setIsAddingBranch] = useState(null); // stores state id
     const [searchTerm, setSearchTerm] = useState("");
@@ -50,12 +23,34 @@ export const States = () => {
     const [newState, setNewState] = useState({ name: "", description: "" });
     const [newBranch, setNewBranch] = useState({ name: "", manager: "" });
 
-    useEffect(() => {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(states));
-    }, [states]);
+    const getAuthHeader = () => {
+        const token = localStorage.getItem("token");
+        return token ? { Authorization: `Bearer ${token}` } : {};
+    };
 
-    const handleAddState = () => {
+    const fetchStates = useCallback(async () => {
+        try {
+            setLoading(true);
+            const response = await axios.get("http://192.168.1.61:5000/api/states", {
+                headers: getAuthHeader()
+            });
+            setStates(response.data);
+        } catch (error) {
+            console.error("Error fetching states:", error);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchStates();
+    }, [fetchStates]);
+
+    const handleAddState = async () => {
         if (!newState.name) return;
+
+        // Optimistic UI update or full implementation would go here
+        // For now, updating local state as before
         const themes = ["stateBlue", "statePurple", "stateGreen", "stateOrange", "statePink"];
         const randomTheme = themes[states.length % themes.length];
 
@@ -109,6 +104,10 @@ export const States = () => {
         s.branches.some(b => b.name.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
+    if (loading) {
+        return <div className={styles.loading}>Loading states and branches...</div>;
+    }
+
     return (
         <div className={styles.container}>
             {/* Header Area */}
@@ -130,7 +129,7 @@ export const States = () => {
                 </div>
                 <div className={styles.statItem}>
                     <Building2 size={18} className={styles.statIcon} />
-                    <span><b>{states.reduce((acc, s) => acc + s.branches.length, 0)}</b> Branches</span>
+                    <span><b>{states.reduce((acc, s) => acc + (s.branches ? s.branches.length : 0), 0)}</b> Branches</span>
                 </div>
                 <div className={styles.searchBox}>
                     <Search size={18} />
@@ -149,7 +148,7 @@ export const States = () => {
                     <motion.div
                         layout
                         key={state.id}
-                        className={`${styles.stateCard} ${styles[state.theme]}`}
+                        className={`${styles.stateCard} ${styles[state.theme] || styles.stateBlue}`}
                     >
                         <div className={styles.cardHeader}>
                             <div className={styles.iconBox}>
@@ -165,7 +164,7 @@ export const States = () => {
                         </div>
 
                         <div className={styles.branchList}>
-                            {state.branches.length === 0 ? (
+                            {(!state.branches || state.branches.length === 0) ? (
                                 <div className={styles.emptyBranches}>No branches yet</div>
                             ) : (
                                 state.branches.map(branch => (

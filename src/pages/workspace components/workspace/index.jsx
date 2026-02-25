@@ -36,8 +36,7 @@ const AutomationHome = ({ branch }) => {
   const [rules, setRules] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [drawerStep, setDrawerStep] = useState(1);
-  const [newRule, setNewRule] = useState({ name: "", trigger: "", condition: "", action: "" });
+  const [newRule, setNewRule] = useState({ name: "", condition: "", action: "", status: "active" });
   const [editingId, setEditingId] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -106,30 +105,24 @@ const AutomationHome = ({ branch }) => {
   };
 
   const handleCreateOpen = () => {
-    setNewRule({ name: "", trigger: "", condition: "", action: "" });
+    setNewRule({ name: "", condition: "", action: "", status: "active" });
     setEditingId(null);
-    setDrawerStep(1);
     setIsDrawerOpen(true);
   };
 
   const handleEditOpen = (rule) => {
     setNewRule({
-      name: rule.name,
-      trigger: rule.trigger_event || "lead_created",
-      condition: rule.conditions?.[0]?.value || "",
-      action: rule.actions?.[0]?.type || ""
+      name: rule.name || "",
+      condition: rule.conditions?.[0]?.value || rule.condition || "",
+      action: rule.actions?.[0]?.type || rule.action || "",
+      status: rule.status || "active"
     });
     setEditingId(rule.id);
-    setDrawerStep(1);
     setIsDrawerOpen(true);
   };
 
-  const handleNextStep = () => {
-    if (drawerStep < 3) setDrawerStep(drawerStep + 1);
-  };
-
   const handleSaveRule = async () => {
-    if (!newRule.name) {
+    if (!newRule.name.trim()) {
       alert("Please enter a rule name");
       return;
     }
@@ -138,16 +131,16 @@ const AutomationHome = ({ branch }) => {
       setSubmitting(true);
       const payload = {
         name: newRule.name,
-        trigger_event: newRule.trigger || "lead_created",
+        trigger_event: "lead_created", // Default trigger since it's removed from UI
         conditions: newRule.condition ? [{ field: "lead_status", operator: "equals", value: newRule.condition }] : [],
         actions: [{
           type: newRule.action || "assign_to_branch",
-          template_id: 1, // Placeholder
-          delay_minutes: 0 // Default
+          template_id: 1, // Required by backend
+          delay_minutes: 0 // Required by backend
         }],
         branch_id: branch?.id || 1,
-        organization_id: 1, // Defaulting to 1 as per dev message
-        status: "active"
+        organization_id: 1,
+        status: newRule.status || "active"
       };
 
       if (editingId) {
@@ -160,7 +153,7 @@ const AutomationHome = ({ branch }) => {
         });
       }
 
-      await fetchRules(); // Refresh list
+      await fetchRules();
       setIsDrawerOpen(false);
     } catch (error) {
       console.error("Error saving rule:", error);
@@ -173,6 +166,64 @@ const AutomationHome = ({ branch }) => {
   const handleOpenBuilder = (workflow) => {
     setActiveWorkflow(workflow);
   };
+
+  const [showAddMenu, setShowAddMenu] = useState(null); // Tracks index where menu is open
+
+  const handleAddNode = (index, type) => {
+    const newNode = {
+      id: Date.now(),
+      type,
+      title: type === "action" ? "New Action" : type === "delay" ? "Wait 1 Day" : "New Condition",
+      icon: type === "action" ? <CheckCircle size={18} /> :
+        type === "delay" ? <div style={{ fontWeight: 'bold', fontSize: '14px' }}>1d</div> :
+          <Filter size={18} />
+    };
+
+    const updatedNodes = [...workflowNodes];
+    updatedNodes.splice(index, 0, newNode);
+    setWorkflowNodes(updatedNodes);
+    setShowAddMenu(null);
+  };
+
+  const [editingNode, setEditingNode] = useState({ id: null, field: null }); // {id, field}
+
+  const handleUpdateNode = (id, field, value) => {
+    setWorkflowNodes(workflowNodes.map(node =>
+      node.id === id ? { ...node, [field]: value } : node
+    ));
+  };
+
+  const handleUpdateNodeIcon = (id, text) => {
+    setWorkflowNodes(workflowNodes.map(node =>
+      node.id === id ? { ...node, icon: <div style={{ fontWeight: 'bold', fontSize: '14px' }}>{text}</div> } : node
+    ));
+  };
+
+  const AddStepSection = ({ index }) => (
+    <div className={styles.addStepWrapper}>
+      <div className={styles.flowLine}></div>
+      {showAddMenu === index ? (
+        <div className={styles.addMenu}>
+          <div className={`${styles.addOption}`} onClick={() => handleAddNode(index, "action")}>
+            <div className={`${styles.addOptionIcon} ${styles.optAction}`}><CheckCircle size={16} /></div>
+            <span className={styles.addOptionLabel}>Action</span>
+          </div>
+          <div className={`${styles.addOption}`} onClick={() => handleAddNode(index, "delay")}>
+            <div className={`${styles.addOptionIcon} ${styles.optDelay}`}><div style={{ fontWeight: 800, fontSize: '10px' }}>1d</div></div>
+            <span className={styles.addOptionLabel}>Delay</span>
+          </div>
+          <div className={`${styles.addOption}`} onClick={() => handleAddNode(index, "condition")}>
+            <div className={`${styles.addOptionIcon} ${styles.optCondition}`}><Filter size={16} /></div>
+            <span className={styles.addOptionLabel}>Condition</span>
+          </div>
+          <button className={styles.closeBtn} style={{ padding: '0.2rem' }} onClick={() => setShowAddMenu(null)}><X size={14} /></button>
+        </div>
+      ) : (
+        <button className={styles.addStepBtn} onClick={() => setShowAddMenu(index)}>+</button>
+      )}
+      <div className={styles.flowLine}></div>
+    </div>
+  );
 
   return (
     <div className={styles.container}>
@@ -279,37 +330,90 @@ const AutomationHome = ({ branch }) => {
         // Workflow Builder
         <div className={styles.builderContainer}>
           {workflowNodes.map((node, index) => (
-            <div key={node.id} className={styles.flowNodeWrapper}>
-              {/* Node */}
-              <div className={`${styles.flowNode} ${node.type === "trigger" ? styles.triggerNode :
-                node.type === "action" ? styles.actionNode :
-                  node.type === "delay" ? styles.delayNode : styles.conditionNode
-                }`}>
-                <div className={styles.nodeIcon}>{node.icon}</div>
-                <div className={styles.nodeContent}>
-                  <div className={styles.nodeLabel}>{node.type}</div>
-                  <div className={styles.nodeTitle}>{node.title}</div>
+            <React.Fragment key={node.id}>
+              <div className={styles.flowNodeWrapper}>
+                <div className={`${styles.flowNode} ${node.type === "trigger" ? styles.triggerNode :
+                  node.type === "action" ? styles.actionNode :
+                    node.type === "delay" ? styles.delayNode : styles.conditionNode
+                  }`}>
+
+                  {/* Icon/Value Section - Editable for Delay */}
+                  <div
+                    className={`${styles.nodeIcon} ${node.type === "delay" ? styles.editableIcon : ""}`}
+                    onClick={() => node.type === "delay" && setEditingNode({ id: node.id, field: "icon" })}
+                  >
+                    {editingNode.id === node.id && editingNode.field === "icon" ? (
+                      <input
+                        autoFocus
+                        className={`${styles.inlineInput} ${styles.iconInput}`}
+                        defaultValue={node.icon.props?.children?.props?.children || "1d"}
+                        onBlur={(e) => {
+                          handleUpdateNodeIcon(node.id, e.target.value);
+                          setEditingNode({ id: null, field: null });
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            handleUpdateNodeIcon(node.id, e.target.value);
+                            setEditingNode({ id: null, field: null });
+                          }
+                        }}
+                      />
+                    ) : node.icon}
+                  </div>
+
+                  <div className={styles.nodeContent}>
+                    <div className={styles.nodeLabel}>{node.type}</div>
+
+                    {/* Title Section - Editable */}
+                    <div
+                      className={styles.editableText}
+                      onClick={() => setEditingNode({ id: node.id, field: "title" })}
+                    >
+                      {editingNode.id === node.id && editingNode.field === "title" ? (
+                        <input
+                          autoFocus
+                          className={styles.inlineInput}
+                          defaultValue={node.title}
+                          onBlur={(e) => {
+                            handleUpdateNode(node.id, "title", e.target.value);
+                            setEditingNode({ id: null, field: null });
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              handleUpdateNode(node.id, "title", e.target.value);
+                              setEditingNode({ id: null, field: null });
+                            }
+                          }}
+                        />
+                      ) : (
+                        <div className={styles.nodeTitle}>{node.title}</div>
+                      )}
+                    </div>
+                  </div>
+
+                  {node.type !== "trigger" && (
+                    <button
+                      className={styles.actionBtn}
+                      style={{ padding: '0.2rem', marginLeft: 'auto' }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setWorkflowNodes(workflowNodes.filter(n => n.id !== node.id));
+                      }}
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  )}
                 </div>
               </div>
 
-              {/* Connector & Add Button (except for last item) */}
-              {index < workflowNodes.length - 1 && (
-                <>
-                  <div className={styles.flowLine}></div>
-                  <button className={styles.addStepBtn}>+</button>
-                  <div className={styles.flowLine}></div>
-                </>
-              )}
-            </div>
+              {/* Add Button Section */}
+              <AddStepSection index={index + 1} />
+            </React.Fragment>
           ))}
-
-          {/* End Add Button */}
-          <div className={styles.flowLine}></div>
-          <button className={styles.addStepBtn}>+</button>
         </div>
       )}
 
-      {/* Persistence Drawer (Only for Rules) */}
+      {/* Create / Edit Rule Drawer */}
       <AnimatePresence>
         {isDrawerOpen && (
           <>
@@ -329,115 +433,73 @@ const AutomationHome = ({ branch }) => {
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
             >
               <div className={styles.drawerHeader}>
-                <div className={styles.drawerTitle}>{editingId ? "Edit Automation Rule" : "Create Automation Rule"}</div>
+                <div className={styles.drawerTitle}>{editingId ? "Edit Rule" : "Create Rule"}</div>
                 <button className={styles.closeBtn} onClick={() => setIsDrawerOpen(false)}><X size={24} /></button>
               </div>
 
               <div className={styles.drawerContent}>
-                {/* Stepper */}
-                <div className={styles.stepper}>
-                  {[1, 2, 3].map((step) => (
-                    <div key={step} className={`${styles.step} ${drawerStep >= step ? styles.active : ''} ${drawerStep > step ? styles.completed : ''}`}>
-                      <div className={styles.stepNumber}>
-                        {drawerStep > step ? <CheckCircle size={16} /> : step}
-                      </div>
-                      <div className={styles.stepLabel}>
-                        {step === 1 ? "Trigger" : step === 2 ? "Conditions" : "Action"}
-                      </div>
-                    </div>
-                  ))}
+
+                {/* Field 1: Status */}
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Status</label>
+                  <select
+                    className={styles.select}
+                    value={newRule.status}
+                    onChange={(e) => setNewRule({ ...newRule, status: e.target.value })}
+                  >
+                    <option value="active">Active</option>
+                    <option value="paused">Paused</option>
+                  </select>
                 </div>
 
-                {/* Step Content */}
-                {drawerStep === 1 && (
-                  <div className={styles.stepContent}>
-                    <div className={styles.formGroup}>
-                      <label className={styles.label}>Rule Name</label>
-                      <input
-                        type="text"
-                        className={styles.input}
-                        placeholder="e.g. Hot Leads Assignment"
-                        value={newRule.name}
-                        onChange={(e) => setNewRule({ ...newRule, name: e.target.value })}
-                      />
-                    </div>
-                    <div className={styles.formGroup}>
-                      <label className={styles.label}>When this happens...</label>
-                      <select
-                        className={styles.select}
-                        value={newRule.trigger}
-                        onChange={(e) => setNewRule({ ...newRule, trigger: e.target.value })}
-                      >
-                        <option value="">Select Trigger</option>
-                        <option value="lead_created">Lead Created</option>
-                        <option value="lead_updated">Lead Updated</option>
-                        <option value="status_changed">Status Changed</option>
-                      </select>
-                    </div>
-                  </div>
-                )}
+                {/* Field 2: Rule Name */}
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Rule Name</label>
+                  <input
+                    type="text"
+                    className={styles.input}
+                    placeholder="e.g. Hot Leads Assignment"
+                    value={newRule.name}
+                    onChange={(e) => setNewRule({ ...newRule, name: e.target.value })}
+                  />
+                </div>
 
-                {drawerStep === 2 && (
-                  <div className={styles.stepContent}>
-                    <div className={styles.formGroup}>
-                      <label className={styles.label}>If these conditions are met...</label>
-                      <div style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
-                        <select className={styles.select} style={{ flex: 1 }}>
-                          <option>Lead Status</option>
-                          <option>State</option>
-                          <option>Source</option>
-                        </select>
-                        <select className={styles.select} style={{ flex: 1 }}>
-                          <option>Equals</option>
-                          <option>Contains</option>
-                        </select>
-                      </div>
-                      <input
-                        type="text"
-                        className={styles.input}
-                        placeholder="Value (e.g. Hot)"
-                        value={newRule.condition}
-                        onChange={(e) => setNewRule({ ...newRule, condition: e.target.value })}
-                      />
-                    </div>
-                  </div>
-                )}
+                {/* Field 3: Conditions */}
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Conditions</label>
+                  <input
+                    type="text"
+                    className={styles.input}
+                    placeholder="e.g. Lead Status = Hot"
+                    value={newRule.condition}
+                    onChange={(e) => setNewRule({ ...newRule, condition: e.target.value })}
+                  />
+                </div>
 
-                {drawerStep === 3 && (
-                  <div className={styles.stepContent}>
-                    <div className={styles.formGroup}>
-                      <label className={styles.label}>Then do this...</label>
-                      <select
-                        className={styles.select}
-                        value={newRule.action}
-                        onChange={(e) => setNewRule({ ...newRule, action: e.target.value })}
-                      >
-                        <option value="">Select Action</option>
-                        <option value="assign_to_branch">Assign to Branch</option>
-                        <option value="assign_to_team">Assign to Team</option>
-                        <option value="send_email">Send Email</option>
-                        <option value="archive">Archive</option>
-                      </select>
-                    </div>
-                  </div>
-                )}
+                {/* Field 4: Actions */}
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Actions</label>
+                  <select
+                    className={styles.select}
+                    value={newRule.action}
+                    onChange={(e) => setNewRule({ ...newRule, action: e.target.value })}
+                  >
+                    <option value="">Select Action</option>
+                    <option value="assign_to_branch">Assign to Branch</option>
+                    <option value="assign_to_team">Assign to Team</option>
+                    <option value="send_email">Send Email</option>
+                    <option value="archive">Archive Lead</option>
+                    <option value="notify_manager">Notify Manager</option>
+                  </select>
+                </div>
 
               </div>
 
               <div className={styles.drawerFooter}>
-                {drawerStep > 1 ? (
-                  <button className={styles.secondaryBtn} onClick={() => setDrawerStep(drawerStep - 1)}>Back</button>
-                ) : (
-                  <div></div> // Spacer
-                )}
-
-                {drawerStep < 3 ? (
-                  <button className={styles.primaryBtn} onClick={handleNextStep}>Next Step <ArrowRight size={16} style={{ marginLeft: 8, verticalAlign: "middle" }} /></button>
-                ) : (
-                  <button className={styles.primaryBtn} onClick={handleSaveRule} disabled={submitting}>
-                    {submitting ? "Saving..." : "Save Rule"}
-                  </button>
-                )}
+                <button className={styles.secondaryBtn} onClick={() => setIsDrawerOpen(false)}>Cancel</button>
+                <button className={styles.primaryBtn} onClick={handleSaveRule} disabled={submitting}>
+                  {submitting ? "Saving..." : "Save Rule"}
+                </button>
               </div>
             </motion.div>
           </>

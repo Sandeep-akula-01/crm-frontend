@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import styles from "./teams.module.css";
 import {
     Users,
@@ -12,69 +12,36 @@ import {
     Clock,
     UserCheck
 } from "lucide-react";
+import axios from "axios";
 
 export const Team = ({ branch }) => {
     const [searchTerm, setSearchTerm] = useState("");
     const [roleFilter, setRoleFilter] = useState("All");
+    const [teamMembers, setTeamMembers] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    // Mock team data
-    const teamMembers = [
-        {
-            id: 1,
-            name: "Sandeep Kumar",
-            role: "Admin",
-            status: "Online",
-            email: "sandeep@example.com",
-            phone: "+91 98765 43210",
-            lastActive: "Now",
-            initials: "SK",
-            color: "#1d4ed8"
-        },
-        {
-            id: 2,
-            name: "Ananya Rao",
-            role: "Manager",
-            status: "Online",
-            email: "ananya@example.com",
-            phone: "+91 87654 32109",
-            lastActive: "10m ago",
-            initials: "AR",
-            color: "#3b82f6"
-        },
-        {
-            id: 3,
-            name: "Rahul Varma",
-            role: "Agent",
-            status: "Offline",
-            email: "rahul@example.com",
-            phone: "+91 76543 21098",
-            lastActive: "2h ago",
-            initials: "RV",
-            color: "#10b981"
-        },
-        {
-            id: 4,
-            name: "Priya Singh",
-            role: "Agent",
-            status: "Pending",
-            email: "priya@example.com",
-            phone: "+91 65432 10987",
-            lastActive: "Invited",
-            initials: "PS",
-            color: "#f59e0b"
-        },
-        {
-            id: 5,
-            name: "Vikram Shah",
-            role: "Manager",
-            status: "Away",
-            email: "vikram@example.com",
-            phone: "+91 54321 09876",
-            lastActive: "45m ago",
-            initials: "VS",
-            color: "#3b82f6"
+    const getAuthHeader = () => {
+        const token = localStorage.getItem("token");
+        return token ? { Authorization: `Bearer ${token}` } : {};
+    };
+
+    const fetchTeam = useCallback(async () => {
+        try {
+            setLoading(true);
+            const response = await axios.get("http://192.168.1.61:5000/api/team", {
+                headers: getAuthHeader()
+            });
+            setTeamMembers(response.data);
+        } catch (error) {
+            console.error("Error fetching team:", error);
+        } finally {
+            setLoading(false);
         }
-    ];
+    }, []);
+
+    useEffect(() => {
+        fetchTeam();
+    }, [fetchTeam]);
 
     const filteredTeam = teamMembers.filter(member => {
         const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -103,6 +70,10 @@ export const Team = ({ branch }) => {
         setShowInviteModal(false);
         setInviteForm({ name: "", email: "", role: "Employee" });
     };
+
+    if (loading) {
+        return <div className={styles.loading}>Loading team members...</div>;
+    }
 
     return (
         <div className={styles.container}>

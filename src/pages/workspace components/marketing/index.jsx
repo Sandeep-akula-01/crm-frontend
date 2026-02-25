@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
     ArrowUpRight,
     ArrowRight,
@@ -17,39 +17,45 @@ import {
     Tooltip,
     ResponsiveContainer,
 } from "recharts";
-
-const trendData = [
-    { month: "Jan", leads: 45, revenue: 40000 },
-    { month: "Feb", leads: 180, revenue: 65000 },
-    { month: "Mar", leads: 95, revenue: 52000 },
-    { month: "Apr", leads: 280, revenue: 90000 },
-    { month: "May", leads: 150, revenue: 120000 },
-    { month: "Jun", leads: 310, revenue: 85000 },
-    { month: "Jul", leads: 220, revenue: 140000 },
-];
-
-const campaignsArray = [
-    {
-        name: "New Year Blast",
-        channel: "Email",
-        status: "Active",
-        leads: 210,
-        conversion: "6.2%",
-        revenue: "₹65,000",
-        date: "Jan 12, 2026",
-    },
-    {
-        name: "Instagram Reel Push",
-        channel: "Social",
-        status: "Scheduled",
-        leads: 120,
-        conversion: "4.1%",
-        revenue: "₹32,000",
-        date: "Feb 02, 2026",
-    },
-];
+import axios from "axios";
 
 export const Marketing = () => {
+    const [data, setData] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    const getAuthHeader = () => {
+        const token = localStorage.getItem("token");
+        return token ? { Authorization: `Bearer ${token}` } : {};
+    };
+
+    const fetchMarketingData = useCallback(async () => {
+        try {
+            setLoading(true);
+            const response = await axios.get("http://192.168.1.61:5000/api/marketing/analytics", {
+                headers: getAuthHeader()
+            });
+            setData(response.data);
+        } catch (error) {
+            console.error("Error fetching marketing data:", error);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchMarketingData();
+    }, [fetchMarketingData]);
+
+    if (loading) {
+        return <div className={styles.loading}>Loading marketing data...</div>;
+    }
+
+    if (!data) {
+        return <div className={styles.error}>Failed to load marketing data.</div>;
+    }
+
+    const { kpis, trendData, campaigns, funnelData, channels } = data;
+
     return (
         <div className={styles.marketingPage}>
 
@@ -59,26 +65,26 @@ export const Marketing = () => {
             <div className={styles.kpiGrid}>
                 <div className={`${styles.kpiCard} ${styles.blue}`}>
                     <h4>Total Campaigns</h4>
-                    <h2>24</h2>
-                    <span>+12% growth</span>
+                    <h2>{kpis.totalCampaigns.value}</h2>
+                    <span>{kpis.totalCampaigns.growth} growth</span>
                 </div>
 
                 <div className={`${styles.kpiCard} ${styles.green}`}>
                     <h4>Leads Generated</h4>
-                    <h2>1,240</h2>
-                    <span>+8% this month</span>
+                    <h2>{kpis.leadsGenerated.value.toLocaleString()}</h2>
+                    <span>{kpis.leadsGenerated.growth} this month</span>
                 </div>
 
                 <div className={`${styles.kpiCard} ${styles.orange}`}>
                     <h4>Conversion Rate</h4>
-                    <h2>5.3%</h2>
-                    <span>+1.2%</span>
+                    <h2>{kpis.conversionRate.value}%</h2>
+                    <span>{kpis.conversionRate.growth}</span>
                 </div>
 
                 <div className={`${styles.kpiCard} ${styles.pink}`}>
                     <h4>Total Revenue</h4>
-                    <h2>₹1,25,000</h2>
-                    <span>+18%</span>
+                    <h2>₹{kpis.totalRevenue.value.toLocaleString()}</h2>
+                    <span>{kpis.totalRevenue.growth}</span>
                 </div>
             </div>
 
@@ -97,14 +103,12 @@ export const Marketing = () => {
                                 tickLine={false}
                                 tick={{ fontSize: 12, fill: '#64748b' }}
                             />
-                            {/* Left Y-Axis for Leads */}
                             <YAxis
                                 yAxisId="left"
                                 axisLine={false}
                                 tickLine={false}
                                 tick={{ fontSize: 12, fill: '#64748b' }}
                             />
-                            {/* Right Y-Axis for Revenue (Hidden to keep UI clean) */}
                             <YAxis
                                 yAxisId="right"
                                 orientation="right"
@@ -145,22 +149,13 @@ export const Marketing = () => {
                         </div>
                     </div>
                     <div className={styles.salesFunnelContainer}>
-                        {/* Downward Arrow on Left */}
                         <div className={styles.funnelIndicator}>
                             <div className={styles.arrowLine}></div>
                             <ArrowDown size={14} className={styles.arrowHead} />
                         </div>
 
-                        {/* Funnel Content */}
                         <div className={styles.funnelStages}>
-                            {[
-                                { label: "Lead", value: "100%", color: "#60a5fa", width: "100%" },
-                                { label: "Market Qualified", value: "55%", color: "#c084fc", width: "85%" },
-                                { label: "Sales Qualified", value: "27%", color: "#4ade80", width: "70%" },
-                                { label: "Negotiated", value: "16%", color: "#fbbf24", width: "55%" },
-                                { label: "Customer", value: "10%", color: "#f472b6", width: "40%" },
-                                { label: "Renewed", value: "3%", color: "#818cf8", width: "30%" },
-                            ].map((stage, idx) => (
+                            {funnelData.map((stage, idx) => (
                                 <div key={idx} className={styles.funnelRow}>
                                     <div
                                         className={styles.funnelBar}
@@ -185,41 +180,22 @@ export const Marketing = () => {
 
             {/* 📈 SECTION 3 — Channel Comparison */}
             <div className={styles.channelSection}>
-                <div className={styles.channelBox}>
-                    <div className={styles.channelLabel}>
-                        <Mail size={18} color="#0ea5e9" /> Email
+                {channels.map((chan, idx) => (
+                    <div key={idx} className={styles.channelBox}>
+                        <div className={styles.channelLabel}>
+                            {chan.name === "Email" && <Mail size={18} color="#0ea5e9" />}
+                            {chan.name === "WhatsApp" && <MessageCircle size={18} color="#10b981" />}
+                            {chan.name === "Social" && <Share2 size={18} color="#f9a8d4" />}
+                            {" "}{chan.name}
+                        </div>
+                        <div className={styles.channelStatsGrid}>
+                            <div className={styles.channelStat}><span>Camp:</span> {chan.campaigns}</div>
+                            <div className={styles.channelStat}><span>Leads:</span> {chan.leads}</div>
+                            <div className={styles.channelStat}><span>Conv:</span> {chan.conversion}</div>
+                            <div className={styles.channelStat}><span>Rev:</span> {chan.revenue}</div>
+                        </div>
                     </div>
-                    <div className={styles.channelStatsGrid}>
-                        <div className={styles.channelStat}><span>Camp:</span> 10</div>
-                        <div className={styles.channelStat}><span>Leads:</span> 480</div>
-                        <div className={styles.channelStat}><span>Conv:</span> 6.1%</div>
-                        <div className={styles.channelStat}><span>Rev:</span> ₹70k</div>
-                    </div>
-                </div>
-
-                <div className={styles.channelBox}>
-                    <div className={styles.channelLabel}>
-                        <MessageCircle size={18} color="#10b981" /> WhatsApp
-                    </div>
-                    <div className={styles.channelStatsGrid}>
-                        <div className={styles.channelStat}><span>Camp:</span> 8</div>
-                        <div className={styles.channelStat}><span>Leads:</span> 390</div>
-                        <div className={styles.channelStat}><span>Conv:</span> 5.8%</div>
-                        <div className={styles.channelStat}><span>Rev:</span> ₹42k</div>
-                    </div>
-                </div>
-
-                <div className={styles.channelBox}>
-                    <div className={styles.channelLabel}>
-                        <Share2 size={18} color="#f9a8d4" /> Social
-                    </div>
-                    <div className={styles.channelStatsGrid}>
-                        <div className={styles.channelStat}><span>Camp:</span> 6</div>
-                        <div className={styles.channelStat}><span>Leads:</span> 370</div>
-                        <div className={styles.channelStat}><span>Conv:</span> 4.3%</div>
-                        <div className={styles.channelStat}><span>Rev:</span> ₹33k</div>
-                    </div>
-                </div>
+                ))}
             </div>
 
             {/* PERFORMANCE TABLE */}
@@ -238,7 +214,7 @@ export const Marketing = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {campaignsArray.map((c, index) => (
+                        {campaigns.map((c, index) => (
                             <tr key={index}>
                                 <td>{c.name}</td>
                                 <td>{c.channel}</td>
