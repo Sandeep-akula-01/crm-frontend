@@ -63,9 +63,14 @@ const AutomationHome = ({ branch }) => {
       const response = await axios.get(`http://192.168.1.61:5000/api/automation/rules?branchId=${branchId}`, {
         headers: getAuthHeader()
       });
-      setRules(response.data);
+      // Ensure rules is always an array
+      const rulesData = Array.isArray(response.data)
+        ? response.data
+        : (response.data && Array.isArray(response.data.rules) ? response.data.rules : []);
+      setRules(rulesData);
     } catch (error) {
       console.error("Error fetching rules:", error);
+      setRules([]); // Fallback to empty array on error
     } finally {
       setLoading(false);
     }

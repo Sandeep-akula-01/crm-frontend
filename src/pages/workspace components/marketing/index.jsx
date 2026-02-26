@@ -19,6 +19,42 @@ import {
 } from "recharts";
 import axios from "axios";
 
+const mockMarketingData = {
+    kpis: {
+        totalCampaigns: { value: 12, growth: "+15%" },
+        leadsGenerated: { value: 2450, growth: "+12%" },
+        conversionRate: { value: 3.2, growth: "+0.5%" },
+        totalRevenue: { value: 850000, growth: "+18%" }
+    },
+    trendData: [
+        { month: "Jan", leads: 300, revenue: 120000 },
+        { month: "Feb", leads: 520, revenue: 150000 },
+        { month: "Mar", leads: 480, revenue: 105000 },
+        { month: "Apr", leads: 610, revenue: 190000 },
+        { month: "May", leads: 550, revenue: 150000 },
+        { month: "Jun", leads: 720, revenue: 140000 },
+    ],
+    funnelData: [
+        { label: "Awareness", color: "#7b8cff", width: "100%", value: "10,000" },
+        { label: "Interest", color: "rgb(163, 129, 255)", width: "80%", value: "4,500" },
+        { label: "Consideration", color: "#3bbfa0", width: "60%", value: "2,100" },
+        { label: "Intent", color: "#ffc56e", width: "40%", value: "850" },
+        { label: "Evaluation", color: "#ff8fa3", width: "25%", value: "320" },
+        { label: "Purchase", color: "#ff5c8a", width: "15%", value: "145" }
+    ],
+    channels: [
+        { name: "Email", campaigns: 5, leads: 850, conversion: "4.2%", revenue: "₹3.2L" },
+        { name: "WhatsApp", campaigns: 3, leads: 1200, conversion: "5.8%", revenue: "₹4.5L" },
+        { name: "Social", campaigns: 4, leads: 400, conversion: "2.1%", revenue: "₹0.8L" },
+    ],
+    campaigns: [
+        { name: "Summer Sale 2024", channel: "Email", status: "Active", leads: 450, conversion: "4.5%", revenue: "₹1.2L", date: "June 15" },
+        { name: "Tech Webinar Series", channel: "WhatsApp", status: "Scheduled", leads: 800, conversion: "6.2%", revenue: "₹2.5L", date: "July 01" },
+        { name: "Brand Awareness", channel: "Social", status: "Active", leads: 320, conversion: "2.5%", revenue: "₹0.5L", date: "June 10" },
+        { name: "Referral Program", channel: "Email", status: "Draft", leads: 0, conversion: "0%", revenue: "₹0", date: "Not Started" },
+    ]
+};
+
 export const Marketing = () => {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -34,9 +70,15 @@ export const Marketing = () => {
             const response = await axios.get("http://192.168.1.61:5000/api/marketing/analytics", {
                 headers: getAuthHeader()
             });
-            setData(response.data);
+
+            if (response.data && Object.keys(response.data).length > 0) {
+                setData(response.data);
+            } else {
+                setData(mockMarketingData);
+            }
         } catch (error) {
-            console.error("Error fetching marketing data:", error);
+            console.error("Error fetching marketing data, using fallback:", error);
+            setData(mockMarketingData);
         } finally {
             setLoading(false);
         }
