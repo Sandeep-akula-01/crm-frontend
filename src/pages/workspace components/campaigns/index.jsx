@@ -229,7 +229,7 @@ export const Campaigns = ({ branch }) => {
     const pauseCampaign = (id) => {
         setCampaigns((prev) =>
             prev.map((c) =>
-                c.id === id ? { ...c, status: "Draft" } : c
+                c.id === id ? { ...c, status: "Paused" } : c
             )
         );
     };
@@ -505,29 +505,32 @@ export const Campaigns = ({ branch }) => {
                         </div>
 
                         <div className={styles.cardFooter}>
-                            <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                <button
-                                    className={styles.iconBtn}
-                                    onClick={() => handleOpenBuilder(camp)}
-                                    title="Open Campaign Builder"
-                                >
-                                    <PlayCircle size={18} />
-                                </button>
+                            <div className={styles.controlGroup}>
+                                <div className={styles.tooltipContainer} data-tooltip="Activate">
+                                    <button
+                                        className={styles.iconBtn}
+                                        onClick={() => startCampaign(camp.id)}
+                                    >
+                                        <PlayCircle size={18} />
+                                    </button>
+                                </div>
 
-                                <button
-                                    className={styles.iconBtn}
-                                    onClick={() => pauseCampaign(camp.id)}
-                                >
-                                    <PauseCircle size={18} />
-                                </button>
+                                <div className={styles.tooltipContainer} data-tooltip="Stop">
+                                    <button
+                                        className={styles.iconBtn}
+                                        onClick={() => pauseCampaign(camp.id)}
+                                    >
+                                        <PauseCircle size={18} />
+                                    </button>
+                                </div>
                             </div>
 
 
                             <div className={styles.cardActions}>
                                 <button
                                     className={styles.editBtn}
-                                    onClick={() => openCampaignDetails(camp)}
-                                    title="Edit campaign details"
+                                    onClick={() => handleOpenBuilder(camp)}
+                                    title="Open Campaign Builder"
                                 >
                                     <Edit2 size={16} />
                                 </button>
@@ -1085,7 +1088,7 @@ export const Campaigns = ({ branch }) => {
 
                     {/* Tabs */}
                     <div className={styles.tabsEditor}>
-                        {["overview", "content", "form", "routing", "analytics"].map((tab) => (
+                        {["overview", "content", "form", "analytics"].map((tab) => (
                             <div
                                 key={tab}
                                 className={`${styles.tabEditor} ${activeLPTab === tab ? styles.activeTabEditor : ""
@@ -1160,19 +1163,6 @@ export const Campaigns = ({ branch }) => {
                             </>
                         )}
 
-                        {activeLPTab === "routing" && (
-                            <>
-                                <label>Assign Pipeline</label>
-                                <select>
-                                    <option>Default Pipeline</option>
-                                </select>
-
-                                <label>Assign Campaign</label>
-                                <select>
-                                    <option>Campaign 1</option>
-                                </select>
-                            </>
-                        )}
 
                         {activeLPTab === "analytics" && (
                             <div className={styles.analyticsBox}>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import styles from "./profile.module.css";
 import {
     User,
@@ -16,35 +16,65 @@ import {
     Clock,
     Users
 } from "lucide-react";
+import axios from "axios";
 
 export const Profile = ({ branch }) => {
     const [activeTab, setActiveTab] = useState("personal");
     const [isEditing, setIsEditing] = useState(false);
+    const [loading, setLoading] = useState(true);
 
-    // Mock Data
     const [userData, setUserData] = useState({
-        name: "Varshini",
-        email: "varshini@acmecorp.com",
-        role: "Admin",
-        phone: "+91 91234 56789",
-        location: "Hyderabad, TS",
-        joinedDate: "October 2025"
+        name: "",
+        email: "",
+        role: "",
+        phone: "",
+        location: "",
+        joinedDate: ""
     });
 
     const [orgData, setOrgData] = useState({
-        name: "Acme Corp",
-        industry: "Real Estate & Consultancy",
-        website: "www.acmecorp.com",
-        address: "123 Business Hub, HITEC City, Hyderabad",
-        totalEmployees: "45",
-        founded: "2020",
-        hq: "Hyderabad"
+        name: "",
+        industry: "",
+        website: "",
+        address: "",
+        totalEmployees: "",
+        founded: "",
+        hq: ""
     });
+
+    const getAuthHeader = () => {
+        const token = localStorage.getItem("token");
+        return token ? { Authorization: `Bearer ${token}` } : {};
+    };
+
+    const fetchProfile = useCallback(async () => {
+        try {
+            setLoading(true);
+            const response = await axios.get("http://192.168.1.61:5000/api/profile", {
+                headers: getAuthHeader()
+            });
+            const { user, organization } = response.data;
+            setUserData(user);
+            setOrgData(organization);
+        } catch (error) {
+            console.error("Error fetching profile:", error);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchProfile();
+    }, [fetchProfile]);
 
     const handleSave = () => {
         setIsEditing(false);
         // Logic to persist data would go here
     };
+
+    if (loading) {
+        return <div className={styles.loading}>Loading profile...</div>;
+    }
 
     return (
         <div className={styles.container}>
@@ -75,7 +105,7 @@ export const Profile = ({ branch }) => {
                         <div className={styles.cardHeader}>
                             <div className={styles.profileHeader}>
                                 <div className={styles.avatarContainer}>
-                                    <div className={styles.avatar}>V</div>
+                                    <div className={styles.avatar}>{userData.name?.charAt(0) || "U"}</div>
                                     {isEditing && (
                                         <button className={styles.cameraBtn}>
                                             <Camera size={14} />
@@ -158,7 +188,7 @@ export const Profile = ({ branch }) => {
                     <div className={styles.card}>
                         <div className={styles.orgHeader}>
                             <div className={styles.orgInfo}>
-                                <div className={styles.orgLogo}>{orgData.name.charAt(0)}</div>
+                                <div className={styles.orgLogo}>{orgData.name?.charAt(0)}</div>
                                 <div className={styles.orgTitle}>
                                     <h3>{orgData.name}</h3>
                                     <p>{orgData.industry}</p>
@@ -201,7 +231,7 @@ export const Profile = ({ branch }) => {
                             <h4>Active Branches</h4>
                             <div className={styles.branchChips}>
                                 {["Hyderabad", "Warangal", "Bangalore", "Mysore"].map(b => (
-                                    <div key={b} className={`${styles.branchChip} ${b === branch.name ? styles.activeChip : ""}`}>
+                                    <div key={b} className={`${styles.branchChip} ${b === branch?.name ? styles.activeChip : ""}`}>
                                         {b}
                                     </div>
                                 ))}

@@ -154,8 +154,9 @@
     color: #6d28d9;
 }
 
-.draft {
-    background: #fef9c3;
+.draft,
+.paused {
+    background: #fef3c7;
     color: #92400e;
 }
 
@@ -190,6 +191,68 @@
 
 .iconBtn:hover {
     background: #f9fafb;
+    border-color: #fb923c;
+    color: #fb923c;
+}
+
+/* ================= TOOLTIPS ================= */
+.controlGroup {
+    display: flex;
+    gap: 0.8rem;
+    align-items: center;
+}
+
+.tooltipContainer {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.tooltipContainer::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%) translateY(5px);
+    background: #fb923c;
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 999px;
+    /* Pill shape */
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(251, 146, 60, 0.3);
+    z-index: 100;
+}
+
+.tooltipContainer:hover::after {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Small arrow for tooltip */
+.tooltipContainer::before {
+    content: '';
+    position: absolute;
+    bottom: 110%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #fb923c;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    z-index: 100;
+}
+
+.tooltipContainer:hover::before {
+    opacity: 1;
+    visibility: visible;
 }
 
 /* ================= EMPTY ================= */

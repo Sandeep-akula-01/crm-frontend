@@ -109,7 +109,7 @@ export default function SignUp() {
                         </form>
 
                         <p className={styles.footerText}>
-                            Already have an account? <span>Sign in</span>
+                            Already have an account? <span onClick={() => navigate("/login")} style={{ cursor: "pointer" }}>Sign in</span>
                         </p>
                     </div>
                 </div>

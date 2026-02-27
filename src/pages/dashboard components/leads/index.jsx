@@ -275,6 +275,22 @@ export default function Leads({ branch }) {
                     </div>
                 </div>
 
+                {/* EXPORT / IMPORT CTA SECTION */}
+                <div className={styles.exportSection}>
+                    <div className={styles.exportText}>
+                        <h3>Import / Export Leads</h3>
+                        <p>Import new leads or export existing data for analysis and backup.</p>
+                    </div>
+                    <div className={styles.exportActionArea}>
+                        <button className={styles.importBtn} onClick={() => alert("Import Leads clicked")}>
+                            Import Leads
+                        </button>
+                        <button className={styles.exportBtn} onClick={() => alert("Export Leads clicked")}>
+                            Export Database
+                        </button>
+                    </div>
+                </div>
+
 
                 {/* TREND + CAMPAIGN ROW */}
 

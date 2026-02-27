@@ -801,6 +801,83 @@ input:checked+.slider:before {
   align-items: center;
 }
 
+/* Add Step Menu */
+.addMenu {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  margin: 0.5rem 0;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.addOption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 0.8rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 70px;
+}
+
+.addOption:hover {
+  background: #f3f4f6;
+}
+
+.addOptionIcon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.addOptionLabel {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.optTrigger {
+  color: #7c3aed;
+  background: #f5f3ff;
+}
+
+.optAction {
+  color: #3b82f6;
+  background: #eff6ff;
+}
+
+.optDelay {
+  color: #f59e0b;
+  background: #fffbeb;
+}
+
+.optCondition {
+  color: #ec4899;
+  background: #fdf2f8;
+}
+
+
 
 
 /* ---------------- WORKSPACE TABS LAYOUT ---------------- */
@@ -857,8 +934,30 @@ input:checked+.slider:before {
   border-radius: 3px 3px 0 0;
 }
 
-.tabContent {
-  flex: 1;
-  position: relative;
-  /* min-height: calc(100vh - 200px); */
+/* Editable Nodes */
+.editableText:hover,
+.editableIcon:hover {
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 4px;
+  cursor: text;
+}
+
+.inlineInput {
+  width: 100%;
+  border: 1px solid #7c3aed;
+  border-radius: 4px;
+  padding: 2px 4px;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+  outline: none;
+  background: white;
+}
+
+.iconInput {
+  width: 40px;
+  text-align: center;
+  font-weight: 800;
+  font-size: 14px;
 }
