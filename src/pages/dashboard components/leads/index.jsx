@@ -44,12 +44,15 @@ export default function Leads({ branch }) {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            let data = res.data || [];
+            // Handle both array and object responses (e.g. { leads: [...] })
+            let data = Array.isArray(res.data)
+                ? res.data
+                : (res.data && Array.isArray(res.data.leads) ? res.data.leads : (res.data?.data || []));
 
             // Map backend data to frontend structure
             const mappedLeads = data.map(lead => ({
                 id: lead.id,
-                name: lead.name || `${lead.first_name || ''} ${lead.last_name || ''}`.trim(),
+                name: lead.name || `${lead.first_name || ''} ${lead.last_name || ''}`.trim() || 'No Name',
                 email: lead.email || '',
                 phone: lead.phone || '',
                 company: lead.company || '',
@@ -63,26 +66,17 @@ export default function Leads({ branch }) {
                 city: lead.city || 'N/A',
                 state: lead.state || 'N/A',
                 country: lead.country || 'N/A',
+                isNewThisWeek: lead.isNewThisWeek || false
             }));
 
             if (mappedLeads.length === 0) {
-                const dummyLeads = [
-                    { id: 101, name: "Anita Kumar", email: "anita@example.com", phone: "+91 91234 56789", company: "Green Energy Corp", source: "Facebook", status: "Hot", score: "High", sla: "On Track", owner: "Varshini", createdAt: "2026-02-23" },
-                    { id: 102, name: "Vikram Singh", email: "vikram@singh.in", phone: "+91 82345 67890", company: "Singh & Sons", source: "Direct", status: "New", score: "Medium", sla: "Delayed", owner: "Ravi", createdAt: "2026-02-22" },
-                    { id: 103, name: "Sarah Jones", email: "sarahj@tech.com", phone: "+1 555 0102", company: "Tech Flow", source: "Google", status: "Converted", score: "High", sla: "On Track", owner: "Anu", createdAt: "2026-02-20" },
-                    { id: 104, name: "Rajesh Iyer", email: "riyer@tcs.com", phone: "+91 73456 78901", company: "TCS", source: "LinkedIn", status: "Lost", score: "Low", sla: "N/A", owner: "Varshini", createdAt: "2026-02-15" },
-                ];
-                setLeads(dummyLeads);
+                setLeads(DUMMY_LEADS);
             } else {
                 setLeads(mappedLeads);
             }
         } catch (error) {
             console.error("Failed to fetch leads:", error);
-            const dummyLeads = [
-                { id: 101, name: "Anita Kumar", email: "anita@example.com", phone: "+91 91234 56789", company: "Green Energy Corp", source: "Facebook", status: "Hot", score: "High", sla: "On Track", owner: "Varshini", createdAt: "2026-02-23" },
-                { id: 102, name: "Vikram Singh", email: "vikram@singh.in", phone: "+91 82345 67890", company: "Singh & Sons", source: "Direct", status: "New", score: "Medium", sla: "Delayed", owner: "Ravi", createdAt: "2026-02-22" },
-            ];
-            setLeads(dummyLeads);
+            setLeads(DUMMY_LEADS);
         }
     };
 

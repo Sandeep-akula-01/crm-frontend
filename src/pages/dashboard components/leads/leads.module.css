@@ -426,7 +426,7 @@
   max-width: 100%;
   /*  prevent layout expansion */
   overflow-x: auto;
-  overflow-y: hidden;
+  overflow-y: auto;
 
   background: #fff;
   border-radius: 22px;
