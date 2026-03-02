@@ -106,10 +106,10 @@ export default function Main({ active, branch, setActive }) {
 
     // --- 3rd Row Dummy Data ---
     const leadStatusData = [
-        { name: "New", value: 45, color: "#6b5cff", grad: "pieGrad1" },
-        { name: "Contacted", value: 30, color: "#3bbfa0", grad: "pieGrad2" },
-        { name: "Qualified", value: 15, color: "#ffc56e", grad: "pieGrad3" },
-        { name: "Closed", value: 10, color: "#ff8fa3", grad: "pieGrad4" },
+        { name: "New", value: 45, color: "#0918a0", grad: "pieGrad1" },
+        { name: "Contacted", value: 30, color: "#00b82b", grad: "pieGrad2" },
+        { name: "Qualified", value: 15, color: "#f79106", grad: "pieGrad3" },
+        { name: "Closed", value: 10, color: "#ff00a0", grad: "pieGrad4" },
     ];
 
     const recentActivities = [
@@ -254,20 +254,20 @@ export default function Main({ active, branch, setActive }) {
                                     <PieChart>
                                         <defs>
                                             <linearGradient id="pieGrad1" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="0%" stopColor="#8c81ff" />
-                                                <stop offset="100%" stopColor="#6b5cff" />
+                                                <stop offset="0%" stopColor="#7b8cff" />
+                                                <stop offset="100%" stopColor="#0918a0" />
                                             </linearGradient>
                                             <linearGradient id="pieGrad2" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="0%" stopColor="#62e0c2" />
-                                                <stop offset="100%" stopColor="#3bbfa0" />
+                                                <stop offset="0%" stopColor="#4fd1a5" />
+                                                <stop offset="100%" stopColor="#00b82b" />
                                             </linearGradient>
                                             <linearGradient id="pieGrad3" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="0%" stopColor="#ffd89d" />
-                                                <stop offset="100%" stopColor="#ffc56e" />
+                                                <stop offset="0%" stopColor="#ffc56e" />
+                                                <stop offset="100%" stopColor="#f79106" />
                                             </linearGradient>
                                             <linearGradient id="pieGrad4" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="0%" stopColor="#ffb3c1" />
-                                                <stop offset="100%" stopColor="#ff8fa3" />
+                                                <stop offset="0%" stopColor="#ff8fa3" />
+                                                <stop offset="100%" stopColor="#ff00a0" />
                                             </linearGradient>
                                         </defs>
                                         <Pie

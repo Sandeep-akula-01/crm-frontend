@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     ComposableMap,
     Geographies,
@@ -9,36 +9,87 @@ import styles from "./CustomerMap.module.css";
 const geoUrl =
     "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
+const indiaGeoUrl =
+    "https://raw.githubusercontent.com/geohacker/india/master/state/india_state.geojson";
+
 export default function CustomerMap() {
+    const [view, setView] = useState("world");
+
+    const crmStates = [
+        "Telangana",
+        "Andhra Pradesh",
+        "Tamil Nadu",
+        "Karnataka"
+    ];
+
     return (
         <div className={styles.card}>
-            <h3 className={styles.title}>Customer by Country</h3>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <h3 className={styles.title}>Customer by Country</h3>
+                {view === "india" && (
+                    <button
+                        onClick={() => setView("world")}
+                        style={{
+                            fontSize: "12px",
+                            marginBottom: "6px",
+                            background: "none",
+                            border: "none",
+                            color: "#000080",
+                            cursor: "pointer",
+                            fontWeight: "600"
+                        }}
+                    >
+                        ← Back to World
+                    </button>
+                )}
+            </div>
 
             <div className={styles.mapLayout}>
                 <ComposableMap
                     projection="geoMercator"
-                    projectionConfig={{
-                        scale: 170,
-                        center: [78, 22],
-                    }}
+                    projectionConfig={
+                        view === "world"
+                            ? { scale: 170, center: [78, 22] }
+                            : { scale: 1200, center: [78.5, 22] }
+                    }
                     className={styles.map}
                 >
-                    <Geographies geography={geoUrl}>
+                    <Geographies
+                        key={view}
+                        geography={view === "world" ? geoUrl : indiaGeoUrl}
+                    >
                         {({ geographies }) =>
                             geographies.map((geo) => {
-                                const isActive = geo.properties.name === "India";
+                                const isIndia = geo.properties.name === "India";
+
+                                // Using NAME_1 property for states in GeoJSON
+                                const stateName = geo.properties.NAME_1 || geo.properties.name || "";
+
+                                const isActiveState = crmStates.some(
+                                    s => s.toLowerCase() === stateName.toLowerCase()
+                                );
+
+                                const fill = view === "world"
+                                    ? (isIndia ? "#000080" : "#E6E8F0")
+                                    : (isActiveState ? "#000080" : "#E6E8F0");
+
                                 return (
                                     <Geography
                                         key={geo.rsmKey}
                                         geography={geo}
+                                        onClick={() => {
+                                            if (isIndia && view === "world") setView("india");
+                                        }}
                                         style={{
                                             default: {
-                                                fill: isActive ? "#7B61FF" : "#E6E8F0",
+                                                fill: fill,
                                                 outline: "none",
+                                                cursor: isIndia && view === "world" ? "pointer" : "default"
                                             },
                                             hover: {
-                                                fill: isActive ? "#6A52E0" : "#D6D9E6",
+                                                fill: view === "world" && isIndia ? "#000066" : (view === "india" && isActiveState ? "#000066" : (fill === "#E6E8F0" ? "#D6D9E6" : fill)),
                                                 outline: "none",
+                                                cursor: (isIndia && view === "world") || (view === "india") ? "pointer" : "default"
                                             },
                                             pressed: { outline: "none" },
                                         }}
@@ -56,7 +107,7 @@ export default function CustomerMap() {
                     </div>
 
                     <div className={styles.statBox}>
-                        <p className={styles.statValue}>India</p>
+                        <p className={styles.statValue}>{view === "india" ? "Telangana" : "India"}</p>
                         <p className={styles.statLabel}>Top Region</p>
                     </div>
 
