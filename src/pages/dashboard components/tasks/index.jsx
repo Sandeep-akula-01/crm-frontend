@@ -20,48 +20,10 @@ import {
 } from "lucide-react";
 import styles from "./tasks.module.css";
 
-const tasksData = [
-  {
-    title: "Follow up with Riya Sharma",
-    related: "Lead · Instagram",
-    priority: "High",
-    due: "Today",
-    owner: "Varshini",
-    done: false,
-  },
-  {
-    title: "Send proposal to Acme Corp",
-    related: "Deal · CRM Setup",
-    priority: "Medium",
-    due: "Tomorrow",
-    owner: "Ravi",
-    done: false,
-  },
-  {
-    title: "Demo call with Nova Labs",
-    related: "Deal · Website Redesign",
-    priority: "High",
-    due: "Jan 26",
-    owner: "Anu",
-    done: false,
-  },
-  {
-    title: "Internal review meeting",
-    related: "Team Task",
-    priority: "Low",
-    due: "Completed",
-    owner: "Varshini",
-    done: true,
-  },
-];
 
 export default function Tasks() {
-  const [tasks, setTasks] = useState([
-    { id: 1, title: "Follow up with Riya Sharma", related: "Lead · Instagram", priority: "High", due: "Today", owner: "Varshini", done: false },
-    { id: 2, title: "Send proposal to Acme Corp", related: "Deal · CRM Setup", priority: "Medium", due: "Tomorrow", owner: "Ravi", done: false },
-    { id: 3, title: "Demo call with Nova Labs", related: "Deal · Website Redesign", priority: "High", due: "Jan 26", owner: "Anu", done: false },
-    { id: 4, title: "Internal review meeting", related: "Team Task", priority: "Low", due: "Completed", owner: "Varshini", done: true },
-  ]);
+  const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const [filter, setFilter] = useState("All");
   const [showTaskModal, setShowTaskModal] = useState(false);
@@ -75,16 +37,67 @@ export default function Tasks() {
   const [files, setFiles] = useState([]);
 
   /* TASK HANDLERS */
-  const toggleTask = (id) => {
-    setTasks(tasks.map(t => t.id === id ? { ...t, done: !t.done } : t));
+  const fetchTasks = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("token");
+      const res = await axios.get("http://192.168.1.61:5000/api/tasks/my", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      // Map backend fields to frontend if needed
+      const mapped = (res.data.tasks || res.data).map(t => ({
+        ...t,
+        done: t.status === 'completed' || t.status === 'done',
+        priority: t.priority || 'Medium',
+        due: t.due_date || t.due || 'No date'
+      }));
+      setTasks(mapped);
+    } catch (err) {
+      console.error("Failed to fetch tasks", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const addTask = (e) => {
+  useEffect(() => {
+    if (activeTab === "tasks") {
+      fetchTasks();
+    }
+  }, [activeTab]);
+
+  const toggleTask = async (id, currentStatus) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.put(`http://192.168.1.61:5000/api/tasks/${id}/complete`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setTasks(tasks.map(t => t.id === id ? { ...t, done: !t.done } : t));
+    } catch (err) {
+      console.error("Failed to update task", err);
+    }
+  };
+
+  const addTask = async (e) => {
     e.preventDefault();
     if (!newTask.title.trim()) return;
-    setTasks([...tasks, { ...newTask, id: Date.now(), done: false }]);
-    setShowTaskModal(false);
-    setNewTask({ title: "", related: "Manual", priority: "Medium", due: "Today", owner: "Varshini" });
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.post("http://192.168.1.61:5000/api/tasks", {
+        title: newTask.title,
+        priority: newTask.priority,
+        due_date: newTask.due || "today",
+        related_to: newTask.related
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      setTasks([...tasks, { ...res.data, done: false }]);
+      setShowTaskModal(false);
+      setNewTask({ title: "", related: "Manual", priority: "Medium", due: "Today", owner: "Varshini" });
+      fetchTasks(); // Refresh for accuracy
+    } catch (err) {
+      console.error("Failed to add task", err);
+    }
   };
 
   const filteredTasks = tasks.filter(t => {
@@ -268,7 +281,7 @@ export default function Tasks() {
                 <input
                   type="checkbox"
                   checked={t.done}
-                  onChange={() => toggleTask(t.id)}
+                  onChange={() => toggleTask(t.id, t.done)}
                   className={styles.taskCheckbox}
                 />
 

@@ -102,6 +102,7 @@ export default function Leads({ branch }) {
         description: ""
     });
 
+
     const getLocation = async () => {
         try {
             const res = await fetch("https://ipinfo.io/json");

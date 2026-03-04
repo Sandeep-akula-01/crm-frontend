@@ -3,6 +3,7 @@ import styles from "./dashboard.module.css";
 import { useNavigate } from "react-router-dom";
 import Main from "../dashboard components/main";
 import Workspace from "../workspace components/workspace";
+import NPSFeedback from "../dashboard components/nps";
 import {
     User,
     LogOut,
@@ -81,6 +82,7 @@ export default function Dashboard() {
     const [openState, setOpenState] = useState(null);
     const [openWorkspace, setOpenWorkspace] = useState(true);
     const [openDropdown, setOpenDropdown] = useState(null); // "notification" | "profile" | null
+    const [showNPS, setShowNPS] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(true);
 
     // Refs for dropdowns
@@ -141,6 +143,8 @@ export default function Dashboard() {
                 return <h2>App Settings</h2>;
             case "Profile":
                 return <h2>User Profile & Organization</h2>;
+            case "KnowledgeBase":
+                return <h2>Knowledge Base</h2>;
             default:
                 return null;
         }
@@ -364,13 +368,39 @@ export default function Dashboard() {
                                                         <MapPin size={16} />
                                                         Branches
                                                     </button>
-                                                    <button className={styles.menuItem}>
+                                                    <button
+                                                        className={styles.menuItem}
+                                                        onClick={() => {
+                                                            setActive("SupportTickets");
+                                                            setOpenDropdown(null);
+                                                        }}
+                                                    >
                                                         <HelpCircle size={16} />
                                                         Support Ticket
+                                                    </button>
+                                                    <button
+                                                        className={styles.menuItem}
+                                                        onClick={() => {
+                                                            setActive("KnowledgeBase");
+                                                            setOpenDropdown(null);
+                                                        }}
+                                                    >
+                                                        <FileText size={16} />
+                                                        Knowledge Base
                                                     </button>
                                                     <button className={styles.menuItem}>
                                                         <Shield size={16} />
                                                         Privacy Policy
+                                                    </button>
+                                                    <button
+                                                        className={styles.menuItem}
+                                                        onClick={() => {
+                                                            setShowNPS(true);
+                                                            setOpenDropdown(null);
+                                                        }}
+                                                    >
+                                                        <Zap size={16} />
+                                                        Give Feedback
                                                     </button>
                                                 </div>
                                                 <div className={styles.dropdownFooter}>
@@ -402,7 +432,7 @@ export default function Dashboard() {
                 </main >
             </div >
 
-
+            {showNPS && <NPSFeedback onClose={() => setShowNPS(false)} />}
         </>
     )
 }
