@@ -10,7 +10,23 @@ import {
   Download,
   Target,
   UserCircle,
-  Globe
+  Globe,
+  Search,
+  Filter,
+  PieChart,
+  Heart,
+  TrendingUp as TrendingIcon,
+  Activity,
+  Sliders,
+  Check,
+  Plus,
+  Share2,
+  Mail,
+  Link,
+  Calendar,
+  ChevronDown,
+  Clock,
+  X
 } from "lucide-react";
 import styles from "./reports.module.css";
 
@@ -18,6 +34,29 @@ export default function Reports() {
   const [activeTab, setActiveTab] = useState("summary");
   const [showExportDropdown, setShowExportDropdown] = useState(false);
   const [selectedExports, setSelectedExports] = useState([]);
+  const [isCustomizing, setIsCustomizing] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [shareExpiry, setShareExpiry] = useState("7 Days");
+  const [sharePage, setSharePage] = useState("all");
+
+  // --- INITIAL VISIBLE TABS ---
+  const DEFAULT_TABS = ["summary", "leads", "sales", "pipeline", "reps", "customers", "health"];
+  const [visibleTabs, setVisibleTabs] = useState(() => {
+    const saved = localStorage.getItem("crm_reports_visible_tabs");
+    return saved ? JSON.parse(saved) : DEFAULT_TABS;
+  });
+
+  useEffect(() => {
+    localStorage.setItem("crm_reports_visible_tabs", JSON.stringify(visibleTabs));
+  }, [visibleTabs]);
+
+  const toggleTabVisibility = (tabId) => {
+    setVisibleTabs(prev =>
+      prev.includes(tabId)
+        ? prev.filter(id => id !== tabId)
+        : [...prev, tabId]
+    );
+  };
 
   // --- DUMMY FALLBACKS ---
   const DUMMY_SUMMARY = {
@@ -58,7 +97,27 @@ export default function Reports() {
     { id: "pipeline", label: "Pipeline Report", icon: <TrendingUp size={16} /> },
     { id: "reps", label: "Sales Reps", icon: <UserCircle size={16} /> },
     { id: "customers", label: "Customer Stats", icon: <Users size={16} /> },
+    { id: "health", label: "Customer Health", icon: <Heart size={16} /> },
   ];
+
+  const DUMMY_CUSTOMER_HEALTH = [
+    { name: "Alpha Systems", score: 85, nps: 9, tickets: 2, sla: 0, trend: "+5%", plan: "Enterprise", status: "Healthy" },
+    { name: "Beta Corp", score: 42, nps: 6, tickets: 12, sla: 4, trend: "-12%", plan: "Pro", status: "At Risk" },
+    { name: "Gamma Tech", score: 28, nps: 4, tickets: 15, sla: 8, trend: "-20%", plan: "Enterprise", status: "Churn Risk" },
+    { name: "Delta Solutions", score: 92, nps: 10, tickets: 0, sla: 0, trend: "+2%", plan: "Startup", status: "Healthy" },
+    { name: "Epsilon Inc", score: 65, nps: 8, tickets: 5, sla: 1, trend: "+8%", plan: "Pro", status: "Healthy" },
+  ];
+
+  const [healthSearch, setHealthSearch] = useState("");
+  const [healthFilter, setHealthFilter] = useState("All");
+  const [planFilter, setPlanFilter] = useState("All");
+
+  const filteredHealth = DUMMY_CUSTOMER_HEALTH.filter(c => {
+    const matchesSearch = c.name.toLowerCase().includes(healthSearch.toLowerCase());
+    const matchesStatus = healthFilter === "All" || c.status === healthFilter;
+    const matchesPlan = planFilter === "All" || c.plan === planFilter;
+    return matchesSearch && matchesStatus && matchesPlan;
+  });
 
   const [insightsData, setInsightsData] = useState([
     { text: "Leads from Google Ads have increased by 22% this month.", type: "short" },
@@ -232,6 +291,32 @@ export default function Reports() {
 
   return (
     <div className={styles.reportsPage}>
+      {/* REPORTS HEADER */}
+      <div className={styles.reportsHeader}>
+        <div className={styles.headerTitle}>
+          <h1>Reports & Analytics</h1>
+          <p>Monitor your business performance and customer health.</p>
+        </div>
+        <div className={styles.headerActions}>
+          <div className={styles.dateFilter}>
+            <Calendar size={16} />
+            <span>Last 30 Days</span>
+            <ChevronDown size={14} />
+          </div>
+
+          <div className={styles.actionGroup}>
+            <button className={styles.headerExportBtn} onClick={() => setShowExportDropdown(!showExportDropdown)}>
+              <Download size={16} />
+              Export
+            </button>
+            <button className={styles.shareBtn} onClick={() => setShowShareModal(true)}>
+              <Share2 size={16} />
+              Share
+            </button>
+          </div>
+        </div>
+      </div>
+
 
       {/* KPI CARDS */}
       <div className={styles.reportStats}>
@@ -285,6 +370,11 @@ export default function Reports() {
             Export Report
           </button>
 
+          <button className={styles.shareBtnInline} onClick={() => setShowShareModal(true)}>
+            <Share2 size={16} />
+            Share
+          </button>
+
           {showExportDropdown && (
             <div className={styles.dropdownMenu}>
               <div className={styles.dropdownHeader}>Select Sections</div>
@@ -322,16 +412,49 @@ export default function Reports() {
       {/* TABBED ANALYTICS SECTION */}
       <div className={styles.tabbedContainer}>
         <div className={styles.tabSidebar}>
-          {tabs.map(tab => (
-            <button
-              key={tab.id}
-              className={`${styles.tabLink} ${activeTab === tab.id ? styles.activeTabLink : ''}`}
-              onClick={() => setActiveTab(tab.id)}
-            >
-              {tab.icon}
-              <span>{tab.label}</span>
-            </button>
-          ))}
+          <div className={styles.sidebarLinks}>
+            {tabs.filter(t => visibleTabs.includes(t.id)).map(tab => (
+              <button
+                key={tab.id}
+                className={`${styles.tabLink} ${activeTab === tab.id ? styles.activeTabLink : ''}`}
+                onClick={() => setActiveTab(tab.id)}
+              >
+                {tab.icon}
+                <span>{tab.label}</span>
+              </button>
+            ))}
+          </div>
+
+          <button
+            className={`${styles.customizeBtn} ${isCustomizing ? styles.active : ''}`}
+            onClick={() => setIsCustomizing(!isCustomizing)}
+          >
+            <Sliders size={16} />
+            <span>Customize</span>
+          </button>
+
+          {isCustomizing && (
+            <div className={styles.customizationOverlay}>
+              <div className={styles.customizationMenu}>
+                <div className={styles.dropdownHeader}>Toggle Components</div>
+                {tabs.map(tab => (
+                  <div
+                    key={tab.id}
+                    className={styles.customToggleItem}
+                    onClick={() => toggleTabVisibility(tab.id)}
+                  >
+                    <div className={`${styles.customCheckbox} ${visibleTabs.includes(tab.id) ? styles.checked : ''}`}>
+                      {visibleTabs.includes(tab.id) && <Check size={12} />}
+                    </div>
+                    <span>{tab.label}</span>
+                  </div>
+                ))}
+                <div className={styles.dropdownFooter}>
+                  <button className={styles.doneBtn} onClick={() => setIsCustomizing(false)}>Done</button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className={styles.tabContent}>
@@ -495,8 +618,225 @@ export default function Reports() {
               </div>
             </div>
           )}
+
+          {activeTab === "health" && (
+            <div className={styles.contentBlock}>
+              <div className={styles.contentHeader}>
+                <h3 className={styles.contentTitle}>Customer Health & Retention</h3>
+              </div>
+
+              {/* Toolbar */}
+              <div className={styles.healthToolbar}>
+                <div className={styles.searchBox}>
+                  <Search size={16} />
+                  <input
+                    type="text"
+                    placeholder="Search customers..."
+                    value={healthSearch}
+                    onChange={(e) => setHealthSearch(e.target.value)}
+                  />
+                </div>
+                <div className={styles.filterGroup}>
+                  <div className={styles.filterItem}>
+                    <Filter size={14} />
+                    <select value={healthFilter} onChange={(e) => setHealthFilter(e.target.value)}>
+                      <option value="All">All Statuses</option>
+                      <option value="Healthy">Healthy</option>
+                      <option value="At Risk">At Risk</option>
+                      <option value="Churn Risk">Churn Risk</option>
+                    </select>
+                  </div>
+                  <div className={styles.filterItem}>
+                    <select value={planFilter} onChange={(e) => setPlanFilter(e.target.value)}>
+                      <option value="All">All Plans</option>
+                      <option value="Enterprise">Enterprise</option>
+                      <option value="Pro">Pro</option>
+                      <option value="Startup">Startup</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Table */}
+              <div className={styles.tableWrapper}>
+                <table className={styles.reportTable}>
+                  <thead>
+                    <tr>
+                      <th>Customer</th>
+                      <th>Health Score</th>
+                      <th>NPS</th>
+                      <th>Open Tickets</th>
+                      <th>SLA Breaches</th>
+                      <th>Trend</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredHealth.map((c, i) => (
+                      <tr key={i}>
+                        <td className={styles.bold}>{c.name} <small className={styles.planBadge}>{c.plan}</small></td>
+                        <td>
+                          <div className={styles.healthScoreCell}>
+                            <div className={styles.circularProgress} style={{ '--progress': c.score + '%' }}>
+                              <svg width="36" height="36">
+                                <circle cx="18" cy="18" r="16" className={styles.progressBg} />
+                                <circle cx="18" cy="18" r="16" className={`${styles.progressValue} ${styles[c.status.replace(' ', '').toLowerCase()]}`} />
+                              </svg>
+                              <span>{c.score}</span>
+                            </div>
+                            <span className={`${styles.statusBadge} ${styles[c.status.replace(' ', '').toLowerCase()]}`}>
+                              {c.status}
+                            </span>
+                          </div>
+                        </td>
+                        <td>
+                          <div className={styles.npsValue}>{c.nps}/10</div>
+                        </td>
+                        <td>{c.tickets}</td>
+                        <td className={c.sla > 0 ? styles.negative : ''}>{c.sla}</td>
+                        <td className={c.trend.startsWith('+') ? styles.positive : styles.negative}>
+                          {c.trend}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Health Analytics Grid */}
+              <div className={styles.analyticsGrid}>
+                <div className={styles.analyticsCard}>
+                  <div className={styles.cardHeader}>
+                    <h4>Health Distribution</h4>
+                    <PieChart size={16} />
+                  </div>
+                  <div className={styles.pieContainer}>
+                    <div className={styles.mockPie}>
+                      <div className={styles.pieSegment} style={{ '--angle': '0deg', '--size': '60%', '--color': '#10b981' }}></div>
+                      <div className={styles.pieSegment} style={{ '--angle': '216deg', '--size': '25%', '--color': '#f59e0b' }}></div>
+                      <div className={styles.pieSegment} style={{ '--angle': '306deg', '--size': '15%', '--color': '#ef4444' }}></div>
+                      <div className={styles.pieCenter}>
+                        <span>{DUMMY_CUSTOMER_HEALTH.length}</span>
+                        <small>Total Customers</small>
+                      </div>
+                    </div>
+                    <div className={styles.pieLegend}>
+                      <div><span style={{ backgroundColor: '#10b981' }}></span> Healthy (60%)</div>
+                      <div><span style={{ backgroundColor: '#f59e0b' }}></span> At Risk (25%)</div>
+                      <div><span style={{ backgroundColor: '#ef4444' }}></span> Churn Risk (15%)</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className={styles.analyticsCard}>
+                  <div className={styles.cardHeader}>
+                    <h4>NPS Breakdown</h4>
+                    <TrendingIcon size={16} />
+                  </div>
+                  <div className={styles.npsMetric}>
+                    <div className={styles.bigNumber}>8.4</div>
+                    <div className={styles.npsBar}>
+                      <div className={styles.npsPromoters} style={{ width: '65%' }}></div>
+                      <div className={styles.npsPassives} style={{ width: '20%' }}></div>
+                      <div className={styles.npsDetractors} style={{ width: '15%' }}></div>
+                    </div>
+                    <div className={styles.npsLegend}>
+                      <span>Promoters (65%)</span>
+                      <span>Passives (20%)</span>
+                      <span>Detractors (15%)</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className={styles.analyticsCard}>
+                  <div className={styles.cardHeader}>
+                    <h4>Potential Churn Risk</h4>
+                    <Activity size={16} />
+                  </div>
+                  <div className={styles.churnMetric}>
+                    <div className={styles.churnValue}>
+                      12.5%
+                      <small className={styles.negative}>+2.1% from last month</small>
+                    </div>
+                    <p className={styles.churnDesc}>3 customers requires immediate attention due to declining health scores and SLA breaches.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
+      {/* SHARE REPORT MODAL */}
+      {showShareModal && (
+        <div className={styles.modalOverlay} onClick={() => setShowShareModal(false)}>
+          <div className={styles.shareModal} onClick={e => e.stopPropagation()}>
+            <button className={styles.closeBtn} onClick={() => setShowShareModal(false)}>
+              <X size={18} />
+            </button>
+            <div className={styles.modalHeader}>
+              <h2>Share Dashboard</h2>
+              <p>Generate a secure link to share your analytics.</p>
+            </div>
+
+            <div className={styles.shareSettings}>
+              <div className={styles.settingField}>
+                <label>Select Page to Share</label>
+                <div className={styles.selectWrapper}>
+                  <select
+                    value={sharePage}
+                    onChange={(e) => setSharePage(e.target.value)}
+                    className={styles.pageSelect}
+                  >
+                    <option value="all">Full Dashboard</option>
+                    {tabs.map(t => (
+                      <option key={t.id} value={t.id}>{t.label}</option>
+                    ))}
+                  </select>
+                  <ChevronDown className={styles.selectIcon} size={16} />
+                </div>
+              </div>
+
+              <div className={styles.expirySection}>
+                <div className={styles.expiryHeader}>
+                  <Clock size={16} />
+                  <span>Link Expiry</span>
+                </div>
+                <div className={styles.expiryToggle}>
+                  {["1 Day", "7 Days", "30 Days", "Never"].map(time => (
+                    <button
+                      key={time}
+                      className={`${styles.expiryBtn} ${shareExpiry === time ? styles.active : ''}`}
+                      onClick={() => setShareExpiry(time)}
+                    >
+                      {time}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.shareOptions}>
+              <div className={styles.shareOption} onClick={() => {
+                navigator.clipboard.writeText(`https://crm.acmecorp.com/reports/share/${sharePage}?exp=${shareExpiry.replace(' ', '')}`);
+                alert("Shareable link copied to clipboard!");
+                Bitter
+              }}>
+                <div className={styles.optionIcon}><Link size={20} /></div>
+                <div className={styles.optionInfo}>
+                  <h4>Copy Shareable Link</h4>
+                  <p>Anyone with this link can view the selected page</p>
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.modalFooter}>
+              <button className={styles.doneBtnLarge} onClick={() => setShowShareModal(false)}>
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+

@@ -28,7 +28,8 @@ import {
     ChevronLeft,
     ChevronRight,
     Search,
-    Layers
+    Layers,
+    Star
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -399,7 +400,7 @@ export default function Dashboard() {
                                                             setOpenDropdown(null);
                                                         }}
                                                     >
-                                                        <Zap size={16} />
+                                                        <Star size={16} />
                                                         Give Feedback
                                                     </button>
                                                 </div>

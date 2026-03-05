@@ -45,12 +45,20 @@ export default function Tasks() {
         headers: { Authorization: `Bearer ${token}` }
       });
       // Map backend fields to frontend if needed
-      const mapped = (res.data.tasks || res.data).map(t => ({
-        ...t,
-        done: t.status === 'completed' || t.status === 'done',
-        priority: t.priority || 'Medium',
-        due: t.due_date || t.due || 'No date'
-      }));
+      const rawData = res.data.tasks || res.data;
+      const tasksArray = Array.isArray(rawData) ? rawData : (rawData.tasks || [rawData]);
+
+      const mapped = tasksArray.map((t, index) => {
+        const id = (t.id !== undefined && t.id !== null) ? t.id : (t.task_id || t.taskId || t._id || `task-${index}`);
+        return {
+          ...t,
+          id,
+          done: t.status === 'completed' || t.status === 'done' || !!t.done,
+          priority: t.priority || 'Medium',
+          due: t.due_date || t.due || 'No date',
+          related: t.related_to || t.related || ""
+        };
+      });
       setTasks(mapped);
     } catch (err) {
       console.error("Failed to fetch tasks", err);
@@ -91,10 +99,29 @@ export default function Tasks() {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      setTasks([...tasks, { ...res.data, done: false }]);
+      const taskData = res.data.task || res.data;
+      const id = (taskData.id !== undefined && taskData.id !== null) ? taskData.id : (taskData.task_id || taskData.taskId || taskData._id || Date.now());
+
+      const addedTask = {
+        ...taskData,
+        id,
+        done: false,
+        priority: taskData.priority || newTask.priority || "Medium",
+        due: taskData.due_date || taskData.due || newTask.due || "Today",
+        related: taskData.related_to || taskData.related || newTask.related || ""
+      };
+
+      setTasks(prev => {
+        // Prevent duplicates if fetchTasks already ran
+        if (prev.find(t => t.id === addedTask.id)) return prev;
+        return [...prev, addedTask];
+      });
+
       setShowTaskModal(false);
       setNewTask({ title: "", related: "Manual", priority: "Medium", due: "Today", owner: "Varshini" });
-      fetchTasks(); // Refresh for accuracy
+
+      // Delay fetch slightly to let backend sync (common with MySQL)
+      setTimeout(() => fetchTasks(), 500);
     } catch (err) {
       console.error("Failed to add task", err);
     }
@@ -276,8 +303,8 @@ export default function Tasks() {
           </div>
 
           <div className={styles.taskList}>
-            {filteredTasks.map((t) => (
-              <div key={t.id} className={`${styles.taskRow} ${t.done ? styles.done : ""}`}>
+            {filteredTasks.map((t, index) => (
+              <div key={t.id || index} className={`${styles.taskRow} ${t.done ? styles.done : ""}`}>
                 <input
                   type="checkbox"
                   checked={t.done}
@@ -287,11 +314,11 @@ export default function Tasks() {
 
                 <div className={styles.taskInfo}>
                   <strong style={{ textDecoration: t.done ? 'line-through' : 'none' }}>{t.title}</strong>
-                  <span>{t.related}</span>
+                  <span>{t.related || ""}</span>
                 </div>
 
-                <span className={`${styles.priority} ${styles[t.priority.toLowerCase()]}`}>
-                  {t.priority}
+                <span className={`${styles.priority} ${styles[(t.priority || "Medium").toLowerCase()]}`}>
+                  {t.priority || "Medium"}
                 </span>
 
                 <span className={styles.due}><Clock size={14} /> {t.due}</span>

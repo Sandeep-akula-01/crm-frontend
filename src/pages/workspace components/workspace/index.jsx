@@ -8,6 +8,7 @@ import { Profile } from "../profile";
 import { States } from "../states";
 import { SupportTickets } from "../support tickets";
 import KnowledgeBase from "../../dashboard components/knowledge base";
+import RBAC from "../rbac";
 import styles from "./workspace.module.css";
 import { Plus, Edit2, Trash2, X, ChevronRight, Zap, Filter, CheckCircle, ArrowRight } from "lucide-react";
 
@@ -531,13 +532,16 @@ export default function Workspace({ active, branch, setActive }) {
       case "States":
         return <States branch={branch} />;
       case "Settings":
-        return <Settings branch={branch} />;
+        return <Settings branch={branch} setActive={setActive} />;
       case "Profile":
         return <Profile branch={branch} />;
       case "SupportTickets":
         return <SupportTickets />;
       case "KnowledgeBase":
         return <KnowledgeBase />;
+      case "RBAC":
+        return <RBAC setActive={setActive} />;
+
       default:
         return null;
     }

@@ -13,7 +13,7 @@ import {
     Check
 } from 'lucide-react';
 
-export const Settings = ({ branch }) => {
+export const Settings = ({ branch, setActive }) => {
     const [selectedCategory, setSelectedCategory] = useState(null);
 
     const categories = [
@@ -43,11 +43,12 @@ export const Settings = ({ branch }) => {
         },
         {
             id: 'team',
-            title: 'Team Permissions',
-            desc: 'Define roles, access levels, and invite new members to this branch.',
-            icon: <Users size={24} />,
-            status: '45 Members',
-            type: 'team'
+            title: 'Roles & Permissions (RBAC)',
+            desc: 'Define granular roles, access levels, and assign permissions to team members.',
+            icon: <ShieldCheck size={24} />,
+            status: 'Security',
+            type: 'team',
+            navigateTo: 'RBAC'
         },
         {
             id: 'integrations',
@@ -127,7 +128,13 @@ export const Settings = ({ branch }) => {
                     <div
                         key={cat.id}
                         className={styles.card}
-                        onClick={() => setSelectedCategory(cat)}
+                        onClick={() => {
+                            if (cat.navigateTo && setActive) {
+                                setActive(cat.navigateTo);
+                            } else {
+                                setSelectedCategory(cat);
+                            }
+                        }}
                     >
                         <div className={`${styles.iconWrapper} ${styles[cat.type]}`}>
                             {cat.icon}
