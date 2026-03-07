@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Team } from "../teams";
 import { Inbox } from "../inbox";
 import { Marketing } from "../marketing";
+import { WebsiteConversion } from "../website conversion";
 import { Campaigns } from "../campaigns";
 import { Settings } from "../settings";
 import { Profile } from "../profile";
@@ -521,7 +522,7 @@ const AutomationHome = ({ branch }) => {
 
 export default function Workspace({ active, branch, setActive }) {
   // Define tabs available in the Workspace section
-  const workspaceTabs = ["Marketing", "Campaigns", "Workspace", "Team"];
+  const workspaceTabs = ["Marketing", "Website Conversion", "Campaigns", "Workspace", "Team"];
 
   // Check if current active page is a workspace tab
   const isWorkspaceTab = workspaceTabs.includes(active);
@@ -588,6 +589,7 @@ export default function Workspace({ active, branch, setActive }) {
             style={{ width: "100%" }}
           >
             {active === "Marketing" && <Marketing branch={branch} />}
+            {active === "Website Conversion" && <WebsiteConversion branch={branch} />}
             {active === "Campaigns" && <Campaigns branch={branch} />}
             {active === "Workspace" && <AutomationHome branch={branch} />}
             {active === "Team" && <Team branch={branch} />}
