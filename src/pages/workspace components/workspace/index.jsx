@@ -12,6 +12,7 @@ import KnowledgeBase from "../../dashboard components/knowledge base";
 import AuditLogs from "../audit logs";
 import Billing from "../billing";
 import RBAC from "../rbac";
+import PerformanceScaling from "../performance scaling";
 import styles from "./workspace.module.css";
 import { Plus, Edit2, Trash2, X, ChevronRight, Zap, Filter, CheckCircle, ArrowRight } from "lucide-react";
 
@@ -548,6 +549,8 @@ export default function Workspace({ active, branch, setActive }) {
         return <Billing setActive={setActive} />;
       case "RBAC":
         return <RBAC setActive={setActive} />;
+      case "PerformanceScaling":
+        return <PerformanceScaling setActive={setActive} />;
 
       default:
         return null;

@@ -11,7 +11,8 @@ import {
     X,
     Save,
     Check,
-    Activity
+    Activity,
+    Gauge
 } from 'lucide-react';
 
 export const Settings = ({ branch, setActive }) => {
@@ -76,6 +77,15 @@ export const Settings = ({ branch, setActive }) => {
             status: 'Pro Plan',
             type: 'billing',
             navigateTo: 'Billing'
+        },
+        {
+            id: 'performance',
+            title: 'Performance Scaling',
+            desc: 'Monitor system metrics, resource usage, and configure infrastructure limits.',
+            icon: <Gauge size={24} />,
+            status: 'Optimal',
+            type: 'performance',
+            navigateTo: 'PerformanceScaling'
         }
     ];
 

@@ -20,6 +20,10 @@ import {
     Tooltip,
     ResponsiveContainer
 } from "recharts";
+import { Trash2, Edit2, X as CloseIcon } from "lucide-react";
+
+// The storage key from Campaigns module
+const LP_STORAGE_KEY = "crm_landing_pages";
 
 const mockVisitorData = [
     { day: "Mon", visitors: 400, leads: 24, conversion: 6 },
@@ -39,6 +43,66 @@ const mockSubmissions = [
 ];
 
 export const WebsiteConversion = ({ branch }) => {
+    // Shared landing page state
+    const [landingPages, setLandingPages] = React.useState(() => {
+        const defaultPages = [
+            {
+                id: 1,
+                name: "Product Demo Promo",
+                slug: "demo-request",
+                campaign: "Demo Email Blast",
+                status: "Published",
+                leads: 124,
+                conversion: "8.4%",
+            },
+            {
+                id: 2,
+                name: "Newsletter Signup",
+                slug: "subscribe",
+                campaign: "Site Footer",
+                status: "Published",
+                leads: 341,
+                conversion: "4.1%",
+            }
+        ];
+
+        const saved = localStorage.getItem(LP_STORAGE_KEY);
+        return saved ? JSON.parse(saved) : defaultPages;
+    });
+
+    const [activeLanding, setActiveLanding] = React.useState(null);
+    const [activeLPTab, setActiveLPTab] = React.useState("overview");
+    const [showChatWidget, setShowChatWidget] = React.useState(false);
+    const editorRef = React.useRef(null);
+
+    React.useEffect(() => {
+        localStorage.setItem(LP_STORAGE_KEY, JSON.stringify(landingPages));
+    }, [landingPages]);
+
+    const handleDeleteLanding = (id) => {
+        setLandingPages(landingPages.filter((lp) => lp.id !== id));
+        if (activeLanding?.id === id) {
+            setActiveLanding(null);
+        }
+    };
+
+    const handleCreateNewForm = () => {
+        const newPage = {
+            id: Date.now(),
+            name: "New Capture Form",
+            slug: "new-capture",
+            campaign: "Direct Website",
+            status: "Draft",
+            leads: 0,
+            conversion: "0%",
+        };
+        setLandingPages([...landingPages, newPage]);
+        setActiveLanding(newPage);
+        setTimeout(() => {
+            editorRef.current?.scrollIntoView({ behavior: "smooth" });
+        }, 100);
+    };
+
     return (
         <div className={styles.conversionPage}>
             <h1 className={styles.pageTitle}>Website Conversion</h1>
@@ -103,10 +167,110 @@ export const WebsiteConversion = ({ branch }) => {
                         </div>
                         <p>Create and embed forms on your website to instantly capture leads.</p>
                         <div className={styles.actionButtons}>
-                            <button className={styles.primaryBtn}>Create New Form</button>
+                            <button className={styles.primaryBtn} onClick={handleCreateNewForm}>Create New Form</button>
                             <button className={styles.secondaryBtn}>Get Embed Code</button>
                         </div>
                     </div>
+
+                    {/* EXPANDABLE EDITOR LOCATED BELOW SECTION */}
+                    {activeLanding && (
+                        <div ref={editorRef} className={styles.editorWrapper}>
+                            <div className={styles.editorHeader}>
+                                <h3>{activeLanding.name}</h3>
+                                <button
+                                    className={styles.closeBtn}
+                                    onClick={() => setActiveLanding(null)}
+                                >
+                                    <CloseIcon size={18} />
+                                </button>
+                            </div>
+
+                            <div className={styles.tabsEditor}>
+                                {["overview", "content", "form", "analytics"].map((tab) => (
+                                    <div
+                                        key={tab}
+                                        className={`${styles.tabEditor} ${activeLPTab === tab ? styles.activeTabEditor : ""}`}
+                                        onClick={() => setActiveLPTab(tab)}
+                                    >
+                                        {tab.toUpperCase()}
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className={styles.tabContent}>
+                                {activeLPTab === "overview" && (
+                                    <>
+                                        <label>Page Name</label>
+                                        <input
+                                            value={activeLanding.name}
+                                            onChange={(e) => setActiveLanding({ ...activeLanding, name: e.target.value })}
+                                        />
+                                        <label>URL Slug</label>
+                                        <input
+                                            value={activeLanding.slug}
+                                            onChange={(e) => setActiveLanding({ ...activeLanding, slug: e.target.value })}
+                                        />
+                                        <label>Status</label>
+                                        <select
+                                            value={activeLanding.status}
+                                            onChange={(e) => setActiveLanding({ ...activeLanding, status: e.target.value })}
+                                        >
+                                            <option>Draft</option>
+                                            <option>Published</option>
+                                        </select>
+                                    </>
+                                )}
+
+                                {activeLPTab === "content" && (
+                                    <>
+                                        <label>Headline</label>
+                                        <input placeholder="Big bold headline here" />
+                                        <label>Description</label>
+                                        <textarea placeholder="Write your landing content..." rows={4} />
+                                    </>
+                                )}
+
+                                {activeLPTab === "form" && (
+                                    <>
+                                        <label>Select Fields</label>
+                                        <div className={styles.checkboxGroup}>
+                                            <label><input type="checkbox" defaultChecked /> Name</label>
+                                            <label><input type="checkbox" defaultChecked /> Email</label>
+                                            <label><input type="checkbox" /> Phone</label>
+                                            <label><input type="checkbox" /> Company</label>
+                                        </div>
+                                    </>
+                                )}
+
+                                {activeLPTab === "analytics" && (
+                                    <div className={styles.analyticsBox}>
+                                        <div>Visitors: —</div>
+                                        <div>Leads: {activeLanding.leads}</div>
+                                        <div>Conversion Rate: {activeLanding.conversion}</div>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className={styles.editorActions}>
+                                <button
+                                    className={styles.saveBtn}
+                                    onClick={() => {
+                                        setLandingPages(landingPages.map((lp) => lp.id === activeLanding.id ? activeLanding : lp));
+                                        alert("Landing Page saved locally.");
+                                    }}
+                                >
+                                    Save Changes
+                                </button>
+
+                                <button
+                                    className={styles.publishBtn}
+                                    onClick={() => setActiveLanding({ ...activeLanding, status: "Published" })}
+                                >
+                                    Publish
+                                </button>
+                            </div>
+                        </div>
+                    )}
 
                     <div className={styles.actionCard}>
                         <div className={styles.actionHeader}>
@@ -115,43 +279,40 @@ export const WebsiteConversion = ({ branch }) => {
                         </div>
                         <p>Engage with live visitors and convert them to leads automatically.</p>
                         <div className={styles.actionButtons}>
-                            <button className={styles.primaryBtn}>Configure Widget</button>
+                            <button className={styles.primaryBtn} onClick={() => setShowChatWidget(!showChatWidget)}>
+                                {showChatWidget ? "Hide Widget" : "Configure Widget"}
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div className={styles.bottomGrid}>
-                {/* 3. Landing Pages */}
                 <div className={styles.listCard}>
                     <div className={styles.cardHeaderFlex}>
                         <div className={styles.headerLeft}>
                             <LayoutTemplate size={20} color="#f59e0b" />
                             <h3>Landing Pages</h3>
                         </div>
-                        <button className={styles.textBtn}>Create Page <ArrowUpRight size={16} /></button>
+                        <button className={styles.textBtn} onClick={handleCreateNewForm}>Create Page <ArrowUpRight size={16} /></button>
                     </div>
                     <div className={styles.pageList}>
-                        <div className={styles.pageItem}>
-                            <div>
-                                <h5>Product Demo Promo</h5>
-                                <span>/promo/demo-request</span>
+                        {landingPages.slice(0, 5).map(page => (
+                            <div key={page.id} className={styles.pageItemRow} onClick={() => {
+                                setActiveLanding(page);
+                                setTimeout(() => editorRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
+                            }}>
+                                <div className={styles.pageItemInfo}>
+                                    <h5>{page.name}</h5>
+                                    <span>/{page.slug}</span>
+                                </div>
+                                <div className={styles.pageStats}>
+                                    <span>{page.leads} leads</span>
+                                    <span className={styles.highlight}>{page.conversion} conv.</span>
+                                </div>
                             </div>
-                            <div className={styles.pageStats}>
-                                <span>1.2k views</span>
-                                <span className={styles.highlight}>8.4% conv.</span>
-                            </div>
-                        </div>
-                        <div className={styles.pageItem}>
-                            <div>
-                                <h5>Newsletter Signup</h5>
-                                <span>/subscribe</span>
-                            </div>
-                            <div className={styles.pageStats}>
-                                <span>3.4k views</span>
-                                <span className={styles.highlight}>4.1% conv.</span>
-                            </div>
-                        </div>
+                        ))}
+                        {landingPages.length === 0 && <p className={styles.emptyState}>No landing pages created yet.</p>}
                     </div>
                 </div>
 
@@ -183,6 +344,25 @@ export const WebsiteConversion = ({ branch }) => {
                 </div>
             </div>
 
+            {/* SIMULATED CHAT WIDGET */}
+            {showChatWidget && (
+                <div className={styles.fakeChatWidget}>
+                    <div className={styles.chatHeader}>
+                        <div>
+                            <h4>Live Chat Support</h4>
+                            <span>We reply immediately</span>
+                        </div>
+                        <button onClick={() => setShowChatWidget(false)}><CloseIcon size={16} /></button>
+                    </div>
+                    <div className={styles.chatBody}>
+                        <div className={styles.msgBot}>Hi! How can we help you? 👋</div>
+                    </div>
+                    <div className={styles.chatInput}>
+                        <input type="text" placeholder="Type your message..." />
+                        <button>Send</button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

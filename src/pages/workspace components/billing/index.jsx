@@ -9,16 +9,24 @@ import {
     Users,
     Activity,
     HardDrive,
-    FileText
+    FileText,
+    X
 } from "lucide-react";
 
 export const Billing = ({ setActive }) => {
+    const [showModal, setShowModal] = useState(false);
+    const [modalMessage, setModalMessage] = useState("");
+
+    const handleAction = (message) => {
+        setModalMessage(message);
+        setShowModal(true);
+    };
 
     const USAGE_LIMITS = [
-        { label: "Users", used: 6, max: 10, icon: <Users size={16} /> },
-        { label: "Leads", used: 1240, max: 5000, icon: <Activity size={16} /> },
-        { label: "Storage", used: 8, max: 20, icon: <HardDrive size={16} />, suffix: "GB" },
-        { label: "Reports Generated", used: 25, max: 50, icon: <FileText size={16} /> }
+        { label: "Users", used: 6, max: 10, icon: <Users size={16} />, color: "#4f46e5" },
+        { label: "Leads", used: 1240, max: 5000, icon: <Activity size={16} />, color: "#10b981" },
+        { label: "Storage", used: 8, max: 20, icon: <HardDrive size={16} />, suffix: "GB", color: "#f59e0b" },
+        { label: "Reports Generated", used: 25, max: 50, icon: <FileText size={16} />, color: "#ec4899" }
     ];
 
     const PLANS = [
@@ -87,8 +95,8 @@ export const Billing = ({ setActive }) => {
                             </div>
                         </div>
                         <div className={styles.cardActions}>
-                            <button className={styles.primaryBtn}>Upgrade Plan</button>
-                            <button className={styles.outlineBtn}>Cancel Plan</button>
+                            <button className={styles.upgradePlanBtn} onClick={() => handleAction("Redirecting to upgrade flow...")}>Upgrade Plan</button>
+                            <button className={styles.outlineBtn} onClick={() => handleAction("Are you sure you want to cancel your plan?")}>Cancel Plan</button>
                         </div>
                     </div>
 
@@ -115,7 +123,7 @@ export const Billing = ({ setActive }) => {
                                         <div className={styles.progressBarBg}>
                                             <div
                                                 className={styles.progressBarFill}
-                                                style={{ width: `${percentage}%`, background: percentage > 85 ? '#f43f5e' : '#6b5cff' }}
+                                                style={{ width: `${percentage}%`, background: percentage > 85 ? '#f43f5e' : item.color, boxShadow: `0 0 10px ${item.color}80` }}
                                             />
                                         </div>
                                     </div>
@@ -142,8 +150,8 @@ export const Billing = ({ setActive }) => {
                             <div className={styles.cardType}>VISA</div>
                         </div>
                         <div className={styles.cardActions}>
-                            <button className={styles.secondaryBtn}>Update Payment Method</button>
-                            <button className={styles.textBtn}>Add New Card</button>
+                            <button className={styles.secondaryBtn} onClick={() => handleAction("Edit payment method drawer")}>Update Payment Method</button>
+                            <button className={styles.textBtn} onClick={() => handleAction("Add new card drawer")}>Add New Card</button>
                         </div>
                     </div>
                 </div>
@@ -172,7 +180,10 @@ export const Billing = ({ setActive }) => {
                                     </li>
                                 ))}
                             </ul>
-                            <button className={plan.current ? styles.outlineBtn : styles.primaryBtn}>
+                            <button
+                                className={plan.current ? styles.outlineBtn : styles.primaryBtn}
+                                onClick={() => handleAction(plan.current ? `Manage ${plan.name} Plan` : `Upgrade to ${plan.name} Plan`)}
+                            >
                                 {plan.current ? "Manage Plan" : "Upgrade"}
                             </button>
                         </div>
@@ -212,7 +223,7 @@ export const Billing = ({ setActive }) => {
                                         </span>
                                     </td>
                                     <td>
-                                        <button className={styles.downloadBtn}>
+                                        <button className={styles.downloadBtn} onClick={() => handleAction(`Downloading Invoice ${invoice.id}...`)}>
                                             <Download size={16} /> Download
                                         </button>
                                     </td>
@@ -222,6 +233,18 @@ export const Billing = ({ setActive }) => {
                     </table>
                 </div>
             </div>
+            {/* Simple Modal overlay for demonstration */}
+            {showModal && (
+                <div className={styles.modalOverlay}>
+                    <div className={styles.simpleModal}>
+                        <button className={styles.closeBtn} onClick={() => setShowModal(false)}><X size={18} /></button>
+                        <AlertCircle size={32} color="#6366f1" style={{ marginBottom: 16 }} />
+                        <h3>Action Triggered</h3>
+                        <p>{modalMessage}</p>
+                        <button className={styles.primaryBtn} style={{ marginTop: 24 }} onClick={() => setShowModal(false)}>Okay</button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

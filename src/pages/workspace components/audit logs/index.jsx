@@ -8,7 +8,11 @@ import {
     Search,
     X,
     ArrowLeft,
-    ArrowRight
+    ArrowRight,
+    ShieldCheck,
+    Lock,
+    Clock,
+    CheckCircle2
 } from "lucide-react";
 
 const DUMMY_LOGS = [
@@ -72,6 +76,8 @@ export const AuditLogs = ({ setActive }) => {
                 </div>
             </div>
 
+
+
             {/* Toolbar */}
             <div className={styles.toolbar}>
                 <div className={styles.searchBox}>
@@ -134,6 +140,65 @@ export const AuditLogs = ({ setActive }) => {
                             )}
                         </tbody>
                     </table>
+                </div>
+            </div>
+
+            {/* Compliance Module Section */}
+            <div className={styles.complianceSection}>
+                <div className={styles.complianceTitle}>
+                    <h2>Compliance</h2>
+                </div>
+                <div className={styles.complianceGrid}>
+                    {/* GDPR Status */}
+                    <div className={styles.complianceCard}>
+                        <div className={styles.complianceHeader}>
+                            <ShieldCheck className={styles.complianceIconBlue} />
+                            <div>
+                                <h3>GDPR Status</h3>
+                                <div className={styles.statusPill}>
+                                    <CheckCircle2 size={12} /> Compliant
+                                </div>
+                            </div>
+                        </div>
+                        <ul className={styles.complianceList}>
+                            <li><CheckCircle2 size={16} className={styles.checkIcon} /> Data Protection</li>
+                            <li><CheckCircle2 size={16} className={styles.checkIcon} /> User Data Rights</li>
+                        </ul>
+                    </div>
+
+                    {/* SOC2 Compliance */}
+                    <div className={styles.complianceCard}>
+                        <div className={styles.complianceHeader}>
+                            <Lock className={styles.complianceIconPurple} />
+                            <div>
+                                <h3>SOC2 Compliance</h3>
+                                <div className={styles.statusPill}>
+                                    <CheckCircle2 size={12} /> Certified
+                                </div>
+                            </div>
+                        </div>
+                        <ul className={styles.complianceList}>
+                            <li><CheckCircle2 size={16} className={styles.checkIcon} /> Security Controls</li>
+                            <li><CheckCircle2 size={16} className={styles.checkIcon} /> Access Monitoring</li>
+                        </ul>
+                    </div>
+
+                    {/* Data Retention */}
+                    <div className={styles.complianceCard}>
+                        <div className={styles.complianceHeader}>
+                            <Clock className={styles.complianceIconOrange} />
+                            <div>
+                                <h3>Data Retention</h3>
+                                <div className={styles.statusPillNeutral}>
+                                    90 Days
+                                </div>
+                            </div>
+                        </div>
+                        <ul className={styles.complianceList}>
+                            <li>Logs Auto Deleted</li>
+                            <li>After 90 Days</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
 
