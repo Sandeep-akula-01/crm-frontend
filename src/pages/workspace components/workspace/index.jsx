@@ -2,12 +2,19 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Team } from "../teams";
 import { Inbox } from "../inbox";
 import { Marketing } from "../marketing";
+import { WebsiteConversion } from "../website conversion";
 import { Campaigns } from "../campaigns";
 import { Settings } from "../settings";
 import { Profile } from "../profile";
 import { States } from "../states";
+import { SupportTickets } from "../support tickets";
+import KnowledgeBase from "../../dashboard components/knowledge base";
+import AuditLogs from "../audit logs";
+import Billing from "../billing";
+import RBAC from "../rbac";
+import PerformanceScaling from "../performance scaling";
 import styles from "./workspace.module.css";
-import { Plus, Edit2, Trash2, X, ChevronRight, Zap, Filter, CheckCircle, ArrowRight } from "lucide-react";
+import { Plus, Edit2, Trash2, X, ChevronRight, Zap, Filter, CheckCircle, ArrowRight, ShieldCheck, Layers, UserPlus } from "lucide-react";
 
 const initialRules = [
   { id: 1, active: true, name: "Hot Leads Assignment", condition: "Lead Status = Hot", action: "Assign to Senior Sales" },
@@ -22,6 +29,44 @@ const initialWorkflows = [
   { id: 1, name: "New Lead Onboarding", trigger: "Lead Created", steps: 4, status: "Active", theme: "cardBlue" },
   { id: 2, name: "Stalled Deal Follow-up", trigger: "Deal Stage Unchanged", steps: 3, status: "Draft", theme: "cardOrange" },
   { id: 3, name: "VIP Welcome Sequence", trigger: "Tag Added: VIP", steps: 5, status: "Active", theme: "cardGreen" },
+];
+
+const enterpriseRules = [
+  {
+    id: "deal-approval",
+    title: "Deal Approval Rules",
+    icon: <ShieldCheck size={24} />,
+    description: "Multi-level authorization for high-value and high-discount deals.",
+    rules: [
+      { condition: "Discount > 20%", action: "Manager Approval Required" },
+      { condition: "Value > ₹10 Lakh", action: "Director Approval Required" },
+      { condition: "Contract > 3 Years", action: "Legal Approval Required" }
+    ],
+    theme: "enterprisePurple"
+  },
+  {
+    id: "pipeline-control",
+    title: "Sales Stage Rules",
+    icon: <Layers size={24} />,
+    description: "Control pipeline movement with mandatory field and state checks.",
+    rules: [
+      { condition: "Move to Proposal", action: "Budget + Decision Maker required" },
+      { condition: "Move to Closed Won", action: "Contract + Payment terms required" }
+    ],
+    theme: "enterpriseBlue"
+  },
+  {
+    id: "lead-qualification",
+    title: "Lead Qualification Rules",
+    icon: <UserPlus size={24} />,
+    description: "Automated scoring logic to determine lead quality and sales priority.",
+    rules: [
+      { condition: "Corporate Email", action: "+15 Score & Direct Sales Call" },
+      { condition: "Budget > ₹5 Lakh", action: "+30 Score" },
+      { condition: "Gmail/Yahoo", action: "-10 Score & Nurture" }
+    ],
+    theme: "enterpriseGreen"
+  }
 ];
 
 import axios from "axios";
@@ -330,6 +375,31 @@ const AutomationHome = ({ branch }) => {
               </div>
             ))}
           </div>
+
+          {/* ----------- Enterprise Rules Section ----------- */}
+          <div className={styles.workflowSectionTitle}>Enterprise Rules</div>
+          <div className={styles.enterpriseGrid}>
+            {enterpriseRules.map((rule) => (
+              <div key={rule.id} className={`${styles.enterpriseCard} ${styles[rule.theme]}`}>
+                <div className={styles.entHeader}>
+                  <div className={styles.entIcon}>{rule.icon}</div>
+                  <div className={styles.entTitleGroup}>
+                    <div className={styles.entTitle}>{rule.title}</div>
+                    <div className={styles.entDesc}>{rule.description}</div>
+                  </div>
+                </div>
+                <div className={styles.entRulesList}>
+                  {rule.rules.map((r, i) => (
+                    <div key={i} className={styles.entRuleItem}>
+                      <span className={styles.entCondition}>{r.condition}</span>
+                      <span className={styles.entAction}>{r.action}</span>
+                    </div>
+                  ))}
+                </div>
+                <button className={styles.configureBtn}>Configure Logic</button>
+              </div>
+            ))}
+          </div>
         </>
       ) : (
         // Workflow Builder
@@ -516,7 +586,7 @@ const AutomationHome = ({ branch }) => {
 
 export default function Workspace({ active, branch, setActive }) {
   // Define tabs available in the Workspace section
-  const workspaceTabs = ["Marketing", "Campaigns", "Workspace", "Team"];
+  const workspaceTabs = ["Marketing", "Website Conversion", "Campaigns", "Workspace", "Team"];
 
   // Check if current active page is a workspace tab
   const isWorkspaceTab = workspaceTabs.includes(active);
@@ -529,9 +599,22 @@ export default function Workspace({ active, branch, setActive }) {
       case "States":
         return <States branch={branch} />;
       case "Settings":
-        return <Settings branch={branch} />;
+        return <Settings branch={branch} setActive={setActive} />;
       case "Profile":
         return <Profile branch={branch} />;
+      case "SupportTickets":
+        return <SupportTickets />;
+      case "KnowledgeBase":
+        return <KnowledgeBase />;
+      case "AuditLogs":
+        return <AuditLogs setActive={setActive} />;
+      case "Billing":
+        return <Billing setActive={setActive} />;
+      case "RBAC":
+        return <RBAC setActive={setActive} />;
+      case "PerformanceScaling":
+        return <PerformanceScaling setActive={setActive} />;
+
       default:
         return null;
     }
@@ -572,6 +655,7 @@ export default function Workspace({ active, branch, setActive }) {
             style={{ width: "100%" }}
           >
             {active === "Marketing" && <Marketing branch={branch} />}
+            {active === "Website Conversion" && <WebsiteConversion branch={branch} />}
             {active === "Campaigns" && <Campaigns branch={branch} />}
             {active === "Workspace" && <AutomationHome branch={branch} />}
             {active === "Team" && <Team branch={branch} />}

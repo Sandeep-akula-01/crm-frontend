@@ -55,9 +55,15 @@ const mockMarketingData = {
     ]
 };
 
+const isValidMarketingData = (d) =>
+    d && d.kpis && d.kpis.totalCampaigns && d.kpis.leadsGenerated &&
+    d.kpis.conversionRate && d.kpis.totalRevenue &&
+    Array.isArray(d.trendData) && Array.isArray(d.funnelData) &&
+    Array.isArray(d.channels) && Array.isArray(d.campaigns);
+
 export const Marketing = () => {
-    const [data, setData] = useState(null);
-    const [loading, setLoading] = useState(true);
+    // Always start with mock data so the page renders immediately
+    const [data, setData] = useState(mockMarketingData);
 
     const getAuthHeader = () => {
         const token = localStorage.getItem("token");
@@ -66,21 +72,18 @@ export const Marketing = () => {
 
     const fetchMarketingData = useCallback(async () => {
         try {
-            setLoading(true);
             const response = await axios.get("http://192.168.1.61:5000/api/marketing/analytics", {
                 headers: getAuthHeader()
             });
 
-            if (response.data && Object.keys(response.data).length > 0) {
+            if (isValidMarketingData(response.data)) {
                 setData(response.data);
+                console.log("✅ Marketing: loaded live data from backend.");
             } else {
-                setData(mockMarketingData);
+                console.warn("⚠️ Marketing: backend response missing expected fields – showing demo data.", response.data);
             }
         } catch (error) {
-            console.error("Error fetching marketing data, using fallback:", error);
-            setData(mockMarketingData);
-        } finally {
-            setLoading(false);
+            console.warn("⚠️ Marketing: backend not connected – showing demo data.", error.message);
         }
     }, []);
 
@@ -88,15 +91,7 @@ export const Marketing = () => {
         fetchMarketingData();
     }, [fetchMarketingData]);
 
-    if (loading) {
-        return <div className={styles.loading}>Loading marketing data...</div>;
-    }
-
-    if (!data) {
-        return <div className={styles.error}>Failed to load marketing data.</div>;
-    }
-
-    const { kpis, trendData, campaigns, funnelData, channels } = data;
+    const { kpis = {}, trendData = [], campaigns = [], funnelData = [], channels = [] } = data;
 
     return (
         <div className={styles.marketingPage}>
@@ -107,26 +102,26 @@ export const Marketing = () => {
             <div className={styles.kpiGrid}>
                 <div className={`${styles.kpiCard} ${styles.blue}`}>
                     <h4>Total Campaigns</h4>
-                    <h2>{kpis.totalCampaigns.value}</h2>
-                    <span>{kpis.totalCampaigns.growth} growth</span>
+                    <h2>{kpis?.totalCampaigns?.value ?? 0}</h2>
+                    <span>{kpis?.totalCampaigns?.growth ?? "0%"} growth</span>
                 </div>
 
                 <div className={`${styles.kpiCard} ${styles.green}`}>
                     <h4>Leads Generated</h4>
-                    <h2>{kpis.leadsGenerated.value.toLocaleString()}</h2>
-                    <span>{kpis.leadsGenerated.growth} this month</span>
+                    <h2>{(kpis?.leadsGenerated?.value ?? 0).toLocaleString()}</h2>
+                    <span>{kpis?.leadsGenerated?.growth ?? "0%"} this month</span>
                 </div>
 
                 <div className={`${styles.kpiCard} ${styles.orange}`}>
                     <h4>Conversion Rate</h4>
-                    <h2>{kpis.conversionRate.value}%</h2>
-                    <span>{kpis.conversionRate.growth}</span>
+                    <h2>{kpis?.conversionRate?.value ?? 0}%</h2>
+                    <span>{kpis?.conversionRate?.growth ?? "0%"}</span>
                 </div>
 
                 <div className={`${styles.kpiCard} ${styles.pink}`}>
                     <h4>Total Revenue</h4>
-                    <h2>₹{kpis.totalRevenue.value.toLocaleString()}</h2>
-                    <span>{kpis.totalRevenue.growth}</span>
+                    <h2>₹{(kpis?.totalRevenue?.value ?? 0).toLocaleString()}</h2>
+                    <span>{kpis?.totalRevenue?.growth ?? "0%"}</span>
                 </div>
             </div>
 
@@ -197,7 +192,7 @@ export const Marketing = () => {
                         </div>
 
                         <div className={styles.funnelStages}>
-                            {funnelData.map((stage, idx) => (
+                            {(funnelData || []).map((stage, idx) => (
                                 <div key={idx} className={styles.funnelRow}>
                                     <div
                                         className={styles.funnelBar}
@@ -222,7 +217,7 @@ export const Marketing = () => {
 
             {/* 📈 SECTION 3 — Channel Comparison */}
             <div className={styles.channelSection}>
-                {channels.map((chan, idx) => (
+                {(channels || []).map((chan, idx) => (
                     <div key={idx} className={styles.channelBox}>
                         <div className={styles.channelLabel}>
                             {chan.name === "Email" && <Mail size={18} color="#0ea5e9" />}
@@ -256,7 +251,7 @@ export const Marketing = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {campaigns.map((c, index) => (
+                        {(campaigns || []).map((c, index) => (
                             <tr key={index}>
                                 <td>{c.name}</td>
                                 <td>{c.channel}</td>

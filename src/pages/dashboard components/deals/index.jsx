@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "./deals.module.css";
 import * as XLSX from "xlsx";
+import EntityTasksDrawer from "../tasks/EntityTasksDrawer";
 
 import {
   PieChart,
@@ -80,6 +81,14 @@ export default function Deals({ branch }) {
     actions: "",
     active: true
   });
+
+  const [taskDrawerOpen, setTaskDrawerOpen] = useState(false);
+  const [selectedEntityForTasks, setSelectedEntityForTasks] = useState(null);
+
+  const openTaskDrawer = (deal) => {
+    setSelectedEntityForTasks({ id: deal.id, name: deal.deal_name });
+    setTaskDrawerOpen(true);
+  };
 
   // Modal State
   const [showModal, setShowModal] = useState(false);
@@ -719,6 +728,7 @@ export default function Deals({ branch }) {
                 <td>{d.pipeline}</td>
                 <td>
                   <div style={{ display: "flex", gap: "0.5rem" }}>
+                    <button onClick={() => openTaskDrawer(d)} style={{ border: "none", background: "none", cursor: "pointer" }} title="Deal Tasks">📋</button>
                     <button onClick={() => openEditModal(d)} style={{ border: "none", background: "none", cursor: "pointer" }}>✏️</button>
                     <button onClick={() => handleDeleteDeal(d.id)} style={{ border: "none", background: "none", cursor: "pointer" }}>🗑️</button>
                   </div>
@@ -804,6 +814,13 @@ export default function Deals({ branch }) {
         </div>
       )}
 
+      <EntityTasksDrawer
+        isOpen={taskDrawerOpen}
+        onClose={() => setTaskDrawerOpen(false)}
+        entityType="deal"
+        entityId={selectedEntityForTasks?.id}
+        entityName={selectedEntityForTasks?.name}
+      />
     </div>
   );
 }

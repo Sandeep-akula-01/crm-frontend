@@ -20,48 +20,18 @@ import {
 } from "lucide-react";
 import styles from "./tasks.module.css";
 
-const tasksData = [
-  {
-    title: "Follow up with Riya Sharma",
-    related: "Lead · Instagram",
-    priority: "High",
-    due: "Today",
-    owner: "Varshini",
-    done: false,
-  },
-  {
-    title: "Send proposal to Acme Corp",
-    related: "Deal · CRM Setup",
-    priority: "Medium",
-    due: "Tomorrow",
-    owner: "Ravi",
-    done: false,
-  },
-  {
-    title: "Demo call with Nova Labs",
-    related: "Deal · Website Redesign",
-    priority: "High",
-    due: "Jan 26",
-    owner: "Anu",
-    done: false,
-  },
-  {
-    title: "Internal review meeting",
-    related: "Team Task",
-    priority: "Low",
-    due: "Completed",
-    owner: "Varshini",
-    done: true,
-  },
-];
 
 export default function Tasks() {
-  const [tasks, setTasks] = useState([
-    { id: 1, title: "Follow up with Riya Sharma", related: "Lead · Instagram", priority: "High", due: "Today", owner: "Varshini", done: false },
-    { id: 2, title: "Send proposal to Acme Corp", related: "Deal · CRM Setup", priority: "Medium", due: "Tomorrow", owner: "Ravi", done: false },
-    { id: 3, title: "Demo call with Nova Labs", related: "Deal · Website Redesign", priority: "High", due: "Jan 26", owner: "Anu", done: false },
-    { id: 4, title: "Internal review meeting", related: "Team Task", priority: "Low", due: "Completed", owner: "Varshini", done: true },
-  ]);
+  const DUMMY_TASKS = [
+    { id: "d1", title: "Review Q1 Marketing Plan", related: "Marketing Strategy", priority: "High", due: "Today", owner: "Varshini", done: false },
+    { id: "d2", title: "Send Proposal to Alpha Corp", related: "Deal #1290", priority: "Medium", due: "Tomorrow", owner: "Anu", done: false },
+    { id: "d3", title: "Schedule follow-up with Beta Tech", related: "Lead #892", priority: "High", due: "Today", owner: "Rohan", done: false },
+    { id: "d4", title: "Prepare Monthly Sales Report", related: "Internal", priority: "Low", due: "Next Week", owner: "Admin", done: true },
+    { id: "d5", title: "Finalize Vendor Contract", related: "Vendor Mgmt", priority: "Medium", due: "Today", owner: "Varshini", done: true },
+  ];
+
+  const [tasks, setTasks] = useState(DUMMY_TASKS);
+  const [loading, setLoading] = useState(false);
 
   const [filter, setFilter] = useState("All");
   const [showTaskModal, setShowTaskModal] = useState(false);
@@ -75,16 +45,104 @@ export default function Tasks() {
   const [files, setFiles] = useState([]);
 
   /* TASK HANDLERS */
-  const toggleTask = (id) => {
-    setTasks(tasks.map(t => t.id === id ? { ...t, done: !t.done } : t));
+  const fetchTasks = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("token");
+      const res = await axios.get("http://192.168.1.61:5000/api/tasks/my", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      // Map backend fields to frontend if needed
+      const rawData = res.data.tasks || res.data;
+      const tasksArray = Array.isArray(rawData) ? rawData : (rawData.tasks || [rawData]);
+
+      const mapped = tasksArray.map((t, index) => {
+        const id = (t.id !== undefined && t.id !== null) ? t.id : (t.task_id || t.taskId || t._id || `task-${index}`);
+        return {
+          ...t,
+          id,
+          done: t.status === 'completed' || t.status === 'done' || !!t.done,
+          title: t.title || "Untitled Task",
+          priority: t.priority || 'Medium',
+          due: t.due_date ? new Date(t.due_date).toLocaleDateString() : (t.due || 'No date'),
+          owner: t.owner || t.assigned_to || t.assigned_user_id || "Unassigned",
+          related: t.related || t.related_to || ""
+        };
+      });
+
+      // Show backend data if available, else retain dummy data
+      if (mapped && mapped.length > 0) {
+        setTasks(mapped);
+      }
+    } catch (err) {
+      console.error("Failed to fetch tasks", err);
+      // Retain dummy tasks on error
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const addTask = (e) => {
+  useEffect(() => {
+    if (activeTab === "tasks") {
+      fetchTasks();
+    }
+  }, [activeTab]);
+
+  const toggleTask = async (id, currentStatus) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.put(`http://192.168.1.61:5000/api/tasks/${id}/complete`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setTasks(tasks.map(t => t.id === id ? { ...t, done: !t.done } : t));
+    } catch (err) {
+      console.error("Failed to update task", err);
+    }
+  };
+
+  const addTask = async (e) => {
     e.preventDefault();
     if (!newTask.title.trim()) return;
-    setTasks([...tasks, { ...newTask, id: Date.now(), done: false }]);
-    setShowTaskModal(false);
-    setNewTask({ title: "", related: "Manual", priority: "Medium", due: "Today", owner: "Varshini" });
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.post("http://192.168.1.61:5000/api/tasks", {
+        title: newTask.title,
+        description: "",
+        priority: newTask.priority,
+        due_date: newTask.due || "today",
+        related: newTask.related,
+        assigned_to: 2, // Backend requires an integer
+        lead_id: 2 // Backend requires an integer
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const taskData = res.data.task || res.data;
+      const id = (taskData.id !== undefined && taskData.id !== null) ? taskData.id : (taskData.task_id || taskData.taskId || taskData._id || Date.now());
+
+      const addedTask = {
+        ...taskData,
+        id,
+        done: false,
+        priority: taskData.priority || newTask.priority || "Medium",
+        due: taskData.due_date || taskData.due || newTask.due || "Today",
+        related: taskData.related_to || taskData.related || newTask.related || ""
+      };
+
+      setTasks(prev => {
+        // Prevent duplicates if fetchTasks already ran
+        if (prev.find(t => t.id === addedTask.id)) return prev;
+        return [...prev, addedTask];
+      });
+
+      setShowTaskModal(false);
+      setNewTask({ title: "", related: "Manual", priority: "Medium", due: "Today", owner: "Varshini" });
+
+      // Delay fetch slightly to let backend sync (common with MySQL)
+      setTimeout(() => fetchTasks(), 500);
+    } catch (err) {
+      console.error("Failed to add task", err);
+    }
   };
 
   const filteredTasks = tasks.filter(t => {
@@ -263,22 +321,22 @@ export default function Tasks() {
           </div>
 
           <div className={styles.taskList}>
-            {filteredTasks.map((t) => (
-              <div key={t.id} className={`${styles.taskRow} ${t.done ? styles.done : ""}`}>
+            {filteredTasks.map((t, index) => (
+              <div key={t.id || index} className={`${styles.taskRow} ${t.done ? styles.done : ""}`}>
                 <input
                   type="checkbox"
                   checked={t.done}
-                  onChange={() => toggleTask(t.id)}
+                  onChange={() => toggleTask(t.id, t.done)}
                   className={styles.taskCheckbox}
                 />
 
                 <div className={styles.taskInfo}>
                   <strong style={{ textDecoration: t.done ? 'line-through' : 'none' }}>{t.title}</strong>
-                  <span>{t.related}</span>
+                  <span>{t.related || ""}</span>
                 </div>
 
-                <span className={`${styles.priority} ${styles[t.priority.toLowerCase()]}`}>
-                  {t.priority}
+                <span className={`${styles.priority} ${styles[(t.priority || "Medium").toLowerCase()]}`}>
+                  {t.priority || "Medium"}
                 </span>
 
                 <span className={styles.due}><Clock size={14} /> {t.due}</span>

@@ -25,6 +25,33 @@
     border-right: 1px solid #e5e7eb;
     display: flex;
     flex-direction: column;
+    position: relative;
+}
+
+.whatsappSupport {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    width: 48px;
+    height: 48px;
+    background: #25D366;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 10;
+}
+
+.whatsappSupport:hover {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 6px 16px rgba(37, 211, 102, 0.5);
+}
+
+.whatsappSupport img {
+    width: 28px;
+    height: 28px;
 }
 
 .chatListHeader {

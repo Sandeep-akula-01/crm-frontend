@@ -14,11 +14,70 @@ import {
 } from "lucide-react";
 import axios from "axios";
 
+const mockTeamData = [
+    {
+        id: "1",
+        name: "Arjun Sharma",
+        email: "arjun.sharma@company.com",
+        role: "Admin",
+        status: "Online",
+        phone: "+91 98765 43210",
+        lastActive: "Just now",
+        initials: "AS",
+        color: "#6366f1"
+    },
+    {
+        id: "2",
+        name: "Priya Mehta",
+        email: "priya.mehta@company.com",
+        role: "Manager",
+        status: "Online",
+        phone: "+91 91234 56789",
+        lastActive: "5 mins ago",
+        initials: "PM",
+        color: "#10b981"
+    },
+    {
+        id: "3",
+        name: "Rohan Verma",
+        email: "rohan.verma@company.com",
+        role: "Employee",
+        status: "Away",
+        phone: "+91 99887 76655",
+        lastActive: "32 mins ago",
+        initials: "RV",
+        color: "#f59e0b"
+    },
+    {
+        id: "4",
+        name: "Sneha Kapoor",
+        email: "sneha.kapoor@company.com",
+        role: "Agent",
+        status: "Offline",
+        phone: "+91 87654 32109",
+        lastActive: "2 hours ago",
+        initials: "SK",
+        color: "#ec4899"
+    },
+    {
+        id: "5",
+        name: "Dev Nair",
+        email: "dev.nair@company.com",
+        role: "Employee",
+        status: "Pending",
+        phone: "+91 76543 21098",
+        lastActive: "Not yet logged in",
+        initials: "DN",
+        color: "#3b82f6"
+    }
+];
+
 export const Team = ({ branch }) => {
     const [searchTerm, setSearchTerm] = useState("");
     const [roleFilter, setRoleFilter] = useState("All");
-    const [teamMembers, setTeamMembers] = useState([]);
-    const [loading, setLoading] = useState(true);
+    // Always start with mock data so the page renders immediately
+    const [teamMembers, setTeamMembers] = useState(mockTeamData);
+    const [loading, setLoading] = useState(false);
 
     const getAuthHeader = () => {
         const token = localStorage.getItem("token");
@@ -27,15 +86,26 @@ export const Team = ({ branch }) => {
 
     const fetchTeam = useCallback(async () => {
         try {
-            setLoading(true);
             const response = await axios.get("http://192.168.1.61:5000/api/team", {
                 headers: getAuthHeader()
             });
-            setTeamMembers(response.data);
+            const raw = response.data;
+            const members = Array.isArray(raw)
+                ? raw
+                : Array.isArray(raw?.members)
+                    ? raw.members
+                    : Array.isArray(raw?.data)
+                        ? raw.data
+                        : null;
+
+            if (members && members.length > 0) {
+                setTeamMembers(members);
+                console.log("✅ Teams: loaded live data from backend.");
+            } else {
+                console.warn("⚠️ Teams: backend response missing expected data – showing demo data.", response.data);
+            }
         } catch (error) {
-            console.error("Error fetching team:", error);
-        } finally {
-            setLoading(false);
+            console.warn("⚠️ Teams: backend not connected – showing demo data.", error.message);
         }
     }, []);
 
